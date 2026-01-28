@@ -1,0 +1,35 @@
+{
+  "app-1": [
+    { "siId": "SI-001", "name": "payment-gateway-prod-1", "environment": "Prod", "status": "Operational" },
+    { "siId": "SI-002", "name": "payment-gateway-prod-2", "environment": "Prod", "status": "Operational" },
+    { "siId": "SI-003", "name": "payment-gateway-dr-1", "environment": "DR", "status": "Operational" },
+    { "siId": "SI-004", "name": "payment-gateway-uat-1", "environment": "UAT", "status": "Operational" },
+    { "siId": "SI-005", "name": "payment-gateway-uat-2", "environment": "UAT", "status": "Maintenance" }
+  ],
+  "app-2": [
+    { "siId": "SI-010", "name": "fraud-detection-prod-1", "environment": "Prod", "status": "Operational" },
+    { "siId": "SI-011", "name": "fraud-detection-dr-1", "environment": "DR", "status": "Operational" },
+    { "siId": "SI-012", "name": "fraud-detection-uat-1", "environment": "UAT", "status": "Operational" }
+  ],
+  "app-3": [
+    { "siId": "SI-020", "name": "customer-dashboard-prod-1", "environment": "Prod", "status": "Operational" },
+    { "siId": "SI-021", "name": "customer-dashboard-prod-2", "environment": "Prod", "status": "Operational" },
+    { "siId": "SI-022", "name": "customer-dashboard-dr-1", "environment": "DR", "status": "Operational" },
+    { "siId": "SI-023", "name": "customer-dashboard-uat-1", "environment": "UAT", "status": "Operational" },
+    { "siId": "SI-024", "name": "customer-dashboard-dev-1", "environment": "Dev", "status": "Operational" }
+  ],
+  "app-4": [
+    { "siId": "SI-030", "name": "mobile-api-prod-1", "environment": "Prod", "status": "Operational" },
+    { "siId": "SI-031", "name": "mobile-api-uat-1", "environment": "UAT", "status": "Operational" }
+  ],
+  "app-5": [
+    { "siId": "SI-040", "name": "analytics-engine-prod-1", "environment": "Prod", "status": "Operational" },
+    { "siId": "SI-041", "name": "analytics-engine-prod-2", "environment": "Prod", "status": "Operational" },
+    { "siId": "SI-042", "name": "analytics-engine-dr-1", "environment": "DR", "status": "Standby" },
+    { "siId": "SI-043", "name": "analytics-engine-uat-1", "environment": "UAT", "status": "Operational" }
+  ],
+  "app-6": [
+    { "siId": "SI-050", "name": "reporting-service-prod-1", "environment": "Prod", "status": "Operational" },
+    { "siId": "SI-051", "name": "reporting-service-uat-1", "environment": "UAT", "status": "Operational" }
+  ]
+}

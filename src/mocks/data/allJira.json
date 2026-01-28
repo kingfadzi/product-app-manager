@@ -1,0 +1,17 @@
+[
+  { "projectKey": "PLAT", "projectName": "Platform Services", "url": "https://jira.example.com/browse/PLAT" },
+  { "projectKey": "PLATOPS", "projectName": "Platform Operations", "url": "https://jira.example.com/browse/PLATOPS" },
+  { "projectKey": "INFRA", "projectName": "Infrastructure", "url": "https://jira.example.com/browse/INFRA" },
+  { "projectKey": "SEC", "projectName": "Security", "url": "https://jira.example.com/browse/SEC" },
+  { "projectKey": "SECOPS", "projectName": "Security Operations", "url": "https://jira.example.com/browse/SECOPS" },
+  { "projectKey": "DEVX", "projectName": "Developer Experience", "url": "https://jira.example.com/browse/DEVX" },
+  { "projectKey": "CORE", "projectName": "Core Services", "url": "https://jira.example.com/browse/CORE" },
+  { "projectKey": "API", "projectName": "API Platform", "url": "https://jira.example.com/browse/API" },
+  { "projectKey": "INTEG", "projectName": "Integration Services", "url": "https://jira.example.com/browse/INTEG" },
+  { "projectKey": "NOTIFY", "projectName": "Notification Services", "url": "https://jira.example.com/browse/NOTIFY" },
+  { "projectKey": "BATCH", "projectName": "Batch Processing", "url": "https://jira.example.com/browse/BATCH" },
+  { "projectKey": "LEGACY", "projectName": "Legacy Systems", "url": "https://jira.example.com/browse/LEGACY" },
+  { "projectKey": "CLOUD", "projectName": "Cloud Migration", "url": "https://jira.example.com/browse/CLOUD" },
+  { "projectKey": "QA", "projectName": "Quality Assurance", "url": "https://jira.example.com/browse/QA" },
+  { "projectKey": "DOCS", "projectName": "Documentation", "url": "https://jira.example.com/browse/DOCS" }
+]

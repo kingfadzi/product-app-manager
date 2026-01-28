@@ -1,0 +1,30 @@
+{
+  "app-1": [
+    { "repoId": "repo-avail-1", "name": "payment-gateway-api", "type": "GitLab", "url": "https://gitlab.example.com/payments/payment-gateway-api" },
+    { "repoId": "repo-avail-2", "name": "payment-gateway-ui", "type": "GitLab", "url": "https://gitlab.example.com/payments/payment-gateway-ui" },
+    { "repoId": "repo-avail-3", "name": "payment-gateway-legacy", "type": "BitBucket", "url": "https://bitbucket.example.com/payments/payment-gateway-legacy" },
+    { "repoId": "repo-avail-4", "name": "payment-gateway-docs", "type": "GitLab", "url": "https://gitlab.example.com/payments/payment-gateway-docs" }
+  ],
+  "app-2": [
+    { "repoId": "repo-avail-10", "name": "fraud-detection-engine", "type": "GitLab", "url": "https://gitlab.example.com/risk/fraud-detection-engine" },
+    { "repoId": "repo-avail-11", "name": "fraud-detection-models", "type": "GitLab", "url": "https://gitlab.example.com/risk/fraud-detection-models" },
+    { "repoId": "repo-avail-12", "name": "fraud-rules-config", "type": "BitBucket", "url": "https://bitbucket.example.com/risk/fraud-rules-config" }
+  ],
+  "app-3": [
+    { "repoId": "repo-avail-20", "name": "customer-dashboard-web", "type": "GitLab", "url": "https://gitlab.example.com/customer/customer-dashboard-web" },
+    { "repoId": "repo-avail-21", "name": "customer-dashboard-api", "type": "GitLab", "url": "https://gitlab.example.com/customer/customer-dashboard-api" }
+  ],
+  "app-4": [
+    { "repoId": "repo-avail-30", "name": "mobile-app-api", "type": "GitLab", "url": "https://gitlab.example.com/mobile/mobile-app-api" },
+    { "repoId": "repo-avail-31", "name": "mobile-app-ios", "type": "BitBucket", "url": "https://bitbucket.example.com/mobile/mobile-app-ios" },
+    { "repoId": "repo-avail-32", "name": "mobile-app-android", "type": "BitBucket", "url": "https://bitbucket.example.com/mobile/mobile-app-android" }
+  ],
+  "app-5": [
+    { "repoId": "repo-avail-40", "name": "analytics-engine-core", "type": "GitLab", "url": "https://gitlab.example.com/analytics/analytics-engine-core" },
+    { "repoId": "repo-avail-41", "name": "analytics-pipelines", "type": "GitLab", "url": "https://gitlab.example.com/analytics/analytics-pipelines" }
+  ],
+  "app-6": [
+    { "repoId": "repo-avail-50", "name": "reporting-service-api", "type": "GitLab", "url": "https://gitlab.example.com/analytics/reporting-service-api" },
+    { "repoId": "repo-avail-51", "name": "reporting-dashboards", "type": "GitLab", "url": "https://gitlab.example.com/analytics/reporting-dashboards" }
+  ]
+}

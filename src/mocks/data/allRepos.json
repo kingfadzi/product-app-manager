@@ -1,0 +1,17 @@
+[
+  { "repoId": "repo-global-1", "name": "shared-auth-library", "type": "GitLab", "url": "https://gitlab.example.com/shared/auth-library" },
+  { "repoId": "repo-global-2", "name": "shared-logging", "type": "GitLab", "url": "https://gitlab.example.com/shared/logging" },
+  { "repoId": "repo-global-3", "name": "common-utils", "type": "GitLab", "url": "https://gitlab.example.com/shared/common-utils" },
+  { "repoId": "repo-global-4", "name": "api-gateway-core", "type": "GitLab", "url": "https://gitlab.example.com/platform/api-gateway-core" },
+  { "repoId": "repo-global-5", "name": "message-queue-client", "type": "GitLab", "url": "https://gitlab.example.com/platform/message-queue-client" },
+  { "repoId": "repo-global-6", "name": "legacy-integration", "type": "BitBucket", "url": "https://bitbucket.example.com/legacy/integration" },
+  { "repoId": "repo-global-7", "name": "legacy-batch-processor", "type": "BitBucket", "url": "https://bitbucket.example.com/legacy/batch-processor" },
+  { "repoId": "repo-global-8", "name": "data-pipeline-core", "type": "GitLab", "url": "https://gitlab.example.com/data/pipeline-core" },
+  { "repoId": "repo-global-9", "name": "etl-framework", "type": "GitLab", "url": "https://gitlab.example.com/data/etl-framework" },
+  { "repoId": "repo-global-10", "name": "notification-service", "type": "GitLab", "url": "https://gitlab.example.com/services/notification-service" },
+  { "repoId": "repo-global-11", "name": "email-templates", "type": "GitLab", "url": "https://gitlab.example.com/services/email-templates" },
+  { "repoId": "repo-global-12", "name": "sms-gateway", "type": "BitBucket", "url": "https://bitbucket.example.com/services/sms-gateway" },
+  { "repoId": "repo-global-13", "name": "monitoring-dashboard", "type": "GitLab", "url": "https://gitlab.example.com/ops/monitoring-dashboard" },
+  { "repoId": "repo-global-14", "name": "alerting-rules", "type": "GitLab", "url": "https://gitlab.example.com/ops/alerting-rules" },
+  { "repoId": "repo-global-15", "name": "infrastructure-as-code", "type": "GitLab", "url": "https://gitlab.example.com/ops/infrastructure-as-code" }
+]

@@ -1,0 +1,26 @@
+{
+  "app-1": [
+    { "projectKey": "PAY", "projectName": "Payment Gateway", "url": "https://jira.example.com/browse/PAY" },
+    { "projectKey": "PAYOPS", "projectName": "Payment Gateway Ops", "url": "https://jira.example.com/browse/PAYOPS" }
+  ],
+  "app-2": [
+    { "projectKey": "FRAUD", "projectName": "Fraud Detection", "url": "https://jira.example.com/browse/FRAUD" },
+    { "projectKey": "FRAUDOPS", "projectName": "Fraud Detection Ops", "url": "https://jira.example.com/browse/FRAUDOPS" },
+    { "projectKey": "RISK", "projectName": "Risk Management", "url": "https://jira.example.com/browse/RISK" }
+  ],
+  "app-3": [
+    { "projectKey": "CUST", "projectName": "Customer Dashboard", "url": "https://jira.example.com/browse/CUST" },
+    { "projectKey": "CUSTOPS", "projectName": "Customer Dashboard Ops", "url": "https://jira.example.com/browse/CUSTOPS" }
+  ],
+  "app-4": [
+    { "projectKey": "MOB", "projectName": "Mobile App", "url": "https://jira.example.com/browse/MOB" },
+    { "projectKey": "MOBAPI", "projectName": "Mobile API", "url": "https://jira.example.com/browse/MOBAPI" }
+  ],
+  "app-5": [
+    { "projectKey": "ANA", "projectName": "Analytics Engine", "url": "https://jira.example.com/browse/ANA" },
+    { "projectKey": "DATA", "projectName": "Data Platform", "url": "https://jira.example.com/browse/DATA" }
+  ],
+  "app-6": [
+    { "projectKey": "RPT", "projectName": "Reporting Service", "url": "https://jira.example.com/browse/RPT" }
+  ]
+}

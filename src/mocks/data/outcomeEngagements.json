@@ -1,0 +1,41 @@
+{
+  "BO-42": {
+    "productDeltaDoc": "https://confluence.example.com/product-delta-42",
+    "architectureDeltaDoc": "https://confluence.example.com/arch-delta-42",
+    "serviceVisionDeltaDoc": "",
+    "questionnaire": {
+      "impactsData": "yes",
+      "impactsSecurity": "no",
+      "impactsAccessibility": "no",
+      "requiresArchReview": "yes",
+      "deploymentStrategy": "standard"
+    },
+    "selectedGuilds": [2, 3]
+  },
+  "BO-38": {
+    "productDeltaDoc": "https://confluence.example.com/product-delta-38",
+    "architectureDeltaDoc": "",
+    "serviceVisionDeltaDoc": "",
+    "questionnaire": {
+      "impactsData": "no",
+      "impactsSecurity": "yes",
+      "impactsAccessibility": "yes",
+      "requiresArchReview": "no",
+      "deploymentStrategy": "feature-flag"
+    },
+    "selectedGuilds": [1, 4]
+  },
+  "BO-35": {
+    "productDeltaDoc": "",
+    "architectureDeltaDoc": "",
+    "serviceVisionDeltaDoc": "",
+    "questionnaire": {
+      "impactsData": "",
+      "impactsSecurity": "",
+      "impactsAccessibility": "",
+      "requiresArchReview": "",
+      "deploymentStrategy": ""
+    },
+    "selectedGuilds": []
+  }
+}

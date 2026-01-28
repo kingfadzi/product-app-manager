@@ -1,0 +1,37 @@
+[
+  {
+    "id": "contact-1",
+    "appId": "app-1",
+    "name": "John Smith",
+    "email": "john.smith@example.com",
+    "role": "product_owner"
+  },
+  {
+    "id": "contact-2",
+    "appId": "app-1",
+    "name": "Jane Doe",
+    "email": "jane.doe@example.com",
+    "role": "tech_lead"
+  },
+  {
+    "id": "contact-3",
+    "appId": "app-2",
+    "name": "Bob Johnson",
+    "email": "bob.johnson@example.com",
+    "role": "tech_lead"
+  },
+  {
+    "id": "contact-4",
+    "appId": "app-3",
+    "name": "Alice Williams",
+    "email": "alice.williams@example.com",
+    "role": "product_owner"
+  },
+  {
+    "id": "contact-5",
+    "appId": "app-5",
+    "name": "Charlie Brown",
+    "email": "charlie.brown@example.com",
+    "role": "business_owner"
+  }
+]

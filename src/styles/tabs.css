@@ -1,0 +1,28 @@
+/* Tabbed card styling - standard Bootstrap tab look */
+.tabbed-card .card-header {
+  background-color: #fff;
+  border-bottom: none;
+}
+
+.tabbed-card .nav-tabs {
+  border-bottom: 1px solid #dee2e6;
+}
+
+.tabbed-card .nav-tabs .nav-link {
+  border: 1px solid transparent;
+  border-top-left-radius: 0.25rem;
+  border-top-right-radius: 0.25rem;
+  color: #6c757d;
+  margin-bottom: -1px;
+}
+
+.tabbed-card .nav-tabs .nav-link:hover {
+  border-color: #e9ecef #e9ecef #dee2e6;
+  color: #495057;
+}
+
+.tabbed-card .nav-tabs .nav-link.active {
+  color: #495057;
+  background-color: #fff;
+  border-color: #dee2e6 #dee2e6 #fff;
+}

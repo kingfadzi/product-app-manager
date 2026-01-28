@@ -1,0 +1,72 @@
+[
+  {
+    "id": "doc-1",
+    "appId": "app-1",
+    "title": "Payment Gateway Roadmap",
+    "url": "https://confluence.example.com/payment-roadmap",
+    "type": "Product Roadmap"
+  },
+  {
+    "id": "doc-2",
+    "appId": "app-1",
+    "title": "Payment Gateway Architecture",
+    "url": "https://confluence.example.com/payment-architecture",
+    "type": "Architecture Vision"
+  },
+  {
+    "id": "doc-3",
+    "appId": "app-1",
+    "title": "Payment Gateway Runbook",
+    "url": "https://confluence.example.com/payment-runbook",
+    "type": "runbook"
+  },
+  {
+    "id": "doc-10",
+    "appId": "app-2",
+    "title": "Fraud Detection Product Vision",
+    "url": "https://confluence.example.com/fraud/product-vision",
+    "type": "Product Vision"
+  },
+  {
+    "id": "doc-11",
+    "appId": "app-2",
+    "title": "Fraud Detection Product Roadmap",
+    "url": "https://confluence.example.com/fraud/product-roadmap",
+    "type": "Product Roadmap"
+  },
+  {
+    "id": "doc-12",
+    "appId": "app-2",
+    "title": "Fraud Detection Architecture Vision",
+    "url": "https://confluence.example.com/fraud/architecture-vision",
+    "type": "Architecture Vision"
+  },
+  {
+    "id": "doc-13",
+    "appId": "app-2",
+    "title": "Fraud Detection Service Vision",
+    "url": "https://confluence.example.com/fraud/service-vision",
+    "type": "Service Vision"
+  },
+  {
+    "id": "doc-14",
+    "appId": "app-2",
+    "title": "Fraud Detection Security Vision",
+    "url": "https://confluence.example.com/fraud/security-vision",
+    "type": "Security Vision"
+  },
+  {
+    "id": "doc-15",
+    "appId": "app-2",
+    "title": "Fraud Detection Test Strategy",
+    "url": "https://confluence.example.com/fraud/test-strategy",
+    "type": "Test Strategy"
+  },
+  {
+    "id": "doc-20",
+    "appId": "app-3",
+    "title": "Customer Portal Architecture Vision",
+    "url": "https://confluence.example.com/portal/architecture-vision",
+    "type": "Architecture Vision"
+  }
+]

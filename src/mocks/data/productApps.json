@@ -1,0 +1,32 @@
+[
+  {
+    "productId": "prod-1",
+    "appId": "app-1",
+    "addedAt": "2024-01-15"
+  },
+  {
+    "productId": "prod-1",
+    "appId": "app-2",
+    "addedAt": "2024-01-20"
+  },
+  {
+    "productId": "prod-2",
+    "appId": "app-3",
+    "addedAt": "2024-02-20"
+  },
+  {
+    "productId": "prod-2",
+    "appId": "app-4",
+    "addedAt": "2024-02-25"
+  },
+  {
+    "productId": "prod-3",
+    "appId": "app-5",
+    "addedAt": "2024-03-15"
+  },
+  {
+    "productId": "prod-3",
+    "appId": "app-6",
+    "addedAt": "2024-03-20"
+  }
+]

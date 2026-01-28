@@ -1,0 +1,8 @@
+export { default as HomePage } from './HomePage';
+export { default as Dashboard } from './Dashboard';
+export { default as ProductList } from './ProductList';
+export { default as ProductDetail } from './ProductDetail';
+export { default as ProductCreate } from './ProductCreate';
+export { default as AppList } from './AppList';
+export { default as AppProfile } from './AppProfile';
+export { default as AppEdit } from './AppEdit';

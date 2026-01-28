@@ -1,0 +1,23 @@
+[
+  {
+    "id": "prod-1",
+    "name": "Payments Platform",
+    "stack": "payments",
+    "description": "All payment services and processing applications",
+    "createdAt": "2024-01-01"
+  },
+  {
+    "id": "prod-2",
+    "name": "Customer Portal",
+    "stack": "customer",
+    "description": "Customer-facing web applications and mobile apps",
+    "createdAt": "2024-02-15"
+  },
+  {
+    "id": "prod-3",
+    "name": "Data Analytics",
+    "stack": "analytics",
+    "description": "Business intelligence and reporting tools",
+    "createdAt": "2024-03-10"
+  }
+]

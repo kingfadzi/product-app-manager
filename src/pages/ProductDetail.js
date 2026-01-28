@@ -1,0 +1,181 @@
+import React, { useState, useContext } from 'react';
+import { Card, Row, Col, Table, Button, Alert, Badge, Breadcrumb } from 'react-bootstrap';
+import { useParams, useHistory } from 'react-router-dom';
+import { AppContext } from '../context/AppContext';
+import useProducts from '../hooks/useProducts';
+import PageLayout from '../components/layout/PageLayout';
+import AddAppModal from '../components/products/AddAppModal';
+import ConfirmModal from '../components/common/ConfirmModal';
+
+function ProductDetail() {
+  const { id } = useParams();
+  const history = useHistory();
+  const { apps } = useContext(AppContext);
+  const {
+    getProductById,
+    getAppsForProduct,
+    addAppToProduct,
+    removeAppFromProduct,
+    error
+  } = useProducts();
+
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [removeConfirm, setRemoveConfirm] = useState(null);
+
+  const product = getProductById(id);
+  const productAppIds = getAppsForProduct(id);
+  const productApps = apps.filter(app => productAppIds.includes(app.id));
+
+  const handleAddApps = async (selectedApps, metadata = {}) => {
+    for (const app of selectedApps) {
+      await addAppToProduct(id, app.id, metadata);
+    }
+    setShowAddModal(false);
+  };
+
+  const handleRemoveApp = async () => {
+    if (removeConfirm) {
+      await removeAppFromProduct(id, removeConfirm.id);
+      setRemoveConfirm(null);
+    }
+  };
+
+  const tierColors = {
+    gold: 'warning',
+    silver: 'secondary',
+    bronze: 'info',
+  };
+
+  const statusColors = {
+    active: 'success',
+    maintenance: 'warning',
+    deprecated: 'danger',
+  };
+
+  // Count apps by tier
+  const goldApps = productApps.filter(a => a.tier === 'gold').length;
+  const silverApps = productApps.filter(a => a.tier === 'silver').length;
+  const bronzeApps = productApps.filter(a => a.tier === 'bronze').length;
+
+  if (!product) {
+    return (
+      <PageLayout>
+        <Alert variant="warning">
+          Product not found.{' '}
+          <Button variant="link" onClick={() => history.push('/products')}>
+            Back to Products
+          </Button>
+        </Alert>
+      </PageLayout>
+    );
+  }
+
+  // Get initial letter for avatar
+  const initial = product.name.charAt(0).toUpperCase();
+
+  return (
+    <PageLayout>
+      {/* Breadcrumb Navigation */}
+      <Breadcrumb>
+        <Breadcrumb.Item onClick={() => history.push('/')}>Stacks</Breadcrumb.Item>
+        <Breadcrumb.Item onClick={() => history.push(`/products?stack=${product.stack}`)}>{product.stack}</Breadcrumb.Item>
+        <Breadcrumb.Item active>{product.name}</Breadcrumb.Item>
+      </Breadcrumb>
+
+      {error && <Alert variant="danger">{error}</Alert>}
+
+      {/* Product Header */}
+      <div className="d-flex align-items-center mb-4">
+        <div
+          className="d-flex align-items-center justify-content-center mr-3"
+          style={{
+            width: '64px',
+            height: '64px',
+            backgroundColor: '#6c5ce7',
+            borderRadius: '8px',
+            color: 'white',
+            fontSize: '28px',
+            fontWeight: 'bold',
+          }}
+        >
+          {initial}
+        </div>
+        <div className="flex-grow-1">
+          <h2 className="mb-1">{product.name}</h2>
+          <span className="text-muted">{product.description || 'No description'}</span>
+        </div>
+        <Button variant="outline-primary" size="sm" onClick={() => setShowAddModal(true)}>
+          Add Application
+        </Button>
+      </div>
+
+
+      {/* Applications Section */}
+      <div className="mb-3 d-flex justify-content-between align-items-center">
+        <h5 className="mb-0">Applications</h5>
+      </div>
+
+      {productApps.length === 0 ? (
+        <Card className="text-center py-5">
+          <Card.Body>
+            <p className="text-muted mb-3">No applications added to this product yet</p>
+            <Button variant="primary" size="sm" onClick={() => setShowAddModal(true)}>
+              Add Application
+            </Button>
+          </Card.Body>
+        </Card>
+      ) : (
+        <Card>
+          <Table hover className="mb-0" size="sm" style={{ whiteSpace: 'nowrap' }}>
+            <thead className="bg-light">
+              <tr>
+                <th>App ID</th>
+                <th>Name</th>
+                <th>Parent</th>
+                <th>ResCat</th>
+                <th className="text-center">Repos</th>
+                <th className="text-center">Backlogs</th>
+                <th className="text-center">Open Risks</th>
+              </tr>
+            </thead>
+            <tbody>
+              {productApps.map(app => (
+                <tr
+                  key={app.id}
+                  style={{ cursor: 'pointer' }}
+                  onClick={() => history.push(`/apps/${app.id}`)}
+                >
+                  <td>{app.cmdbId}</td>
+                  <td style={{ fontWeight: 500 }}>{app.name}</td>
+                  <td>{app.parent || '-'}</td>
+                  <td>{app.resCat || '-'}</td>
+                  <td className="text-center">{app.repoCount || 0}</td>
+                  <td className="text-center">{app.backlogCount || 0}</td>
+                  <td className="text-center">{app.openRisks || 0}</td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
+        </Card>
+      )}
+
+      <AddAppModal
+        show={showAddModal}
+        onHide={() => setShowAddModal(false)}
+        onAdd={handleAddApps}
+        existingAppIds={productAppIds}
+      />
+
+      <ConfirmModal
+        show={!!removeConfirm}
+        onHide={() => setRemoveConfirm(null)}
+        onConfirm={handleRemoveApp}
+        title="Remove App"
+        message={`Are you sure you want to remove "${removeConfirm?.name}" from this product?`}
+        confirmText="Remove"
+      />
+    </PageLayout>
+  );
+}
+
+export default ProductDetail;

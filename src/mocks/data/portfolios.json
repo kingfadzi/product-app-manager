@@ -1,0 +1,38 @@
+[
+  {
+    "id": "SVC-00001",
+    "name": "Digital Banking Services",
+    "owner": "John Smith",
+    "description": "Core digital banking platform services"
+  },
+  {
+    "id": "SVC-00002",
+    "name": "Payment Processing",
+    "owner": "Sarah Johnson",
+    "description": "Payment gateway and transaction processing"
+  },
+  {
+    "id": "SVC-00003",
+    "name": "Customer Experience",
+    "owner": "Michael Brown",
+    "description": "Customer-facing applications and portals"
+  },
+  {
+    "id": "SVC-00004",
+    "name": "Risk & Compliance",
+    "owner": "Emily Davis",
+    "description": "Risk management and compliance systems"
+  },
+  {
+    "id": "SVC-00005",
+    "name": "Data & Analytics",
+    "owner": "David Wilson",
+    "description": "Business intelligence and data platform"
+  },
+  {
+    "id": "SVC-00006",
+    "name": "Infrastructure Services",
+    "owner": "Lisa Anderson",
+    "description": "Core infrastructure and platform services"
+  }
+]

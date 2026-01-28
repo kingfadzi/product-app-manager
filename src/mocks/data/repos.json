@@ -1,0 +1,50 @@
+[
+  {
+    "id": "repo-1",
+    "appId": "app-1",
+    "repoPath": "org/payment-gateway-api",
+    "repoName": "payment-gateway-api",
+    "role": "backend",
+    "isPrimary": true
+  },
+  {
+    "id": "repo-2",
+    "appId": "app-1",
+    "repoPath": "org/payment-gateway-ui",
+    "repoName": "payment-gateway-ui",
+    "role": "frontend",
+    "isPrimary": false
+  },
+  {
+    "id": "repo-3",
+    "appId": "app-2",
+    "repoPath": "org/fraud-detection-service",
+    "repoName": "fraud-detection-service",
+    "role": "backend",
+    "isPrimary": true
+  },
+  {
+    "id": "repo-4",
+    "appId": "app-3",
+    "repoPath": "org/customer-dashboard",
+    "repoName": "customer-dashboard",
+    "role": "frontend",
+    "isPrimary": true
+  },
+  {
+    "id": "repo-5",
+    "appId": "app-4",
+    "repoPath": "org/mobile-api",
+    "repoName": "mobile-api",
+    "role": "backend",
+    "isPrimary": true
+  },
+  {
+    "id": "repo-6",
+    "appId": "app-5",
+    "repoPath": "org/analytics-engine",
+    "repoName": "analytics-engine",
+    "role": "backend",
+    "isPrimary": true
+  }
+]
