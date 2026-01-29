@@ -19,14 +19,7 @@ function Header() {
               to="/"
               active={location.pathname === '/'}
             >
-              Dashboard
-            </Nav.Link>
-            <Nav.Link
-              as={Link}
-              to="/products"
-              active={location.pathname.startsWith('/products')}
-            >
-              Products
+              Home
             </Nav.Link>
             <Nav.Link
               as={Link}

@@ -10,6 +10,7 @@ import {
   AppList,
   AppProfile,
   AppEdit,
+  SearchResults,
 } from './pages';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -20,6 +21,7 @@ function App() {
       <Router>
         <Switch>
           <Route exact path="/" component={HomePage} />
+          <Route exact path="/search" component={SearchResults} />
           <Route exact path="/stacks" component={Dashboard} />
           <Route exact path="/products" component={ProductList} />
           <Route exact path="/products/new" component={ProductCreate} />

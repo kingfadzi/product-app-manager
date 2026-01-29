@@ -1,4 +1,23 @@
 {
+  "APP-1234": [
+    { "projectKey": "PAY", "projectName": "Payment Gateway", "url": "https://jira.example.com/browse/PAY" },
+    { "projectKey": "PAYOPS", "projectName": "Payment Gateway Ops", "url": "https://jira.example.com/browse/PAYOPS" }
+  ],
+  "APP-3001": [
+    { "projectKey": "ANA", "projectName": "Analytics Engine", "url": "https://jira.example.com/browse/ANA" },
+    { "projectKey": "DATA", "projectName": "Data Platform", "url": "https://jira.example.com/browse/DATA" }
+  ],
+  "APP-4001": [
+    { "projectKey": "LOAN", "projectName": "Loan Origination", "url": "https://jira.example.com/browse/LOAN" },
+    { "projectKey": "LOANOPS", "projectName": "Loan Origination Ops", "url": "https://jira.example.com/browse/LOANOPS" }
+  ],
+  "APP-5001": [
+    { "projectKey": "TREAS", "projectName": "Treasury Dashboard", "url": "https://jira.example.com/browse/TREAS" }
+  ],
+  "APP-10001": [
+    { "projectKey": "MOBBANK", "projectName": "Mobile Banking", "url": "https://jira.example.com/browse/MOBBANK" },
+    { "projectKey": "MOBBANKOPS", "projectName": "Mobile Banking Ops", "url": "https://jira.example.com/browse/MOBBANKOPS" }
+  ],
   "app-1": [
     { "projectKey": "PAY", "projectName": "Payment Gateway", "url": "https://jira.example.com/browse/PAY" },
     { "projectKey": "PAYOPS", "projectName": "Payment Gateway Ops", "url": "https://jira.example.com/browse/PAYOPS" }
@@ -22,5 +41,25 @@
   ],
   "app-6": [
     { "projectKey": "RPT", "projectName": "Reporting Service", "url": "https://jira.example.com/browse/RPT" }
+  ],
+  "APP-20001": [
+    { "projectKey": "CPV2", "projectName": "Customer Portal v2", "url": "https://jira.example.com/browse/CPV2" },
+    { "projectKey": "CPV2OPS", "projectName": "Customer Portal v2 Ops", "url": "https://jira.example.com/browse/CPV2OPS" }
+  ],
+  "APP-20002": [
+    { "projectKey": "INV", "projectName": "Inventory Management", "url": "https://jira.example.com/browse/INV" },
+    { "projectKey": "INVOPS", "projectName": "Inventory Management Ops", "url": "https://jira.example.com/browse/INVOPS" }
+  ],
+  "APP-20004": [
+    { "projectKey": "DAP", "projectName": "Data Analytics Platform", "url": "https://jira.example.com/browse/DAP" },
+    { "projectKey": "DAPOPS", "projectName": "Data Analytics Platform Ops", "url": "https://jira.example.com/browse/DAPOPS" },
+    { "projectKey": "MLOPS", "projectName": "ML Operations", "url": "https://jira.example.com/browse/MLOPS" }
+  ],
+  "APP-20005": [
+    { "projectKey": "EMAIL", "projectName": "Email Gateway", "url": "https://jira.example.com/browse/EMAIL" }
+  ],
+  "APP-20010": [
+    { "projectKey": "RISKASS", "projectName": "Risk Assessment", "url": "https://jira.example.com/browse/RISKASS" },
+    { "projectKey": "RISKOPS", "projectName": "Risk Assessment Ops", "url": "https://jira.example.com/browse/RISKOPS" }
   ]
 }

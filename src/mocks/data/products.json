@@ -2,22 +2,145 @@
   {
     "id": "prod-1",
     "name": "Payments Platform",
-    "stack": "payments",
+    "stack": "Payments",
     "description": "All payment services and processing applications",
+    "tc": "tc-7",
     "createdAt": "2024-01-01"
   },
   {
     "id": "prod-2",
     "name": "Customer Portal",
-    "stack": "customer",
+    "stack": "Customer Services",
     "description": "Customer-facing web applications and mobile apps",
+    "tc": "tc-1",
     "createdAt": "2024-02-15"
   },
   {
     "id": "prod-3",
     "name": "Data Analytics",
-    "stack": "analytics",
+    "stack": "Analytics",
     "description": "Business intelligence and reporting tools",
+    "tc": "tc-2",
     "createdAt": "2024-03-10"
+  },
+  {
+    "id": "prod-4",
+    "name": "Fraud Detection",
+    "stack": "Risk & Fraud",
+    "description": "Fraud monitoring and prevention systems",
+    "tc": "tc-8",
+    "createdAt": "2024-01-20"
+  },
+  {
+    "id": "prod-5",
+    "name": "Lending Platform",
+    "stack": "Lending",
+    "description": "Loan origination and management",
+    "tc": "tc-1",
+    "createdAt": "2024-02-01"
+  },
+  {
+    "id": "prod-6",
+    "name": "Treasury Management",
+    "stack": "Treasury",
+    "description": "Cash management and liquidity tools",
+    "tc": "tc-5",
+    "createdAt": "2024-03-05"
+  },
+  {
+    "id": "prod-7",
+    "name": "Wealth Advisory",
+    "stack": "Wealth Management",
+    "description": "Investment and portfolio management",
+    "tc": "tc-4",
+    "createdAt": "2024-01-15"
+  },
+  {
+    "id": "prod-8",
+    "name": "Card Services",
+    "stack": "Cards",
+    "description": "Credit and debit card management",
+    "tc": "tc-7",
+    "createdAt": "2024-02-20"
+  },
+  {
+    "id": "prod-9",
+    "name": "Trade Finance",
+    "stack": "Trade",
+    "description": "International trade and LC management",
+    "tc": "tc-2",
+    "createdAt": "2024-03-15"
+  },
+  {
+    "id": "prod-10",
+    "name": "Regulatory Reporting",
+    "stack": "Compliance",
+    "description": "Regulatory and compliance reporting",
+    "tc": "tc-9",
+    "createdAt": "2024-01-25"
+  },
+  {
+    "id": "prod-11",
+    "name": "AML Platform",
+    "stack": "Compliance",
+    "description": "Anti-money laundering monitoring",
+    "tc": "tc-9",
+    "createdAt": "2024-02-10"
+  },
+  {
+    "id": "prod-12",
+    "name": "Mobile Banking",
+    "stack": "Digital Channels",
+    "description": "Mobile banking applications",
+    "tc": "tc-1",
+    "createdAt": "2024-03-01"
+  },
+  {
+    "id": "prod-13",
+    "name": "Internet Banking",
+    "stack": "Digital Channels",
+    "description": "Online banking portal",
+    "tc": "tc-1",
+    "createdAt": "2024-01-10"
+  },
+  {
+    "id": "prod-14",
+    "name": "Core Banking",
+    "stack": "Core Systems",
+    "description": "Core banking system",
+    "tc": "tc-2",
+    "createdAt": "2024-02-25"
+  },
+  {
+    "id": "prod-15",
+    "name": "GL System",
+    "stack": "Finance",
+    "description": "General ledger and accounting",
+    "tc": "tc-2",
+    "createdAt": "2024-03-20"
+  },
+  {
+    "id": "prod-16",
+    "name": "HR Platform",
+    "stack": "Enterprise",
+    "description": "Human resources management",
+    "tc": "tc-2",
+    "createdAt": "2024-01-05"
+  },
+  {
+    "id": "prod-17",
+    "name": "Insurance Claims",
+    "stack": "Insurance",
+    "description": "Claims processing system",
+    "tc": "tc-6",
+    "createdAt": "2024-02-05"
+  },
+  {
+    "id": "prod-18",
+    "name": "Policy Admin",
+    "stack": "Insurance",
+    "description": "Policy administration system",
+    "tc": "tc-6",
+    "createdAt": "2024-03-25"
   }
 ]

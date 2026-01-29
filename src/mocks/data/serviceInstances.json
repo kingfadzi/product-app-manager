@@ -1,4 +1,32 @@
 {
+  "APP-1234": [
+    { "siId": "SI-200", "name": "payment-gateway-prod-1", "environment": "Prod", "status": "Operational" },
+    { "siId": "SI-201", "name": "payment-gateway-prod-2", "environment": "Prod", "status": "Operational" },
+    { "siId": "SI-202", "name": "payment-gateway-dr-1", "environment": "DR", "status": "Standby" },
+    { "siId": "SI-203", "name": "payment-gateway-uat-1", "environment": "UAT", "status": "Operational" }
+  ],
+  "APP-3001": [
+    { "siId": "SI-210", "name": "analytics-engine-prod-1", "environment": "Prod", "status": "Operational" },
+    { "siId": "SI-211", "name": "analytics-engine-prod-2", "environment": "Prod", "status": "Operational" },
+    { "siId": "SI-212", "name": "analytics-engine-dr-1", "environment": "DR", "status": "Standby" },
+    { "siId": "SI-213", "name": "analytics-engine-uat-1", "environment": "UAT", "status": "Operational" },
+    { "siId": "SI-214", "name": "analytics-engine-dev-1", "environment": "Dev", "status": "Operational" }
+  ],
+  "APP-4001": [
+    { "siId": "SI-220", "name": "loan-origination-prod-1", "environment": "Prod", "status": "Operational" },
+    { "siId": "SI-221", "name": "loan-origination-dr-1", "environment": "DR", "status": "Standby" },
+    { "siId": "SI-222", "name": "loan-origination-uat-1", "environment": "UAT", "status": "Operational" }
+  ],
+  "APP-5001": [
+    { "siId": "SI-230", "name": "treasury-dashboard-prod-1", "environment": "Prod", "status": "Operational" },
+    { "siId": "SI-231", "name": "treasury-dashboard-uat-1", "environment": "UAT", "status": "Operational" }
+  ],
+  "APP-10001": [
+    { "siId": "SI-240", "name": "mobile-banking-prod-1", "environment": "Prod", "status": "Operational" },
+    { "siId": "SI-241", "name": "mobile-banking-prod-2", "environment": "Prod", "status": "Operational" },
+    { "siId": "SI-242", "name": "mobile-banking-dr-1", "environment": "DR", "status": "Operational" },
+    { "siId": "SI-243", "name": "mobile-banking-uat-1", "environment": "UAT", "status": "Operational" }
+  ],
   "app-1": [
     { "siId": "SI-001", "name": "payment-gateway-prod-1", "environment": "Prod", "status": "Operational" },
     { "siId": "SI-002", "name": "payment-gateway-prod-2", "environment": "Prod", "status": "Operational" },
@@ -31,5 +59,32 @@
   "app-6": [
     { "siId": "SI-050", "name": "reporting-service-prod-1", "environment": "Prod", "status": "Operational" },
     { "siId": "SI-051", "name": "reporting-service-uat-1", "environment": "UAT", "status": "Operational" }
+  ],
+  "APP-20001": [
+    { "siId": "SI-100", "name": "customer-portal-v2-prod-1", "environment": "Prod", "status": "Operational" },
+    { "siId": "SI-101", "name": "customer-portal-v2-prod-2", "environment": "Prod", "status": "Operational" },
+    { "siId": "SI-102", "name": "customer-portal-v2-dr-1", "environment": "DR", "status": "Standby" },
+    { "siId": "SI-103", "name": "customer-portal-v2-uat-1", "environment": "UAT", "status": "Operational" }
+  ],
+  "APP-20002": [
+    { "siId": "SI-110", "name": "inventory-mgmt-prod-1", "environment": "Prod", "status": "Operational" },
+    { "siId": "SI-111", "name": "inventory-mgmt-uat-1", "environment": "UAT", "status": "Operational" }
+  ],
+  "APP-20004": [
+    { "siId": "SI-120", "name": "data-analytics-prod-1", "environment": "Prod", "status": "Operational" },
+    { "siId": "SI-121", "name": "data-analytics-prod-2", "environment": "Prod", "status": "Operational" },
+    { "siId": "SI-122", "name": "data-analytics-dr-1", "environment": "DR", "status": "Standby" },
+    { "siId": "SI-123", "name": "data-analytics-uat-1", "environment": "UAT", "status": "Operational" },
+    { "siId": "SI-124", "name": "data-analytics-dev-1", "environment": "Dev", "status": "Operational" }
+  ],
+  "APP-20005": [
+    { "siId": "SI-130", "name": "email-gateway-prod-1", "environment": "Prod", "status": "Operational" },
+    { "siId": "SI-131", "name": "email-gateway-dr-1", "environment": "DR", "status": "Standby" }
+  ],
+  "APP-20010": [
+    { "siId": "SI-140", "name": "risk-assessment-prod-1", "environment": "Prod", "status": "Operational" },
+    { "siId": "SI-141", "name": "risk-assessment-prod-2", "environment": "Prod", "status": "Operational" },
+    { "siId": "SI-142", "name": "risk-assessment-dr-1", "environment": "DR", "status": "Operational" },
+    { "siId": "SI-143", "name": "risk-assessment-uat-1", "environment": "UAT", "status": "Operational" }
   ]
 }

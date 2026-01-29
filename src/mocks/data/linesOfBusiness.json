@@ -1,0 +1,11 @@
+[
+  { "id": "tc-1", "name": "Retail Banking" },
+  { "id": "tc-2", "name": "Corporate Banking" },
+  { "id": "tc-3", "name": "Investment Banking" },
+  { "id": "tc-4", "name": "Wealth Management" },
+  { "id": "tc-5", "name": "Treasury Services" },
+  { "id": "tc-6", "name": "Insurance" },
+  { "id": "tc-7", "name": "Payments" },
+  { "id": "tc-8", "name": "Risk Management" },
+  { "id": "tc-9", "name": "Compliance" }
+]

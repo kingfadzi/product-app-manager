@@ -6,3 +6,4 @@ export { default as ProductCreate } from './ProductCreate';
 export { default as AppList } from './AppList';
 export { default as AppProfile } from './AppProfile';
 export { default as AppEdit } from './AppEdit';
+export { default as SearchResults } from './SearchResults';

@@ -34,7 +34,7 @@ function AppEdit() {
   return (
     <PageLayout>
       <Breadcrumb>
-        <Breadcrumb.Item onClick={() => history.push('/')}>Stacks</Breadcrumb.Item>
+        <Breadcrumb.Item onClick={() => history.push('/')}>Home</Breadcrumb.Item>
         <Breadcrumb.Item onClick={() => history.push('/apps')}>Applications</Breadcrumb.Item>
         <Breadcrumb.Item onClick={() => history.push(`/apps/${id}`)}>{app.name}</Breadcrumb.Item>
         <Breadcrumb.Item active>Edit</Breadcrumb.Item>

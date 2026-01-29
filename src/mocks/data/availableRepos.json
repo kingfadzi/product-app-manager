@@ -1,4 +1,27 @@
 {
+  "APP-1234": [
+    { "repoId": "repo-avail-200", "name": "payment-gateway-api", "type": "GitLab", "url": "https://gitlab.example.com/payments/payment-gateway-api" },
+    { "repoId": "repo-avail-201", "name": "payment-gateway-ui", "type": "GitLab", "url": "https://gitlab.example.com/payments/payment-gateway-ui" },
+    { "repoId": "repo-avail-202", "name": "payment-gateway-legacy", "type": "BitBucket", "url": "https://bitbucket.example.com/payments/payment-gateway-legacy" }
+  ],
+  "APP-3001": [
+    { "repoId": "repo-avail-210", "name": "analytics-engine-core", "type": "GitLab", "url": "https://gitlab.example.com/analytics/analytics-engine-core" },
+    { "repoId": "repo-avail-211", "name": "analytics-pipelines", "type": "GitLab", "url": "https://gitlab.example.com/analytics/analytics-pipelines" },
+    { "repoId": "repo-avail-212", "name": "analytics-ml-models", "type": "GitLab", "url": "https://gitlab.example.com/analytics/analytics-ml-models" }
+  ],
+  "APP-4001": [
+    { "repoId": "repo-avail-220", "name": "loan-origination-api", "type": "GitLab", "url": "https://gitlab.example.com/lending/loan-origination-api" },
+    { "repoId": "repo-avail-221", "name": "loan-origination-ui", "type": "GitLab", "url": "https://gitlab.example.com/lending/loan-origination-ui" }
+  ],
+  "APP-5001": [
+    { "repoId": "repo-avail-230", "name": "treasury-dashboard-api", "type": "GitLab", "url": "https://gitlab.example.com/treasury/treasury-dashboard-api" },
+    { "repoId": "repo-avail-231", "name": "treasury-dashboard-ui", "type": "GitLab", "url": "https://gitlab.example.com/treasury/treasury-dashboard-ui" }
+  ],
+  "APP-10001": [
+    { "repoId": "repo-avail-240", "name": "mobile-banking-ios", "type": "GitLab", "url": "https://gitlab.example.com/mobile/mobile-banking-ios" },
+    { "repoId": "repo-avail-241", "name": "mobile-banking-android", "type": "GitLab", "url": "https://gitlab.example.com/mobile/mobile-banking-android" },
+    { "repoId": "repo-avail-242", "name": "mobile-banking-api", "type": "GitLab", "url": "https://gitlab.example.com/mobile/mobile-banking-api" }
+  ],
   "app-1": [
     { "repoId": "repo-avail-1", "name": "payment-gateway-api", "type": "GitLab", "url": "https://gitlab.example.com/payments/payment-gateway-api" },
     { "repoId": "repo-avail-2", "name": "payment-gateway-ui", "type": "GitLab", "url": "https://gitlab.example.com/payments/payment-gateway-ui" },
@@ -26,5 +49,28 @@
   "app-6": [
     { "repoId": "repo-avail-50", "name": "reporting-service-api", "type": "GitLab", "url": "https://gitlab.example.com/analytics/reporting-service-api" },
     { "repoId": "repo-avail-51", "name": "reporting-dashboards", "type": "GitLab", "url": "https://gitlab.example.com/analytics/reporting-dashboards" }
+  ],
+  "APP-20001": [
+    { "repoId": "repo-avail-100", "name": "customer-portal-v2-web", "type": "GitLab", "url": "https://gitlab.example.com/customer/customer-portal-v2-web" },
+    { "repoId": "repo-avail-101", "name": "customer-portal-v2-api", "type": "GitLab", "url": "https://gitlab.example.com/customer/customer-portal-v2-api" },
+    { "repoId": "repo-avail-102", "name": "customer-portal-v2-mobile", "type": "BitBucket", "url": "https://bitbucket.example.com/customer/customer-portal-v2-mobile" }
+  ],
+  "APP-20002": [
+    { "repoId": "repo-avail-110", "name": "inventory-mgmt-backend", "type": "GitLab", "url": "https://gitlab.example.com/ops/inventory-mgmt-backend" },
+    { "repoId": "repo-avail-111", "name": "inventory-mgmt-frontend", "type": "GitLab", "url": "https://gitlab.example.com/ops/inventory-mgmt-frontend" }
+  ],
+  "APP-20004": [
+    { "repoId": "repo-avail-120", "name": "data-analytics-core", "type": "GitLab", "url": "https://gitlab.example.com/analytics/data-analytics-core" },
+    { "repoId": "repo-avail-121", "name": "data-analytics-ml-models", "type": "GitLab", "url": "https://gitlab.example.com/analytics/data-analytics-ml-models" },
+    { "repoId": "repo-avail-122", "name": "data-analytics-pipelines", "type": "GitLab", "url": "https://gitlab.example.com/analytics/data-analytics-pipelines" }
+  ],
+  "APP-20005": [
+    { "repoId": "repo-avail-130", "name": "email-gateway-service", "type": "GitLab", "url": "https://gitlab.example.com/infra/email-gateway-service" },
+    { "repoId": "repo-avail-131", "name": "email-templates", "type": "GitLab", "url": "https://gitlab.example.com/infra/email-templates" }
+  ],
+  "APP-20010": [
+    { "repoId": "repo-avail-140", "name": "risk-assessment-engine", "type": "GitLab", "url": "https://gitlab.example.com/risk/risk-assessment-engine" },
+    { "repoId": "repo-avail-141", "name": "risk-models", "type": "GitLab", "url": "https://gitlab.example.com/risk/risk-models" },
+    { "repoId": "repo-avail-142", "name": "risk-dashboard", "type": "GitLab", "url": "https://gitlab.example.com/risk/risk-dashboard" }
   ]
 }

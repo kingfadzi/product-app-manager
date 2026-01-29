@@ -6,10 +6,8 @@ function Sidebar() {
   const location = useLocation();
 
   const navItems = [
-    { path: '/', label: 'Dashboard', icon: 'house' },
-    { path: '/products', label: 'Products', icon: 'box' },
-    { path: '/products/new', label: 'New Product', icon: 'plus-circle' },
-    { path: '/apps', label: 'All Apps', icon: 'grid' },
+    { path: '/', label: 'Home', icon: 'house' },
+    { path: '/apps', label: 'Apps', icon: 'grid' },
   ];
 
   return (

@@ -58,7 +58,7 @@ function ProductCreate() {
   return (
     <PageLayout>
       <Breadcrumb>
-        <Breadcrumb.Item onClick={() => history.push('/')}>Stacks</Breadcrumb.Item>
+        <Breadcrumb.Item onClick={() => history.push('/')}>Home</Breadcrumb.Item>
         <Breadcrumb.Item onClick={() => history.push('/products')}>Products</Breadcrumb.Item>
         <Breadcrumb.Item active>New Product</Breadcrumb.Item>
       </Breadcrumb>
