@@ -472,6 +472,44 @@ export const handlers = [
     return res(ctx.json(appSmes));
   }),
 
+  // Guild SMEs (for Guilds tab in Governance card)
+  rest.get('/api/apps/:appId/guild-smes', (req, res, ctx) => {
+    const appSmes = controlSmes[req.params.appId] || [];
+    // Transform guild field to role for consistency with backend format
+    const transformed = appSmes.map(sme => ({
+      id: sme.id,
+      name: sme.name,
+      email: sme.email,
+      role: sme.guild.toLowerCase().replace(/[.\s]/g, '_'),
+    }));
+    return res(ctx.json(transformed));
+  }),
+
+  rest.post('/api/apps/:appId/guild-smes', (req, res, ctx) => {
+    const appId = req.params.appId;
+    if (!controlSmes[appId]) {
+      controlSmes[appId] = [];
+    }
+    const newSme = {
+      id: Date.now(),
+      ...req.body
+    };
+    controlSmes[appId].push(newSme);
+    return res(ctx.status(201), ctx.json({ success: true, stakeholder_id: newSme.id }));
+  }),
+
+  rest.delete('/api/guild-smes/:id', (req, res, ctx) => {
+    const id = parseInt(req.params.id);
+    for (const appId in controlSmes) {
+      const index = controlSmes[appId].findIndex(s => s.id === id);
+      if (index !== -1) {
+        controlSmes[appId].splice(index, 1);
+        return res(ctx.status(204));
+      }
+    }
+    return res(ctx.status(404), ctx.json({ error: 'Not found' }));
+  }),
+
   // Deployments
   rest.get('/api/backlogs/:projectKey/fix-versions', (req, res, ctx) => {
     const versions = fixVersions[req.params.projectKey] || [];

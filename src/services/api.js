@@ -1,7 +1,7 @@
 // API Configuration
-// Set USE_LEAN_WEB to true to use real lean-web backend endpoints
-// Set to false to use mock endpoints during development
-const USE_LEAN_WEB = true;
+// Set USE_MOCK to true to use mock endpoints during development
+// Set to false to use real backend endpoints in production
+const USE_MOCK = true;
 
 const BASE_URL = '/api';
 
@@ -33,19 +33,20 @@ async function request(endpoint, options = {}) {
   return data;
 }
 
-// Response transformers to normalize lean-web responses to expected format
+// Response transformers to normalize backend responses to expected format
+// Transformers only run when using real backend (USE_MOCK = false)
 const transformers = {
-  // Transform lean-web search results to expected format
+  // Transform backend search results to expected format
   searchResults: (data) => {
-    if (!USE_LEAN_WEB) return data;
-    // lean-web returns { results: [...], query: "..." }
+    if (USE_MOCK) return data;
+    // Backend returns { results: [...], query: "..." }
     return data.results || data;
   },
 
-  // Transform lean-web stakeholders to contacts and guildSmes
+  // Transform backend stakeholders to contacts
   stakeholdersToContacts: (data) => {
-    if (!USE_LEAN_WEB) return data;
-    // Handle { contacts: [...], guild_smes: [...] } format from lean-web
+    if (USE_MOCK) return data;
+    // Handle { contacts: [...], guild_smes: [...] } format from backend
     const stakeholders = Array.isArray(data) ? data : (data.contacts || data.stakeholders || []);
     if (!Array.isArray(stakeholders)) return [];
     return stakeholders.map(s => ({
@@ -57,8 +58,9 @@ const transformers = {
     }));
   },
 
+  // Transform backend stakeholders to guild SMEs
   stakeholdersToGuildSmes: (data) => {
-    if (!USE_LEAN_WEB) return data;
+    if (USE_MOCK) return data;
     const guildSmes = Array.isArray(data) ? data : (data.guild_smes || []);
     if (!Array.isArray(guildSmes)) return [];
     return guildSmes.map(s => ({
@@ -69,9 +71,9 @@ const transformers = {
     }));
   },
 
-  // Transform lean-web Jira projects to backlogs format
+  // Transform backend Jira projects to backlogs format
   jiraProjectsToBacklogs: (data) => {
-    if (!USE_LEAN_WEB) return data;
+    if (USE_MOCK) return data;
     const projects = data.projects || data;
     return projects.map(p => ({
       id: p.project_key || p.key,
@@ -81,9 +83,9 @@ const transformers = {
     }));
   },
 
-  // Transform lean-web versions to fix versions format
+  // Transform backend versions to fix versions format
   versionsToFixVersions: (data) => {
-    if (!USE_LEAN_WEB) return data;
+    if (USE_MOCK) return data;
     const versions = data.versions || data;
     return versions.map(v => ({
       id: v.id || v.name,
@@ -95,16 +97,16 @@ const transformers = {
     }));
   },
 
-  // Transform lean-web service instances
+  // Transform backend service instances
   serviceInstances: (data) => {
-    if (!USE_LEAN_WEB) return data;
+    if (USE_MOCK) return data;
     if (!data) return [];
     return data.instances || data || [];
   },
 
-  // Transform lean-web work items to risk stories format
+  // Transform backend work items to risk stories format
   workItemsToRiskStories: (data) => {
-    if (!USE_LEAN_WEB) return data;
+    if (USE_MOCK) return data;
     const items = data.work_items || data;
     return items.map(item => ({
       id: item.ticket_key || item.id,
@@ -119,126 +121,104 @@ const transformers = {
 };
 
 // Products API
-// Note: Products endpoints need v2 API in lean-web (currently a gap)
 export const productsApi = {
-  getAll: () => request('/v2/products/'),
-  getById: (id) => request(`/v2/products/${id}/`),
-  create: (product) => request('/v2/products/', { method: 'POST', body: product }),
-  update: (id, product) => request(`/v2/products/${id}/`, { method: 'PUT', body: product }),
-  delete: (id) => request(`/v2/products/${id}/`, { method: 'DELETE' }),
-  getApps: (productId) => request(`/v2/products/${productId}/apps/`),
-  addApp: (productId, appId) => request(`/v2/products/${productId}/apps/${appId}/`, { method: 'POST' }),
-  removeApp: (productId, appId) => request(`/v2/products/${productId}/apps/${appId}/`, { method: 'DELETE' }),
+  getAll: () => request(USE_MOCK ? '/products' : '/v2/products/'),
+  getById: (id) => request(USE_MOCK ? `/products/${id}` : `/v2/products/${id}/`),
+  create: (product) => request(USE_MOCK ? '/products' : '/v2/products/', { method: 'POST', body: product }),
+  update: (id, product) => request(USE_MOCK ? `/products/${id}` : `/v2/products/${id}/`, { method: 'PUT', body: product }),
+  delete: (id) => request(USE_MOCK ? `/products/${id}` : `/v2/products/${id}/`, { method: 'DELETE' }),
+  getApps: (productId) => request(USE_MOCK ? `/products/${productId}/apps` : `/v2/products/${productId}/apps/`),
+  addApp: (productId, appId) => request(USE_MOCK ? `/products/${productId}/apps/${appId}` : `/v2/products/${productId}/apps/${appId}/`, { method: 'POST' }),
+  removeApp: (productId, appId) => request(USE_MOCK ? `/products/${productId}/apps/${appId}` : `/v2/products/${productId}/apps/${appId}/`, { method: 'DELETE' }),
 };
 
 // Apps API
 export const appsApi = {
-  // Note: getAll and getById need v2 API in lean-web (currently a gap)
-  getAll: () => request('/v2/apps/'),
-  getById: (id) => request(`/v2/apps/${id}/`),
-  create: (app) => request('/v2/apps/', { method: 'POST', body: app }),
-  update: (id, app) => request(`/v2/apps/${id}/`, { method: 'PUT', body: app }),
-  // Uses existing lean-web endpoint
-  search: (query) => request(`/search/applications/?q=${encodeURIComponent(query)}`).then(transformers.searchResults),
-  // Uses existing lean-web endpoint
-  getServiceInstances: (appId) => request(`/release/${appId}/service-instances/`)
+  getAll: () => request(USE_MOCK ? '/apps' : '/v2/apps/'),
+  getById: (id) => request(USE_MOCK ? `/apps/${id}` : `/v2/apps/${id}/`),
+  create: (app) => request(USE_MOCK ? '/apps' : '/v2/apps/', { method: 'POST', body: app }),
+  update: (id, app) => request(USE_MOCK ? `/apps/${id}` : `/v2/apps/${id}/`, { method: 'PUT', body: app }),
+  search: (query) => request(USE_MOCK ? `/apps/search?q=${encodeURIComponent(query)}` : `/search/applications/?q=${encodeURIComponent(query)}`).then(transformers.searchResults),
+  getServiceInstances: (appId) => request(USE_MOCK ? `/apps/${appId}/service-instances` : `/release/${appId}/service-instances/`)
     .then(transformers.serviceInstances)
     .catch(() => []),
 };
 
 // Repos API
-// Note: Repos endpoints need v2 API in lean-web (currently a gap)
 export const reposApi = {
-  getByApp: (appId) => request(`/v2/apps/${appId}/repos/`),
-  getAvailable: (appId) => request(`/v2/apps/${appId}/available-repos/`),
-  create: (appId, repo) => request(`/v2/apps/${appId}/repos/`, { method: 'POST', body: repo }),
-  update: (id, repo) => request(`/v2/repos/${id}/`, { method: 'PUT', body: repo }),
-  delete: (id) => request(`/v2/repos/${id}/`, { method: 'DELETE' }),
+  getByApp: (appId) => request(USE_MOCK ? `/apps/${appId}/repos` : `/v2/apps/${appId}/repos/`),
+  getAvailable: (appId) => request(USE_MOCK ? `/apps/${appId}/available-repos` : `/v2/apps/${appId}/available-repos/`),
+  create: (appId, repo) => request(USE_MOCK ? `/apps/${appId}/repos` : `/v2/apps/${appId}/repos/`, { method: 'POST', body: repo }),
+  update: (id, repo) => request(USE_MOCK ? `/repos/${id}` : `/v2/repos/${id}/`, { method: 'PUT', body: repo }),
+  delete: (id) => request(USE_MOCK ? `/repos/${id}` : `/v2/repos/${id}/`, { method: 'DELETE' }),
 };
 
 // Backlogs API (Jira Projects)
 export const backlogsApi = {
-  // Uses existing lean-web endpoint
-  getByApp: (appId) => request(`/jira/projects/${appId}/`).then(transformers.jiraProjectsToBacklogs),
-  // Note: Create/Update/Delete need v2 API in lean-web (currently a gap)
-  create: (appId, backlog) => request(`/v2/apps/${appId}/backlogs/`, { method: 'POST', body: backlog }),
-  update: (id, backlog) => request(`/v2/backlogs/${id}/`, { method: 'PUT', body: backlog }),
-  delete: (id) => request(`/v2/backlogs/${id}/`, { method: 'DELETE' }),
+  getByApp: (appId) => request(USE_MOCK ? `/apps/${appId}/backlogs` : `/jira/projects/${appId}/`).then(transformers.jiraProjectsToBacklogs),
+  create: (appId, backlog) => request(USE_MOCK ? `/apps/${appId}/backlogs` : `/v2/apps/${appId}/backlogs/`, { method: 'POST', body: backlog }),
+  update: (id, backlog) => request(USE_MOCK ? `/backlogs/${id}` : `/v2/backlogs/${id}/`, { method: 'PUT', body: backlog }),
+  delete: (id) => request(USE_MOCK ? `/backlogs/${id}` : `/v2/backlogs/${id}/`, { method: 'DELETE' }),
 };
 
 // Contacts API (Stakeholders in lean-web)
 export const contactsApi = {
-  // Uses existing lean-web endpoint
-  getByApp: (appId) => request(`/app/${appId}/stakeholders/`).then(transformers.stakeholdersToContacts),
-  create: (appId, contact) => request(`/app/${appId}/stakeholders/`, { method: 'POST', body: contact }),
-  update: (appId, id, contact) => request(`/app/${appId}/stakeholders/${id}/`, { method: 'PUT', body: contact }),
-  delete: (appId, id) => request(`/app/${appId}/stakeholders/${id}/`, { method: 'DELETE' }),
+  getByApp: (appId) => request(USE_MOCK ? `/apps/${appId}/contacts` : `/app/${appId}/stakeholders/`).then(transformers.stakeholdersToContacts),
+  create: (appId, contact) => request(USE_MOCK ? `/apps/${appId}/contacts` : `/app/${appId}/stakeholders/`, { method: 'POST', body: contact }),
+  update: (appId, id, contact) => request(USE_MOCK ? `/contacts/${id}` : `/app/${appId}/stakeholders/${id}/`, { method: 'PUT', body: contact }),
+  delete: (appId, id) => request(USE_MOCK ? `/contacts/${id}` : `/app/${appId}/stakeholders/${id}/`, { method: 'DELETE' }),
 };
 
-// Guild SMEs API (uses same stakeholders endpoint with stakeholder_type: "guild_sme")
+// Guild SMEs API (uses same stakeholders endpoint in lean-web, separate endpoint for mocks)
 export const guildSmesApi = {
-  getByApp: (appId) => request(`/app/${appId}/stakeholders/`).then(transformers.stakeholdersToGuildSmes),
-  create: (appId, guildSme) => request(`/app/${appId}/stakeholders/`, { method: 'POST', body: guildSme }),
-  delete: (appId, id) => request(`/app/${appId}/stakeholders/${id}/`, { method: 'DELETE' }),
+  getByApp: (appId) => request(USE_MOCK ? `/apps/${appId}/guild-smes` : `/app/${appId}/stakeholders/`).then(transformers.stakeholdersToGuildSmes),
+  create: (appId, guildSme) => request(USE_MOCK ? `/apps/${appId}/guild-smes` : `/app/${appId}/stakeholders/`, { method: 'POST', body: guildSme }),
+  delete: (appId, id) => request(USE_MOCK ? `/guild-smes/${id}` : `/app/${appId}/stakeholders/${id}/`, { method: 'DELETE' }),
 };
 
 // Docs API
-// Note: Docs endpoints need v2 API in lean-web (currently a gap)
 export const docsApi = {
-  getByApp: (appId) => request(`/v2/apps/${appId}/docs/`),
-  create: (appId, doc) => request(`/v2/apps/${appId}/docs/`, { method: 'POST', body: doc }),
-  update: (id, doc) => request(`/v2/docs/${id}/`, { method: 'PUT', body: doc }),
-  delete: (id) => request(`/v2/docs/${id}/`, { method: 'DELETE' }),
+  getByApp: (appId) => request(USE_MOCK ? `/apps/${appId}/docs` : `/v2/apps/${appId}/docs/`),
+  create: (appId, doc) => request(USE_MOCK ? `/apps/${appId}/docs` : `/v2/apps/${appId}/docs/`, { method: 'POST', body: doc }),
+  update: (id, doc) => request(USE_MOCK ? `/docs/${id}` : `/v2/docs/${id}/`, { method: 'PUT', body: doc }),
+  delete: (id) => request(USE_MOCK ? `/docs/${id}` : `/v2/docs/${id}/`, { method: 'DELETE' }),
 };
 
 // Lines of Business API
-// Note: Needs v2 API in lean-web (currently a gap)
 export const linesOfBusinessApi = {
-  getAll: () => request('/v2/lines-of-business/'),
+  getAll: () => request(USE_MOCK ? '/lines-of-business' : '/v2/lines-of-business/'),
 };
 
 // Risk Stories API (Work Items in lean-web)
 export const riskStoriesApi = {
-  // Uses existing lean-web endpoint
-  getByApp: (appId) => request(`/work-items/${appId}/`).then(transformers.workItemsToRiskStories),
-  create: (appId, data) => request(`/work-items/${appId}/create/`, { method: 'POST', body: data }),
-  // Note: Update needs v2 API in lean-web (currently a gap)
-  update: (id, data) => request(`/v2/risk-stories/${id}/`, { method: 'PUT', body: data }),
+  getByApp: (appId) => request(USE_MOCK ? `/apps/${appId}/risk-stories` : `/work-items/${appId}/`).then(transformers.workItemsToRiskStories),
+  create: (appId, data) => request(USE_MOCK ? `/apps/${appId}/risk-stories` : `/work-items/${appId}/create/`, { method: 'POST', body: data }),
+  update: (id, data) => request(USE_MOCK ? `/risk-stories/${id}` : `/v2/risk-stories/${id}/`, { method: 'PUT', body: data }),
 };
 
 // Business Outcomes API
 export const outcomesApi = {
-  // Uses existing lean-web endpoint (needs project key and version)
   getByApp: (appId, projectKey, version) =>
-    request(`/jira/version-bos/${projectKey}/${version}/`),
-  // Search business outcomes
-  search: (appId, query) => request(`/bo/${appId}/search/?q=${encodeURIComponent(query)}`),
-  // Note: Engagement endpoints need v2 API in lean-web (currently a gap)
-  getEngagement: (id) => request(`/v2/outcomes/${id}/engagement/`),
-  saveEngagement: (id, data) => request(`/v2/outcomes/${id}/engagement/`, { method: 'PUT', body: data }),
+    request(USE_MOCK ? `/apps/${appId}/outcomes` : `/jira/version-bos/${projectKey}/${version}/`),
+  search: (appId, query) => request(USE_MOCK ? `/apps/${appId}/outcomes/search?q=${encodeURIComponent(query)}` : `/bo/${appId}/search/?q=${encodeURIComponent(query)}`),
+  getEngagement: (id) => request(USE_MOCK ? `/outcomes/${id}/engagement` : `/v2/outcomes/${id}/engagement/`),
+  saveEngagement: (id, data) => request(USE_MOCK ? `/outcomes/${id}/engagement` : `/v2/outcomes/${id}/engagement/`, { method: 'PUT', body: data }),
 };
 
 // Guilds API
 export const guildsApi = {
-  // Note: Guilds endpoints need v2 API in lean-web (currently a gap)
-  getAll: () => request('/v2/guilds/'),
-  getByApp: (appId) => request(`/v2/apps/${appId}/guild-assignments/`),
-  // Uses existing lean-web endpoint for control details by guild
-  getControls: (appId, guild, status) => request(`/controls/${appId}/${guild}/${status}/`),
+  getAll: () => request(USE_MOCK ? '/guilds' : '/v2/guilds/'),
+  getByApp: (appId) => request(USE_MOCK ? `/apps/${appId}/guild-assignments` : `/v2/apps/${appId}/guild-assignments/`),
+  getControls: (appId, guild, status) => request(USE_MOCK ? `/apps/${appId}/controls/${guild}/${status}` : `/controls/${appId}/${guild}/${status}/`),
 };
 
 // Deployments API
 export const deploymentsApi = {
-  // Uses existing lean-web endpoint
-  getFixVersions: (projectKey) => request(`/jira/project-versions/${projectKey}/`).then(transformers.versionsToFixVersions),
-  // Uses existing lean-web endpoint
-  getEnvironments: (appId) => request(`/release/${appId}/service-instances/`)
-    .then(data => data.by_environment || {})
+  getFixVersions: (projectKey) => request(USE_MOCK ? `/backlogs/${projectKey}/fix-versions` : `/jira/project-versions/${projectKey}/`).then(transformers.versionsToFixVersions),
+  getEnvironments: (appId) => request(USE_MOCK ? `/apps/${appId}/environments` : `/release/${appId}/service-instances/`)
+    .then(data => USE_MOCK ? data : (data.by_environment || {}))
     .catch(() => ({})),
-  // Uses existing lean-web endpoint
-  create: (releaseId, data) => request(`/release/${releaseId}/deploy/`, { method: 'POST', body: data }),
-  // Get release gate status
-  getGateStatus: (releaseId) => request(`/release/${releaseId}/gate-status/`),
-  // Create a new release
-  createRelease: (appId, data) => request(`/application/${appId}/release/create/`, { method: 'POST', body: data }),
+  create: (releaseId, data) => request(USE_MOCK ? `/releases/${releaseId}/deploy` : `/release/${releaseId}/deploy/`, { method: 'POST', body: data }),
+  getGateStatus: (releaseId) => request(USE_MOCK ? `/releases/${releaseId}/gate-status` : `/release/${releaseId}/gate-status/`),
+  createRelease: (appId, data) => request(USE_MOCK ? `/apps/${appId}/releases` : `/application/${appId}/release/create/`, { method: 'POST', body: data }),
 };

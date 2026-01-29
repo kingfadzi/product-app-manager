@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
 import { STEPS, DOC_TYPES } from './constants';
+import { appsApi, reposApi, backlogsApi } from '../../../services/api';
 
 const AddAppWizardContext = createContext(null);
 
@@ -44,15 +45,17 @@ export function AddAppWizardProvider({ children, onComplete, onClose }) {
   useEffect(() => {
     if (!selectedApp) return;
 
+    const appId = selectedApp.cmdbId || selectedApp.correlation_id || selectedApp.id;
+
     Promise.all([
-      fetch(`/api/apps/${selectedApp.cmdbId}/service-instances`).then(res => res.json()),
-      fetch(`/api/apps/${selectedApp.cmdbId}/available-repos`).then(res => res.json()),
-      fetch(`/api/apps/${selectedApp.cmdbId}/available-jira`).then(res => res.json()),
+      appsApi.getServiceInstances(appId).catch(() => []),
+      reposApi.getAvailable(appId).catch(() => []),
+      backlogsApi.getByApp(appId).catch(() => []),
     ])
       .then(([instances, repos, jira]) => {
-        setServiceInstances(instances);
-        setAvailableRepos(repos);
-        setAvailableJira(jira);
+        setServiceInstances(instances || []);
+        setAvailableRepos(repos || []);
+        setAvailableJira(jira || []);
       })
       .catch(() => {
         setServiceInstances([]);
