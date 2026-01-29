@@ -21,20 +21,95 @@ erDiagram
     App ||--o{ BusinessOutcome : has
     App ||--o{ ServiceInstance : has
 
-    TransactionCycle { string id PK; string name }
-    Stack { string id PK; string name }
-    Guild { string id PK; string name; string color }
-    Product { string id PK; string tc FK; string stack FK; string name }
-    App { string id PK; string tc FK; string stack FK; string productId FK; string cmdbId; string name; string resCat; string tier }
-    ProductApp { string productId FK; string appId FK; date addedAt }
-    Repo { string id PK; string appId FK; string repoPath; string role; bool isPrimary }
-    Backlog { string id PK; string appId FK; string projectKey; string purpose; bool isPrimary }
-    Contact { string id PK; string appId FK; string name; string email; string role }
-    Doc { string id PK; string appId FK; string title; string url; string type }
-    GuildSme { string id PK; string appId FK; string name; string email; string role }
-    RiskStory { string id PK; string appId FK; string summary; string status }
-    BusinessOutcome { string id PK; string appId FK; string summary; string status; string fixRelease }
-    ServiceInstance { string siId PK; string appId FK; string name; string environment; string status }
+    TransactionCycle {
+        string id PK
+        string name
+    }
+    Stack {
+        string id PK
+        string name
+    }
+    Guild {
+        string id PK
+        string name
+        string color
+    }
+    Product {
+        string id PK
+        string tc FK
+        string stack FK
+        string name
+    }
+    App {
+        string id PK
+        string tc FK
+        string stack FK
+        string productId FK
+        string cmdbId
+        string name
+        string resCat
+        string tier
+    }
+    ProductApp {
+        string productId FK
+        string appId FK
+        date addedAt
+    }
+    Repo {
+        string id PK
+        string appId FK
+        string repoPath
+        string role
+        bool isPrimary
+    }
+    Backlog {
+        string id PK
+        string appId FK
+        string projectKey
+        string purpose
+        bool isPrimary
+    }
+    Contact {
+        string id PK
+        string appId FK
+        string name
+        string email
+        string role
+    }
+    Doc {
+        string id PK
+        string appId FK
+        string title
+        string url
+        string type
+    }
+    GuildSme {
+        string id PK
+        string appId FK
+        string name
+        string email
+        string role
+    }
+    RiskStory {
+        string id PK
+        string appId FK
+        string summary
+        string status
+    }
+    BusinessOutcome {
+        string id PK
+        string appId FK
+        string summary
+        string status
+        string fixRelease
+    }
+    ServiceInstance {
+        string siId PK
+        string appId FK
+        string name
+        string environment
+        string status
+    }
 ```
 
 ## Entities
