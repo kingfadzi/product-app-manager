@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import useApps from '../../../hooks/useApps';
-import { riskStoriesApi, outcomesApi, guildsApi, deploymentsApi } from '../../../services/api';
+import { riskStoriesApi, outcomesApi, guildSmesApi, deploymentsApi } from '../../../services/api';
 
 function useAppProfileData(appId) {
   const {
@@ -14,7 +14,7 @@ function useAppProfileData(appId) {
   const [docs, setDocs] = useState([]);
   const [riskStories, setRiskStories] = useState([]);
   const [businessOutcomes, setBusinessOutcomes] = useState([]);
-  const [controlSmes, setControlSmes] = useState([]);
+  const [guildSmes, setGuildSmes] = useState([]);
   const [deploymentEnvironments, setDeploymentEnvironments] = useState([]);
   const [fixVersions, setFixVersions] = useState({});
   const [loading, setLoading] = useState(true);
@@ -28,10 +28,10 @@ function useAppProfileData(appId) {
         getAppBacklogs(appId),
         getAppContacts(appId),
         getAppDocs(appId),
-        riskStoriesApi.getByApp(appId),
-        outcomesApi.getByApp(appId),
-        guildsApi.getByApp(appId),
-        deploymentsApi.getEnvironments(),
+        riskStoriesApi.getByApp(appId).catch(() => []),
+        outcomesApi.getByApp(appId).catch(() => []),
+        guildSmesApi.getByApp(appId).catch(() => []),
+        deploymentsApi.getEnvironments(appId).catch(() => ({})),
       ]);
       setRepos(reposData || []);
       setBacklogs(backlogsData || []);
@@ -39,7 +39,7 @@ function useAppProfileData(appId) {
       setDocs(docsData || []);
       setRiskStories(riskData || []);
       setBusinessOutcomes(outcomesData || []);
-      setControlSmes(smesData || []);
+      setGuildSmes(smesData || []);
       setDeploymentEnvironments(envsData || []);
     } catch (err) {
       console.error('Error loading app data:', err);
@@ -62,15 +62,23 @@ function useAppProfileData(appId) {
   }, []);
 
   const addContact = useCallback(async (contactData) => {
-    const created = await createContact(appId, contactData);
-    setContacts(prev => [...prev, created]);
-    return created;
+    const result = await createContact(appId, contactData);
+    // Backend returns { success, stakeholder_id, message }
+    // Construct contact object for local state
+    const newContact = {
+      id: result.stakeholder_id,
+      name: contactData.name,
+      email: contactData.email,
+      role: contactData.role,
+    };
+    setContacts(prev => [...prev, newContact]);
+    return newContact;
   }, [appId, createContact]);
 
   const removeContact = useCallback(async (contactId) => {
-    await deleteContact(contactId);
+    await deleteContact(appId, contactId);
     setContacts(prev => prev.filter(c => c.id !== contactId));
-  }, [deleteContact]);
+  }, [appId, deleteContact]);
 
   const addDoc = useCallback(async (docData) => {
     const created = await createDoc(appId, docData);
@@ -83,6 +91,24 @@ function useAppProfileData(appId) {
     setDocs(prev => prev.filter(d => d.id !== docId));
   }, [deleteDoc]);
 
+  const addGuildSme = useCallback(async (smeData) => {
+    const result = await guildSmesApi.create(appId, smeData);
+    // Backend returns { success, stakeholder_id, message }
+    const newSme = {
+      id: result.stakeholder_id,
+      name: smeData.name,
+      email: smeData.email,
+      role: smeData.role,
+    };
+    setGuildSmes(prev => [...prev, newSme]);
+    return newSme;
+  }, [appId]);
+
+  const removeGuildSme = useCallback(async (smeId) => {
+    await guildSmesApi.delete(appId, smeId);
+    setGuildSmes(prev => prev.filter(s => s.id !== smeId));
+  }, [appId]);
+
   return {
     repos,
     backlogs,
@@ -90,7 +116,7 @@ function useAppProfileData(appId) {
     docs,
     riskStories,
     businessOutcomes,
-    controlSmes,
+    guildSmes,
     deploymentEnvironments,
     fixVersions,
     loading,
@@ -99,6 +125,8 @@ function useAppProfileData(appId) {
     removeContact,
     addDoc,
     removeDoc,
+    addGuildSme,
+    removeGuildSme,
   };
 }
 

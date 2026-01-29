@@ -4,12 +4,14 @@ import { formatShortDate } from './helpers';
 
 const ITEMS_PER_PAGE = 5;
 
-function RiskOutcomesModal({ show, type, data, onHide, onOutcomeClick }) {
+function RiskOutcomesModal({ show, type, data = [], onHide, onOutcomeClick }) {
   const [currentPage, setCurrentPage] = useState(1);
 
-  const totalPages = Math.ceil(data.length / ITEMS_PER_PAGE);
+  // Ensure data is an array
+  const items = Array.isArray(data) ? data : [];
+  const totalPages = Math.ceil(items.length / ITEMS_PER_PAGE);
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-  const paginatedData = data.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+  const paginatedData = items.slice(startIndex, startIndex + ITEMS_PER_PAGE);
 
   const handleItemClick = (item) => {
     if (type === 'outcomes') {

@@ -30,7 +30,7 @@ function AppProfile() {
     docs,
     riskStories,
     businessOutcomes,
-    controlSmes,
+    guildSmes,
     deploymentEnvironments,
     fixVersions,
     loadFixVersions,
@@ -38,6 +38,8 @@ function AppProfile() {
     removeContact,
     addDoc,
     removeDoc,
+    addGuildSme,
+    removeGuildSme,
   } = useAppProfileData(id);
 
   // Modal states
@@ -91,10 +93,12 @@ function AppProfile() {
           <GovernanceCard
             businessOutcomes={businessOutcomes}
             riskStories={riskStories}
-            controlSmes={controlSmes}
+            guildSmes={guildSmes}
             onViewOutcomes={() => setShowModal('outcomes')}
             onViewRisks={() => setShowModal('risks')}
             onOutcomeClick={setSelectedOutcome}
+            onAddGuildSme={addGuildSme}
+            onRemoveGuildSme={removeGuildSme}
           />
           <DeploymentsCard onCreateDeployment={() => setShowDeploymentWizard(true)} />
           <SourceCodeCard repos={repos} backlogs={backlogs} />
@@ -112,7 +116,7 @@ function AppProfile() {
       <BusinessOutcomeModal
         show={!!selectedOutcome}
         outcome={selectedOutcome}
-        controlSmes={controlSmes}
+        guildSmes={guildSmes}
         onHide={() => setSelectedOutcome(null)}
       />
 

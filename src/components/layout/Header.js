@@ -1,6 +1,7 @@
 import React from 'react';
 import { Navbar, Nav, Container } from 'react-bootstrap';
 import { Link, useLocation } from 'react-router-dom';
+import { APP_NAME } from '../../constants/config';
 
 function Header() {
   const location = useLocation();
@@ -9,7 +10,7 @@ function Header() {
     <Navbar bg="dark" variant="dark" expand="lg" fixed="top">
       <Container fluid>
         <Navbar.Brand as={Link} to="/">
-          Product & App Manager
+          {APP_NAME}
         </Navbar.Brand>
         <Navbar.Toggle aria-controls="main-navbar" />
         <Navbar.Collapse id="main-navbar">

@@ -66,8 +66,9 @@ function DocumentationCard({ docs, onAddDoc, onRemoveDoc }) {
   );
 }
 
-function DocTabContent({ docs, docTypes, editing, newDoc, setNewDoc, onAdd, onRemove }) {
-  const filteredDocs = docs.filter(d => docTypes.includes(d.type));
+function DocTabContent({ docs = [], docTypes, editing, newDoc, setNewDoc, onAdd, onRemove }) {
+  const safeArray = Array.isArray(docs) ? docs : [];
+  const filteredDocs = safeArray.filter(d => docTypes.includes(d.type));
   const existingTypes = filteredDocs.map(d => d.type);
   const availableTypes = docTypes.filter(t => !existingTypes.includes(t));
 

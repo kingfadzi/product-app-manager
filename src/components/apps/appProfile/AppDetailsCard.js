@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Card, Tab, Nav, Row, Col, Table, Button, Form, ListGroup } from 'react-bootstrap';
 import { useHistory } from 'react-router-dom';
 import { CONTACT_TYPES } from './constants';
-import { getResCatBadgeClass } from './helpers';
+import { getResCatBadgeClass, getContactRoleLabel } from './helpers';
 import DeleteIcon from '../../products/addAppWizard/DeleteIcon';
 
 function AppDetailsCard({ app, contacts, appProducts, onAddContact, onRemoveContact }) {
@@ -13,6 +13,7 @@ function AppDetailsCard({ app, contacts, appProducts, onAddContact, onRemoveCont
   const handleAdd = async () => {
     if (newContact.type && newContact.name && newContact.email) {
       await onAddContact({
+        stakeholder_type: 'contact',
         role: newContact.type,
         name: newContact.name,
         email: newContact.email
@@ -90,7 +91,8 @@ function DetailRow({ label, value }) {
   );
 }
 
-function ContactsTab({ contacts, editing, setEditing, newContact, setNewContact, onAdd, onRemove }) {
+function ContactsTab({ contacts = [], editing, setEditing, newContact, setNewContact, onAdd, onRemove }) {
+  const items = Array.isArray(contacts) ? contacts : [];
   return (
     <>
       <div className="d-flex justify-content-end mb-2">
@@ -103,14 +105,14 @@ function ContactsTab({ contacts, editing, setEditing, newContact, setNewContact,
         </Button>
       </div>
 
-      {contacts.length === 0 ? (
+      {items.length === 0 ? (
         <p className="text-muted mb-0">No contacts added</p>
       ) : (
         <Table size="sm" className={editing ? "mb-3" : "mb-0"} borderless>
           <tbody>
-            {contacts.map(contact => (
+            {items.map(contact => (
               <tr key={contact.id}>
-                <td style={{ whiteSpace: 'nowrap' }} className="text-muted">{contact.role}</td>
+                <td style={{ whiteSpace: 'nowrap' }} className="text-muted">{getContactRoleLabel(contact.role)}</td>
                 <td>{contact.name}</td>
                 <td>{contact.email}</td>
                 {editing && (
@@ -153,8 +155,8 @@ function ContactForm({ newContact, setNewContact, onAdd }) {
         style={{ width: '140px' }}
       >
         <option value="">Type...</option>
-        {CONTACT_TYPES.map(type => (
-          <option key={type} value={type}>{type}</option>
+        {CONTACT_TYPES.map(ct => (
+          <option key={ct.value} value={ct.value}>{ct.label}</option>
         ))}
       </Form.Control>
       <Form.Control
@@ -185,14 +187,15 @@ function ContactForm({ newContact, setNewContact, onAdd }) {
   );
 }
 
-function ProductsTab({ products, history }) {
-  if (products.length === 0) {
+function ProductsTab({ products = [], history }) {
+  const items = Array.isArray(products) ? products : [];
+  if (items.length === 0) {
     return <p className="text-muted mb-0">Not assigned to any products</p>;
   }
 
   return (
     <ListGroup variant="flush">
-      {products.map(product => (
+      {items.map(product => (
         <ListGroup.Item
           key={product.id}
           action

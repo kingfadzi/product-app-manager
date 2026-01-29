@@ -3,6 +3,7 @@ import { Form, InputGroup, Button, Spinner, Alert } from 'react-bootstrap';
 import { useHistory } from 'react-router-dom';
 import { AppContext } from '../context/AppContext';
 import PageLayout from '../components/layout/PageLayout';
+import { APP_NAME } from '../constants/config';
 
 function HomePage() {
   const history = useHistory();
@@ -46,7 +47,7 @@ function HomePage() {
       <div className="d-flex justify-content-center align-items-center" style={{ minHeight: '50vh' }}>
         <div style={{ width: '100%', maxWidth: '600px' }}>
           <h1 className="text-center mb-4" style={{ fontSize: '1.75rem', fontWeight: 600 }}>
-            Product & App Manager
+            {APP_NAME}
           </h1>
 
           <Form onSubmit={handleSearchSubmit}>

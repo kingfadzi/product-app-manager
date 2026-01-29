@@ -70,12 +70,12 @@ export function useApps() {
     return execute(() => contactsApi.create(appId, contact));
   }, [execute]);
 
-  const updateContact = useCallback(async (id, contact) => {
-    return execute(() => contactsApi.update(id, contact));
+  const updateContact = useCallback(async (appId, id, contact) => {
+    return execute(() => contactsApi.update(appId, id, contact));
   }, [execute]);
 
-  const deleteContact = useCallback(async (id) => {
-    return execute(() => contactsApi.delete(id));
+  const deleteContact = useCallback(async (appId, id) => {
+    return execute(() => contactsApi.delete(appId, id));
   }, [execute]);
 
   // Docs

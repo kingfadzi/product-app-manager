@@ -1,16 +1,17 @@
+// Must match backend CONTACT_ROLES in lean-web/services/stakeholder/repo.py
 export const CONTACT_TYPES = [
-  'Product Owner',
-  'Architecture Owner',
-  'Team Lead',
-  'Service Owner'
+  { value: 'product_owner', label: 'Product Owner' },
+  { value: 'tech_lead', label: 'Tech Lead' },
+  { value: 'scrum_master', label: 'Scrum Master' },
+  { value: 'support_lead', label: 'Support Lead' },
 ];
 
-export const ALL_GUILDS = [
-  { id: 'data', name: 'Data', color: '#ffc107' },
-  { id: 'security', name: 'Security', color: '#dc3545' },
-  { id: 'accessibility', name: 'Accessibility', color: '#007bff' },
-  { id: 'ent-arch', name: 'Ent. Architecture', color: '#6f42c1' },
-  { id: 'srv-transition', name: 'Srv. Transition', color: '#28a745' }
+// Must match backend GUILD_SME_ROLES in lean-web/services/stakeholder/repo.py
+export const GUILD_SME_TYPES = [
+  { value: 'security', label: 'Security' },
+  { value: 'data', label: 'Data' },
+  { value: 'operations', label: 'Operations' },
+  { value: 'enterprise_architecture', label: 'Enterprise Architecture' },
 ];
 
 export const ROLE_LABELS = {

@@ -27,15 +27,16 @@ function SourceCodeCard({ repos, backlogs }) {
   );
 }
 
-function ReposTab({ repos }) {
-  if (repos.length === 0) {
+function ReposTab({ repos = [] }) {
+  const items = Array.isArray(repos) ? repos : [];
+  if (items.length === 0) {
     return <p className="text-muted mb-0">No repositories added</p>;
   }
 
   return (
     <Table size="sm" className="mb-0" borderless>
       <tbody>
-        {repos.map(repo => (
+        {items.map(repo => (
           <tr key={repo.id}>
             <td>
               <a href={`https://gitlab.com/${repo.repoPath}`} target="_blank" rel="noopener noreferrer">
@@ -51,15 +52,16 @@ function ReposTab({ repos }) {
   );
 }
 
-function BacklogsTab({ backlogs }) {
-  if (backlogs.length === 0) {
+function BacklogsTab({ backlogs = [] }) {
+  const items = Array.isArray(backlogs) ? backlogs : [];
+  if (items.length === 0) {
     return <p className="text-muted mb-0">No backlogs added</p>;
   }
 
   return (
     <Table size="sm" className="mb-0" borderless>
       <tbody>
-        {backlogs.map(backlog => (
+        {items.map(backlog => (
           <tr key={backlog.id}>
             <td>
               <a href={`https://jira.example.com/browse/${backlog.projectKey}`} target="_blank" rel="noopener noreferrer">

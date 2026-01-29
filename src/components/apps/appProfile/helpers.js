@@ -24,3 +24,25 @@ export function getResCatBadgeClass(resCat) {
     default: return 'secondary';
   }
 }
+
+const CONTACT_ROLE_LABELS = {
+  product_owner: 'Product Owner',
+  tech_lead: 'Tech Lead',
+  scrum_master: 'Scrum Master',
+  support_lead: 'Support Lead',
+};
+
+export function getContactRoleLabel(role) {
+  return CONTACT_ROLE_LABELS[role] || role;
+}
+
+const GUILD_ROLE_LABELS = {
+  security: 'Security',
+  data: 'Data',
+  operations: 'Operations',
+  enterprise_architecture: 'Enterprise Architecture',
+};
+
+export function getGuildRoleLabel(role) {
+  return GUILD_ROLE_LABELS[role] || role;
+}

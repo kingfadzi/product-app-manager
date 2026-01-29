@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Modal, Button, Card, Table, Form, Alert } from 'react-bootstrap';
 import StepIndicator from '../../common/StepIndicator';
 import { getHealthColor } from './helpers';
+import { outcomesApi } from '../../../services/api';
 
 const INITIAL_WIZARD_DATA = {
   productDeltaDoc: '',
@@ -17,7 +18,7 @@ const INITIAL_WIZARD_DATA = {
   selectedGuilds: []
 };
 
-function BusinessOutcomeModal({ show, outcome, controlSmes, onHide }) {
+function BusinessOutcomeModal({ show, outcome, guildSmes, onHide }) {
   const [viewMode, setViewMode] = useState('review');
   const [wizardStep, setWizardStep] = useState(1);
   const [wizardData, setWizardData] = useState(INITIAL_WIZARD_DATA);
@@ -25,14 +26,13 @@ function BusinessOutcomeModal({ show, outcome, controlSmes, onHide }) {
   const loadEngagementData = useCallback(async () => {
     if (!outcome) return;
     try {
-      const response = await fetch(`/api/outcomes/${outcome.id}/engagement`);
-      const savedData = await response.json();
+      const savedData = await outcomesApi.getEngagement(outcome.id);
       setWizardData({
-        productDeltaDoc: savedData.productDeltaDoc || '',
-        architectureDeltaDoc: savedData.architectureDeltaDoc || '',
-        serviceVisionDeltaDoc: savedData.serviceVisionDeltaDoc || '',
+        productDeltaDoc: savedData.productDeltaDoc || savedData.product_delta_doc || '',
+        architectureDeltaDoc: savedData.architectureDeltaDoc || savedData.architecture_delta_doc || '',
+        serviceVisionDeltaDoc: savedData.serviceVisionDeltaDoc || savedData.service_vision_delta_doc || '',
         questionnaire: savedData.questionnaire || INITIAL_WIZARD_DATA.questionnaire,
-        selectedGuilds: savedData.selectedGuilds || []
+        selectedGuilds: savedData.selectedGuilds || savedData.selected_guilds || []
       });
     } catch (err) {
       console.error('Error fetching outcome engagement:', err);
@@ -57,11 +57,7 @@ function BusinessOutcomeModal({ show, outcome, controlSmes, onHide }) {
   const handleSave = async () => {
     if (!outcome) return;
     try {
-      await fetch(`/api/outcomes/${outcome.id}/engagement`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(wizardData)
-      });
+      await outcomesApi.saveEngagement(outcome.id, wizardData);
       setViewMode('review');
     } catch (err) {
       console.error('Error saving outcome engagement:', err);
@@ -88,21 +84,21 @@ function BusinessOutcomeModal({ show, outcome, controlSmes, onHide }) {
           </Modal.Title>
           {viewMode === 'review' && (
             <Button variant="outline-primary" size="sm" onClick={() => setViewMode('edit')}>
-              Edit
+              Guild Engagement
             </Button>
           )}
         </div>
       </Modal.Header>
       <Modal.Body style={{ paddingTop: '0.5rem' }}>
         {viewMode === 'review' ? (
-          <ReviewMode outcome={outcome} wizardData={wizardData} controlSmes={controlSmes} />
+          <ReviewMode outcome={outcome} wizardData={wizardData} guildSmes={guildSmes} />
         ) : (
           <EditMode
             outcome={outcome}
             wizardData={wizardData}
             setWizardData={setWizardData}
             wizardStep={wizardStep}
-            controlSmes={controlSmes}
+            guildSmes={guildSmes}
             toggleGuild={toggleGuild}
           />
         )}
@@ -148,13 +144,13 @@ function BusinessOutcomeModal({ show, outcome, controlSmes, onHide }) {
   );
 }
 
-function ReviewMode({ outcome, wizardData, controlSmes }) {
+function ReviewMode({ outcome, wizardData, guildSmes }) {
   return (
     <div>
       <DetailsCard outcome={outcome} />
       <DeltaDocCard wizardData={wizardData} />
       <GuildAssessmentCard wizardData={wizardData} />
-      <AssignedGuildsCard wizardData={wizardData} controlSmes={controlSmes} />
+      <AssignedGuildsCard wizardData={wizardData} guildSmes={guildSmes} />
     </div>
   );
 }
@@ -261,8 +257,8 @@ function GuildAssessmentCard({ wizardData }) {
   );
 }
 
-function AssignedGuildsCard({ wizardData, controlSmes }) {
-  const assignedSmes = controlSmes.filter(sme => wizardData.selectedGuilds.includes(sme.id));
+function AssignedGuildsCard({ wizardData, guildSmes }) {
+  const assignedSmes = guildSmes.filter(sme => wizardData.selectedGuilds.includes(sme.id));
 
   return (
     <Card>
@@ -293,14 +289,14 @@ function AssignedGuildsCard({ wizardData, controlSmes }) {
   );
 }
 
-function EditMode({ outcome, wizardData, setWizardData, wizardStep, controlSmes, toggleGuild }) {
+function EditMode({ outcome, wizardData, setWizardData, wizardStep, guildSmes, toggleGuild }) {
   return (
     <>
       <StepIndicator steps={['Details', 'Changes', 'Questionnaire', 'Request']} currentStep={wizardStep} />
       {wizardStep === 1 && <Step1Details outcome={outcome} />}
       {wizardStep === 2 && <Step2Changes wizardData={wizardData} setWizardData={setWizardData} />}
       {wizardStep === 3 && <Step3Questionnaire wizardData={wizardData} setWizardData={setWizardData} />}
-      {wizardStep === 4 && <Step4Request wizardData={wizardData} controlSmes={controlSmes} toggleGuild={toggleGuild} />}
+      {wizardStep === 4 && <Step4Request wizardData={wizardData} guildSmes={guildSmes} toggleGuild={toggleGuild} />}
     </>
   );
 }
@@ -379,12 +375,12 @@ function QuestionSelect({ label, value, onChange }) {
   );
 }
 
-function Step4Request({ wizardData, controlSmes, toggleGuild }) {
+function Step4Request({ wizardData, guildSmes, toggleGuild }) {
   return (
     <div>
       <h6 className="mb-3">Request Guild Engagement</h6>
       <p className="text-muted small">Select the guild members you want to engage with:</p>
-      {controlSmes.map(sme => {
+      {guildSmes.map(sme => {
         const isRecommended = isGuildRecommended(sme.guild, wizardData.questionnaire);
         return (
           <Form.Check
