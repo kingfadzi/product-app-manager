@@ -184,9 +184,9 @@ export const docsApi = {
   delete: (id) => request(USE_MOCK ? `/docs/${id}` : `/v2/docs/${id}/`, { method: 'DELETE' }),
 };
 
-// Lines of Business API
-export const linesOfBusinessApi = {
-  getAll: () => request(USE_MOCK ? '/lines-of-business' : '/v2/lines-of-business/'),
+// Transaction Cycles API
+export const transactionCyclesApi = {
+  getAll: () => request(USE_MOCK ? '/transaction-cycles' : '/v2/transaction-cycles/'),
 };
 
 // Risk Stories API (Work Items in lean-web)

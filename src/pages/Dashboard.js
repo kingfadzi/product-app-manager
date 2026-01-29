@@ -6,7 +6,7 @@ import PageLayout from '../components/layout/PageLayout';
 import EmptyState from '../components/common/EmptyState';
 import TablePagination from '../components/common/TablePagination';
 import { usePagination } from '../hooks/usePagination';
-import { linesOfBusinessApi } from '../services/api';
+import { transactionCyclesApi } from '../services/api';
 
 function Dashboard() {
   const { products, apps, productApps, loading, error } = useContext(AppContext);
@@ -14,7 +14,7 @@ function Dashboard() {
   const [tcList, setTcList] = useState([]);
 
   useEffect(() => {
-    linesOfBusinessApi.getAll().then(setTcList).catch(console.error);
+    transactionCyclesApi.getAll().then(setTcList).catch(console.error);
   }, []);
 
   const getTcName = (tcId) => {

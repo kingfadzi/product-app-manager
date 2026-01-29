@@ -15,7 +15,7 @@ import availableJiraData from './data/availableJira.json';
 import allReposData from './data/allRepos.json';
 import allJiraData from './data/allJira.json';
 import outcomeEngagementsData from './data/outcomeEngagements.json';
-import linesOfBusinessData from './data/linesOfBusiness.json';
+import transactionCyclesData from './data/transactionCycles.json';
 import cmdbAppsData from './data/cmdbApps.json';
 import riskStoriesData from './data/riskStories.json';
 import businessOutcomesData from './data/businessOutcomes.json';
@@ -39,7 +39,7 @@ const availableJira = { ...availableJiraData };
 const allRepos = [...allReposData];
 const allJira = [...allJiraData];
 let outcomeEngagements = { ...outcomeEngagementsData };
-const linesOfBusiness = [...linesOfBusinessData];
+const transactionCycles = [...transactionCyclesData];
 const cmdbApps = [...cmdbAppsData];
 let riskStories = { ...riskStoriesData };
 let businessOutcomes = { ...businessOutcomesData };
@@ -421,9 +421,9 @@ export const handlers = [
     return res(ctx.json(outcomeEngagements[req.params.outcomeId]));
   }),
 
-  // Lines of Business
-  rest.get('/api/lines-of-business', (req, res, ctx) => {
-    return res(ctx.json(linesOfBusiness));
+  // Transaction Cycles
+  rest.get('/api/transaction-cycles', (req, res, ctx) => {
+    return res(ctx.json(transactionCycles));
   }),
 
   // Risk Stories
