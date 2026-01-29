@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Table, Button, Spinner, Alert, Breadcrumb } from 'react-bootstrap';
 import { useHistory, useLocation } from 'react-router-dom';
 import useProducts from '../hooks/useProducts';
@@ -20,6 +20,17 @@ function ProductList() {
     ? products.filter(p => p.stack === stackFilter)
     : products;
 
+  // Pre-compute app counts in O(n) instead of O(n*m) per render
+  const appCountMap = useMemo(() => {
+    const counts = new Map();
+    for (const pa of productApps) {
+      counts.set(pa.productId, (counts.get(pa.productId) || 0) + 1);
+    }
+    return counts;
+  }, [productApps]);
+
+  const getAppCount = (productId) => appCountMap.get(productId) || 0;
+
   // Pagination
   const {
     currentPage,
@@ -31,10 +42,6 @@ function ProductList() {
     totalItems,
     showPagination
   } = usePagination(filteredProducts, 10);
-
-  const getAppCount = (productId) => {
-    return productApps.filter(pa => pa.productId === productId).length;
-  };
 
   if (loading && products.length === 0) {
     return (

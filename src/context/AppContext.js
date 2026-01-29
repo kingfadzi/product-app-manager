@@ -14,26 +14,15 @@ export function AppProvider({ children }) {
     async function loadInitialData() {
       try {
         setLoading(true);
-        const [productsData, appsData] = await Promise.all([
+        const [productsData, appsData, allAssociations] = await Promise.all([
           productsApi.getAll(),
           appsApi.getAll(),
+          productsApi.getAllProductApps(),
         ]);
-
-        // Load product-app associations
-        const associations = [];
-        for (const product of productsData) {
-          const productAppsData = await productsApi.getApps(product.id);
-          productAppsData.forEach(app => {
-            associations.push({
-              productId: product.id,
-              appId: app.id,
-            });
-          });
-        }
 
         setProducts(productsData);
         setApps(appsData);
-        setProductApps(associations);
+        setProductApps(allAssociations);
       } catch (err) {
         setError(err.message);
       } finally {

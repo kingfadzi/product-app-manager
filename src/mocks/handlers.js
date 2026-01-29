@@ -102,6 +102,11 @@ export const handlers = [
     return res(ctx.status(204));
   }),
 
+  // Bulk Product Apps (all associations in one call)
+  rest.get('/api/products/apps/all', (req, res, ctx) => {
+    return res(ctx.json(productApps));
+  }),
+
   // Product Apps (associations)
   rest.get('/api/products/:id/apps', (req, res, ctx) => {
     const associations = productApps.filter(pa => pa.productId === req.params.id);

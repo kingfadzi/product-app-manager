@@ -42,10 +42,10 @@ function ProductCreate() {
         description: values.description,
       });
 
-      // Add apps with their metadata
-      for (const app of addedApps) {
-        await addAppToProduct(product.id, app.id, app.metadata);
-      }
+      // Add apps in parallel
+      await Promise.all(
+        addedApps.map(app => addAppToProduct(product.id, app.id, app.metadata))
+      );
 
       history.push(`/products/${product.id}`);
     } catch (err) {

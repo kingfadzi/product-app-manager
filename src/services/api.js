@@ -1,7 +1,7 @@
 // API Configuration
-// Set USE_MOCK to true to use mock endpoints during development
-// Set to false to use real backend endpoints in production
-const USE_MOCK = true;
+// Set REACT_APP_USE_MOCK=true in .env to use mock endpoints
+// Set REACT_APP_USE_MOCK=false to use real backend endpoints
+const USE_MOCK = process.env.REACT_APP_USE_MOCK !== 'false';
 
 const BASE_URL = '/api';
 
@@ -128,6 +128,7 @@ export const productsApi = {
   update: (id, product) => request(USE_MOCK ? `/products/${id}` : `/v2/products/${id}/`, { method: 'PUT', body: product }),
   delete: (id) => request(USE_MOCK ? `/products/${id}` : `/v2/products/${id}/`, { method: 'DELETE' }),
   getApps: (productId) => request(USE_MOCK ? `/products/${productId}/apps` : `/v2/products/${productId}/apps/`),
+  getAllProductApps: () => request(USE_MOCK ? '/products/apps/all' : '/v2/products/apps/all/'),
   addApp: (productId, appId) => request(USE_MOCK ? `/products/${productId}/apps/${appId}` : `/v2/products/${productId}/apps/${appId}/`, { method: 'POST' }),
   removeApp: (productId, appId) => request(USE_MOCK ? `/products/${productId}/apps/${appId}` : `/v2/products/${productId}/apps/${appId}/`, { method: 'DELETE' }),
 };

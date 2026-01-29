@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from 'react';
+import React, { useContext, useState, useEffect, useMemo } from 'react';
 import { Table, Button, Spinner, Alert, Breadcrumb } from 'react-bootstrap';
 import { useHistory } from 'react-router-dom';
 import { AppContext } from '../context/AppContext';
@@ -17,50 +17,84 @@ function Dashboard() {
     transactionCyclesApi.getAll().then(setTcList).catch(console.error);
   }, []);
 
-  const getTcName = (tcId) => {
-    const tc = tcList.find(t => t.id === tcId);
-    return tc ? tc.name : '-';
-  };
+  // Create lookup maps for O(1) access
+  const tcMap = useMemo(() => {
+    const map = new Map();
+    for (const tc of tcList) {
+      map.set(tc.id, tc.name);
+    }
+    return map;
+  }, [tcList]);
+
+  const getTcName = (tcId) => tcMap.get(tcId) || '-';
+
+  const appsMap = useMemo(() => {
+    const map = new Map();
+    for (const app of apps) {
+      map.set(app.id, app);
+    }
+    return map;
+  }, [apps]);
+
+  // Pre-compute product -> appIds mapping
+  const productAppIdsMap = useMemo(() => {
+    const map = new Map();
+    for (const pa of productApps) {
+      if (!map.has(pa.productId)) {
+        map.set(pa.productId, []);
+      }
+      map.get(pa.productId).push(pa.appId);
+    }
+    return map;
+  }, [productApps]);
 
   // Group products by stack and calculate metrics
-  const stackGroups = products.reduce((acc, product) => {
-    const stack = product.stack || 'Unassigned';
-    if (!acc[stack]) {
-      acc[stack] = { products: [], tc: product.tc || '-' };
-    }
-    acc[stack].products.push(product);
-    // Use TC from first product that has one
-    if (product.tc && acc[stack].tc === '-') {
-      acc[stack].tc = product.tc;
-    }
-    return acc;
-  }, {});
+  const stacks = useMemo(() => {
+    const stackGroups = products.reduce((acc, product) => {
+      const stack = product.stack || 'Unassigned';
+      if (!acc[stack]) {
+        acc[stack] = { products: [], tc: product.tc || '-' };
+      }
+      acc[stack].products.push(product);
+      if (product.tc && acc[stack].tc === '-') {
+        acc[stack].tc = product.tc;
+      }
+      return acc;
+    }, {});
 
-  const stacks = Object.keys(stackGroups).map(stackName => {
-    const stackData = stackGroups[stackName];
-    const stackProductIds = stackData.products.map(p => p.id);
+    return Object.keys(stackGroups).map(stackName => {
+      const stackData = stackGroups[stackName];
 
-    // Get all app IDs associated with products in this stack
-    const stackAppIds = productApps
-      .filter(pa => stackProductIds.includes(pa.productId))
-      .map(pa => pa.appId);
+      // Collect unique app IDs for this stack using Set
+      const stackAppIdSet = new Set();
+      for (const product of stackData.products) {
+        const appIds = productAppIdsMap.get(product.id) || [];
+        for (const appId of appIds) {
+          stackAppIdSet.add(appId);
+        }
+      }
 
-    // Get unique apps in this stack
-    const stackApps = apps.filter(app => stackAppIds.includes(app.id));
+      // Calculate metrics using Maps for O(1) lookups
+      let criticalApps = 0;
+      let openRisks = 0;
+      for (const appId of stackAppIdSet) {
+        const app = appsMap.get(appId);
+        if (app) {
+          if (app.resCat === 'Critical') criticalApps++;
+          openRisks += app.openRisks || 0;
+        }
+      }
 
-    // Calculate metrics
-    const criticalApps = stackApps.filter(app => app.resCat === 'Critical').length;
-    const openRisks = stackApps.reduce((sum, app) => sum + (app.openRisks || 0), 0);
-
-    return {
-      name: stackName,
-      productCount: stackData.products.length,
-      appCount: stackApps.length,
-      criticalApps,
-      openRisks,
-      tc: stackData.tc
-    };
-  });
+      return {
+        name: stackName,
+        productCount: stackData.products.length,
+        appCount: stackAppIdSet.size,
+        criticalApps,
+        openRisks,
+        tc: stackData.tc
+      };
+    });
+  }, [products, productAppIdsMap, appsMap]);
 
   // Pagination
   const {
