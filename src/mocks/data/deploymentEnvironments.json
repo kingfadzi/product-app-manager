@@ -1,0 +1,6 @@
+[
+  { "id": "prod", "name": "Production", "siId": "SI-001" },
+  { "id": "dr", "name": "DR (Disaster Recovery)", "siId": "SI-002" },
+  { "id": "uat", "name": "UAT", "siId": "SI-003" },
+  { "id": "dev", "name": "Development", "siId": "SI-004" }
+]

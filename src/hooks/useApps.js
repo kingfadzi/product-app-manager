@@ -7,12 +7,6 @@ export function useApps() {
   const { apps, setApps } = useContext(AppContext);
   const { loading, error, execute, clearError } = useApi();
 
-  const fetchApps = useCallback(async () => {
-    const data = await execute(() => appsApi.getAll());
-    setApps(data);
-    return data;
-  }, [execute, setApps]);
-
   const createApp = useCallback(async (app) => {
     const created = await execute(() => appsApi.create(app));
     setApps(prev => [...prev, created]);
@@ -106,7 +100,6 @@ export function useApps() {
     loading,
     error,
     clearError,
-    fetchApps,
     createApp,
     updateApp,
     searchApps,

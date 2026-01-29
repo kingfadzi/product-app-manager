@@ -1,10 +1,46 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Modal, Button, ListGroup, Form, Table, Badge, Alert, InputGroup } from 'react-bootstrap';
-import useApps from '../../hooks/useApps';
+import TablePagination from '../common/TablePagination';
+import { usePagination } from '../../hooks/usePagination';
+import RemediationBox from '../common/RemediationBox';
+import { appsApi, productsApi } from '../../services/api';
+
+// Wrapper component for paginated tables in modals
+function PaginatedTableWrapper({ data, itemsPerPage = 5, renderTable, itemLabel = 'items' }) {
+  const {
+    currentPage,
+    setCurrentPage,
+    totalPages,
+    paginatedData,
+    startIndex,
+    endIndex,
+    totalItems,
+    showPagination
+  } = usePagination(data, itemsPerPage);
+
+  return (
+    <>
+      {renderTable(paginatedData)}
+      {showPagination && (
+        <TablePagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={setCurrentPage}
+          startIndex={startIndex}
+          endIndex={endIndex}
+          totalItems={totalItems}
+          size="sm"
+          showInfo={false}
+          itemLabel={itemLabel}
+        />
+      )}
+    </>
+  );
+}
 
 // Step names for the wizard
-const STEPS = ['search', 'details', 'instances', 'repos', 'jira', 'docs', 'review'];
-const STEP_LABELS = ['Search', 'Details', 'Instances', 'Repos', 'Jira', 'Docs', 'Review'];
+const STEPS = ['search', 'product', 'details', 'instances', 'repos', 'jira', 'docs', 'review'];
+const STEP_LABELS = ['Search', 'Product', 'Details', 'Instances', 'Repos', 'Jira', 'Docs', 'Review'];
 
 // Required document types
 const DOC_TYPES = [
@@ -15,20 +51,6 @@ const DOC_TYPES = [
   'Security Vision',
   'Test Strategy'
 ];
-
-// Remediation Box Component
-function RemediationBox({ dataSource, contactEmail, linkUrl, linkText }) {
-  return (
-    <div style={{ background: '#f8f9fa', padding: '1rem', borderRadius: '0.25rem', marginTop: '1rem' }}>
-      <strong>Something missing or incorrect?</strong>
-      <p className="mb-1 small text-muted">{dataSource}</p>
-      <p className="mb-0 small">
-        <strong>Contact:</strong> {contactEmail}<br />
-        <a href={linkUrl} target="_blank" rel="noopener noreferrer">{linkText} &rarr;</a>
-      </p>
-    </div>
-  );
-}
 
 // Step Indicator Component
 function StepIndicator({ currentStep, steps, labels, onStepClick }) {
@@ -82,14 +104,20 @@ function StepIndicator({ currentStep, steps, labels, onStepClick }) {
 }
 
 function AddAppModal({ show, onHide, onAdd, existingAppIds = [] }) {
-  const { apps } = useApps();
-
   // Step navigation
   const [currentStep, setCurrentStep] = useState('search');
 
   // Step 1: Search
   const [searchTerm, setSearchTerm] = useState('');
+  const [searchResults, setSearchResults] = useState([]);
+  const [searchLoading, setSearchLoading] = useState(false);
   const [selectedApp, setSelectedApp] = useState(null);
+
+  // Step 2: Product Selection
+  const [productSearchTerm, setProductSearchTerm] = useState('');
+  const [productSearchResults, setProductSearchResults] = useState([]);
+  const [productSearchLoading, setProductSearchLoading] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState(null);
 
   // Step 3: Service Instances
   const [serviceInstances, setServiceInstances] = useState([]);
@@ -113,23 +141,76 @@ function AddAppModal({ show, onHide, onAdd, existingAppIds = [] }) {
   const [docType, setDocType] = useState('');
   const [docUrl, setDocUrl] = useState('');
 
+  // Error handling state
+  const [error, setError] = useState(null);
+
+  // Auto-dismiss error after 5 seconds
+  useEffect(() => {
+    if (error) {
+      const timer = setTimeout(() => setError(null), 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [error]);
+
+  // Search CMDB when search term changes
+  useEffect(() => {
+    if (searchTerm.length >= 2) {
+      setSearchLoading(true);
+      fetch(`/api/cmdb/search?q=${encodeURIComponent(searchTerm)}`)
+        .then(res => res.json())
+        .then(data => {
+          setSearchResults(data);
+          setSearchLoading(false);
+        })
+        .catch((err) => {
+          setSearchResults([]);
+          setSearchLoading(false);
+          setError('Failed to search applications. Please try again.');
+        });
+    } else {
+      setSearchResults([]);
+    }
+  }, [searchTerm]);
+
+  // Search products when product search term changes
+  useEffect(() => {
+    if (productSearchTerm.length >= 2) {
+      setProductSearchLoading(true);
+      fetch(`/api/products/search?q=${encodeURIComponent(productSearchTerm)}`)
+        .then(res => res.json())
+        .then(data => {
+          setProductSearchResults(data);
+          setProductSearchLoading(false);
+        })
+        .catch((err) => {
+          setProductSearchResults([]);
+          setProductSearchLoading(false);
+          setError('Failed to search products. Please try again.');
+        });
+    } else {
+      setProductSearchResults([]);
+    }
+  }, [productSearchTerm]);
+
   // Fetch service instances, repos, and jira when app is selected
   useEffect(() => {
     if (selectedApp) {
-      fetch(`/api/apps/${selectedApp.id}/service-instances`)
-        .then(res => res.json())
-        .then(data => setServiceInstances(data))
-        .catch(() => setServiceInstances([]));
-
-      fetch(`/api/apps/${selectedApp.id}/available-repos`)
-        .then(res => res.json())
-        .then(data => setAvailableRepos(data))
-        .catch(() => setAvailableRepos([]));
-
-      fetch(`/api/apps/${selectedApp.id}/available-jira`)
-        .then(res => res.json())
-        .then(data => setAvailableJira(data))
-        .catch(() => setAvailableJira([]));
+      Promise.all([
+        fetch(`/api/apps/${selectedApp.cmdbId}/service-instances`).then(res => res.json()),
+        fetch(`/api/apps/${selectedApp.cmdbId}/available-repos`).then(res => res.json()),
+        fetch(`/api/apps/${selectedApp.cmdbId}/available-jira`).then(res => res.json()),
+      ])
+        .then(([instances, repos, jira]) => {
+          setServiceInstances(instances);
+          setAvailableRepos(repos);
+          setAvailableJira(jira);
+        })
+        .catch((err) => {
+          setServiceInstances([]);
+          setAvailableRepos([]);
+          setAvailableJira([]);
+          setError('Failed to load app data. Please try again.');
+        });
     }
   }, [selectedApp]);
 
@@ -139,7 +220,10 @@ function AddAppModal({ show, onHide, onAdd, existingAppIds = [] }) {
       fetch(`/api/repos/search?q=${encodeURIComponent(repoLookupTerm)}`)
         .then(res => res.json())
         .then(data => setRepoLookupResults(data))
-        .catch(() => setRepoLookupResults([]));
+        .catch((err) => {
+          setRepoLookupResults([]);
+          setError('Failed to search repositories. Please try again.');
+        });
     } else {
       setRepoLookupResults([]);
     }
@@ -151,27 +235,35 @@ function AddAppModal({ show, onHide, onAdd, existingAppIds = [] }) {
       fetch(`/api/jira/search?q=${encodeURIComponent(jiraLookupTerm)}`)
         .then(res => res.json())
         .then(data => setJiraLookupResults(data))
-        .catch(() => setJiraLookupResults([]));
+        .catch((err) => {
+          setJiraLookupResults([]);
+          setError('Failed to search Jira projects. Please try again.');
+        });
     } else {
       setJiraLookupResults([]);
     }
   }, [jiraLookupTerm]);
 
-  const availableApps = apps.filter(app => !existingAppIds.includes(app.id));
-  const filteredApps = availableApps.filter(app =>
-    app.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    app.cmdbId.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
   const handleSelectApp = (app) => {
     setSelectedApp(app);
+    setCurrentStep('product');
+  };
+
+  const handleSelectProduct = (product) => {
+    setSelectedProduct(product);
     setCurrentStep('details');
   };
 
   const handleClose = () => {
     setCurrentStep('search');
     setSearchTerm('');
+    setSearchResults([]);
+    setSearchLoading(false);
     setSelectedApp(null);
+    setProductSearchTerm('');
+    setProductSearchResults([]);
+    setProductSearchLoading(false);
+    setSelectedProduct(null);
     setServiceInstances([]);
     setAvailableRepos([]);
     setSelectedRepos([]);
@@ -186,6 +278,7 @@ function AddAppModal({ show, onHide, onAdd, existingAppIds = [] }) {
     setAddedDocs([]);
     setDocType('');
     setDocUrl('');
+    setError(null);
     onHide();
   };
 
@@ -221,6 +314,8 @@ function AddAppModal({ show, onHide, onAdd, existingAppIds = [] }) {
 
   const handleFinish = () => {
     onAdd([selectedApp], {
+      productId: selectedProduct.id,
+      productName: selectedProduct.name,
       repos: getAllSelectedRepos(),
       jiraProjects: getAllSelectedJira(),
       documentation: addedDocs
@@ -326,6 +421,7 @@ function AddAppModal({ show, onHide, onAdd, existingAppIds = [] }) {
   // Validation helpers
   const totalSelectedRepos = selectedRepos.length + manualRepos.length;
   const totalSelectedJira = selectedJira.length + manualJira.length;
+  const canProceedFromInstances = serviceInstances.length > 0;
   const canProceedFromRepos = totalSelectedRepos > 0;
   const canProceedFromJira = totalSelectedJira > 0;
   const canProceedFromDocs = addedDocs.length === DOC_TYPES.length;
@@ -372,72 +468,152 @@ function AddAppModal({ show, onHide, onAdd, existingAppIds = [] }) {
     }
   };
 
-  // Get onboarding status badge
-  const getOnboardingBadge = (app) => {
-    if (app.onboardingStatus === 'completed') {
-      return <Badge bg="success" className="ms-2">Already Onboarded</Badge>;
-    } else if (app.onboardingStatus && app.onboardingStatus.startsWith('step-')) {
-      const stepNum = app.onboardingStatus.split('-')[1];
-      return <Badge bg="warning" text="dark" className="ms-2">In Progress (Step {stepNum})</Badge>;
-    }
-    return null;
+  // Render Step 1: Search
+  const renderSearchStep = () => {
+    return (
+      <>
+        <Form.Group className="mb-3">
+          <Form.Control
+            type="text"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            placeholder="Search by App ID or Application Name..."
+          />
+        </Form.Group>
+
+        <ListGroup style={{ maxHeight: '350px', overflow: 'auto' }}>
+          {searchTerm.length === 0 ? (
+            <ListGroup.Item className="text-center text-muted">
+              Start typing to search for applications in CMDB
+            </ListGroup.Item>
+          ) : searchTerm.length < 2 ? (
+            <ListGroup.Item className="text-center text-muted">
+              Type at least 2 characters to search
+            </ListGroup.Item>
+          ) : searchLoading ? (
+            <ListGroup.Item className="text-center text-muted">
+              Searching CMDB...
+            </ListGroup.Item>
+          ) : searchResults.length === 0 ? (
+            <ListGroup.Item className="text-center text-muted">
+              No applications found in CMDB
+            </ListGroup.Item>
+          ) : (
+            searchResults.map(app => (
+              <ListGroup.Item
+                key={app.cmdbId}
+                action
+                onClick={() => handleSelectApp(app)}
+                className="p-3"
+              >
+                <div className="d-flex justify-content-between align-items-start">
+                  <div>
+                    <strong>{app.name}</strong>
+                    {app.isOnboarded && app.memberOfProducts.length > 0 && (
+                      <Badge bg="warning" text="dark" className="ms-2">
+                        In: {app.memberOfProducts.map(p => p.name).join(', ')}
+                      </Badge>
+                    )}
+                    <div className="text-muted small">{app.cmdbId}</div>
+                  </div>
+                  <div className="text-end">
+                    <Badge bg={app.tier === 'Gold' ? 'warning' : app.tier === 'Silver' ? 'secondary' : 'info'}>
+                      {app.tier}
+                    </Badge>
+                    <div className="text-muted small">{app.productOwner}</div>
+                  </div>
+                </div>
+              </ListGroup.Item>
+            ))
+          )}
+        </ListGroup>
+
+        <RemediationBox
+          dataSource="Application data is sourced from CMDB."
+          contactEmail="cmdb-support@example.com"
+          linkUrl="https://servicenow.example.com/cmdb"
+          linkText="Open ServiceNow CMDB"
+        />
+      </>
+    );
   };
 
-  // Render Step 1: Search
-  const renderSearchStep = () => (
-    <>
-      <Form.Group className="mb-3">
-        <Form.Control
-          type="text"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          placeholder="Search by App ID or Application Name..."
-        />
-      </Form.Group>
+  // Render Step 2: Product Selection
+  const renderProductStep = () => {
+    // Check if selected app is already in any products
+    const appProducts = selectedApp?.memberOfProducts || [];
 
-      <ListGroup style={{ maxHeight: '350px', overflow: 'auto' }}>
-        {searchTerm.length === 0 ? (
-          <ListGroup.Item className="text-center text-muted">
-            Start typing to search for applications
-          </ListGroup.Item>
-        ) : filteredApps.length === 0 ? (
-          <ListGroup.Item className="text-center text-muted">
-            No applications found
-          </ListGroup.Item>
-        ) : (
-          filteredApps.map(app => (
-            <ListGroup.Item
-              key={app.id}
-              action
-              onClick={() => handleSelectApp(app)}
-              className="p-3"
-            >
-              <div className="d-flex justify-content-between align-items-start">
-                <div>
-                  <strong>{app.name}</strong>
-                  {getOnboardingBadge(app)}
-                  <div className="text-muted small">{app.cmdbId}</div>
-                </div>
-                <div className="text-end">
-                  <span className="small">{app.tier}</span>
-                  <div className="text-muted small">{app.productOwner}</div>
-                </div>
-              </div>
+    return (
+      <>
+        <Form.Group className="mb-3">
+          <Form.Label>Select a product for this application</Form.Label>
+          <Form.Control
+            type="text"
+            value={productSearchTerm}
+            onChange={(e) => setProductSearchTerm(e.target.value)}
+            placeholder="Search products by name..."
+          />
+        </Form.Group>
+
+        <ListGroup style={{ maxHeight: '300px', overflow: 'auto' }}>
+          {productSearchTerm.length < 2 ? (
+            <ListGroup.Item className="text-center text-muted">
+              Type at least 2 characters to search products
             </ListGroup.Item>
-          ))
+          ) : productSearchLoading ? (
+            <ListGroup.Item className="text-center text-muted">
+              Searching products...
+            </ListGroup.Item>
+          ) : productSearchResults.length === 0 ? (
+            <ListGroup.Item className="text-center text-muted">
+              No products found
+            </ListGroup.Item>
+          ) : (
+            productSearchResults.map(product => {
+              const isInThisProduct = appProducts.some(p => p.id === product.id);
+              const otherProducts = appProducts.filter(p => p.id !== product.id);
+
+              return (
+                <ListGroup.Item
+                  key={product.id}
+                  action={!isInThisProduct}
+                  onClick={() => !isInThisProduct && handleSelectProduct(product)}
+                  className={`p-3 ${isInThisProduct ? 'bg-light' : ''}`}
+                  style={{ cursor: isInThisProduct ? 'not-allowed' : 'pointer' }}
+                >
+                  <div className="d-flex justify-content-between align-items-start">
+                    <div>
+                      <strong>{product.name}</strong>
+                      {isInThisProduct && (
+                        <Badge bg="secondary" className="ms-2">App already in this product</Badge>
+                      )}
+                      <div className="text-muted small">{product.description}</div>
+                      {!isInThisProduct && otherProducts.length > 0 && (
+                        <div className="small mt-1">
+                          <Badge bg="warning" text="dark">Note</Badge>
+                          <span className="text-muted ms-2">
+                            This app is already in: {otherProducts.map(p => p.name).join(', ')}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </ListGroup.Item>
+              );
+            })
+          )}
+        </ListGroup>
+
+        {selectedProduct && (
+          <Alert variant="info" className="mt-3">
+            <strong>Selected:</strong> {selectedProduct.name}
+          </Alert>
         )}
-      </ListGroup>
+      </>
+    );
+  };
 
-      <RemediationBox
-        dataSource="Application data is sourced from CMDB."
-        contactEmail="cmdb-support@example.com"
-        linkUrl="https://servicenow.example.com/cmdb"
-        linkText="Open ServiceNow CMDB"
-      />
-    </>
-  );
-
-  // Render Step 2: App Details
+  // Render Step 3: App Details
   const renderDetailsStep = () => (
     <>
       {selectedApp && (
@@ -504,8 +680,9 @@ function AddAppModal({ show, onHide, onAdd, existingAppIds = [] }) {
   const renderInstancesStep = () => (
     <>
       {serviceInstances.length === 0 ? (
-        <Alert variant="info">
-          No service instances found for this application. You can skip this step.
+        <Alert variant="danger">
+          <strong>Cannot proceed:</strong> No service instances found for this application in CMDB.
+          Service instances are required to complete onboarding. Please contact CMDB support to register service instances.
         </Alert>
       ) : (
         <>
@@ -513,30 +690,37 @@ function AddAppModal({ show, onHide, onAdd, existingAppIds = [] }) {
             <strong>Summary:</strong> {getEnvironmentSummary()}
           </div>
 
-          <Table bordered hover size="sm">
-            <thead className="bg-light">
-              <tr>
-                <th>Environment</th>
-                <th>SI ID</th>
-                <th>Instance Name</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              {serviceInstances.map(si => (
-                <tr key={si.siId}>
-                  <td>
-                    <Badge bg={getEnvBadgeColor(si.environment)}>
-                      {si.environment}
-                    </Badge>
-                  </td>
-                  <td>{si.siId}</td>
-                  <td>{si.name}</td>
-                  <td>{si.status}</td>
-                </tr>
-              ))}
-            </tbody>
-          </Table>
+          <PaginatedTableWrapper
+            data={serviceInstances}
+            itemsPerPage={5}
+            itemLabel="instances"
+            renderTable={(paginatedData) => (
+              <Table bordered hover size="sm">
+                <thead className="bg-light">
+                  <tr>
+                    <th>Environment</th>
+                    <th>SI ID</th>
+                    <th>Instance Name</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {paginatedData.map(si => (
+                    <tr key={si.siId}>
+                      <td>
+                        <Badge bg={getEnvBadgeColor(si.environment)}>
+                          {si.environment}
+                        </Badge>
+                      </td>
+                      <td>{si.siId}</td>
+                      <td>{si.name}</td>
+                      <td>{si.status}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </Table>
+            )}
+          />
         </>
       )}
 
@@ -603,46 +787,53 @@ function AddAppModal({ show, onHide, onAdd, existingAppIds = [] }) {
               </span>
             </div>
 
-            <Table bordered hover size="sm">
-              <thead className="bg-light">
-                <tr>
-                  <th style={{ width: '40px' }}>
-                    <Form.Check
-                      type="checkbox"
-                      checked={selectedRepos.length === availableRepos.length && availableRepos.length > 0}
-                      onChange={handleSelectAllRepos}
-                    />
-                  </th>
-                  <th>Type</th>
-                  <th>Repository Name</th>
-                  <th>Link</th>
-                </tr>
-              </thead>
-              <tbody>
-                {availableRepos.map(repo => (
-                  <tr key={repo.repoId}>
-                    <td>
-                      <Form.Check
-                        type="checkbox"
-                        checked={selectedRepos.includes(repo.repoId)}
-                        onChange={() => handleRepoToggle(repo.repoId)}
-                      />
-                    </td>
-                    <td>
-                      <Badge bg={repo.type === 'GitLab' ? 'success' : 'primary'}>
-                        {repo.type}
-                      </Badge>
-                    </td>
-                    <td>{repo.name}</td>
-                    <td>
-                      <a href={repo.url} target="_blank" rel="noopener noreferrer">
-                        View &rarr;
-                      </a>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </Table>
+            <PaginatedTableWrapper
+              data={availableRepos}
+              itemsPerPage={5}
+              itemLabel="repos"
+              renderTable={(paginatedData) => (
+                <Table bordered hover size="sm">
+                  <thead className="bg-light">
+                    <tr>
+                      <th style={{ width: '40px' }}>
+                        <Form.Check
+                          type="checkbox"
+                          checked={selectedRepos.length === availableRepos.length && availableRepos.length > 0}
+                          onChange={handleSelectAllRepos}
+                        />
+                      </th>
+                      <th>Type</th>
+                      <th>Repository Name</th>
+                      <th>Link</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {paginatedData.map(repo => (
+                      <tr key={repo.repoId}>
+                        <td>
+                          <Form.Check
+                            type="checkbox"
+                            checked={selectedRepos.includes(repo.repoId)}
+                            onChange={() => handleRepoToggle(repo.repoId)}
+                          />
+                        </td>
+                        <td>
+                          <Badge bg={repo.type === 'GitLab' ? 'success' : 'primary'}>
+                            {repo.type}
+                          </Badge>
+                        </td>
+                        <td>{repo.name}</td>
+                        <td>
+                          <a href={repo.url} target="_blank" rel="noopener noreferrer">
+                            View &rarr;
+                          </a>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </Table>
+              )}
+            />
           </>
         )}
 
@@ -650,47 +841,54 @@ function AddAppModal({ show, onHide, onAdd, existingAppIds = [] }) {
         {manualRepos.length > 0 && (
           <>
             <div className="mb-2 mt-3 small fw-bold">Manually Added</div>
-            <Table bordered hover size="sm">
-              <thead className="bg-light">
-                <tr>
-                  <th>Type</th>
-                  <th>Repository Name</th>
-                  <th>Link</th>
-                  <th style={{ width: '40px' }}></th>
-                </tr>
-              </thead>
-              <tbody>
-                {manualRepos.map(repo => (
-                  <tr key={repo.repoId}>
-                    <td>
-                      <Badge bg={repo.type === 'GitLab' ? 'success' : 'primary'}>
-                        {repo.type}
-                      </Badge>
-                    </td>
-                    <td>{repo.name}</td>
-                    <td>
-                      <a href={repo.url} target="_blank" rel="noopener noreferrer">
-                        View &rarr;
-                      </a>
-                    </td>
-                    <td className="text-center align-middle">
-                      <Button
-                        variant="link"
-                        size="sm"
-                        className="p-0 text-danger"
-                        onClick={() => handleRemoveManualRepo(repo.repoId)}
-                        title="Remove"
-                      >
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                          <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
-                          <path fillRule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
-                        </svg>
-                      </Button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </Table>
+            <PaginatedTableWrapper
+              data={manualRepos}
+              itemsPerPage={5}
+              itemLabel="repos"
+              renderTable={(paginatedData) => (
+                <Table bordered hover size="sm">
+                  <thead className="bg-light">
+                    <tr>
+                      <th>Type</th>
+                      <th>Repository Name</th>
+                      <th>Link</th>
+                      <th style={{ width: '40px' }}></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {paginatedData.map(repo => (
+                      <tr key={repo.repoId}>
+                        <td>
+                          <Badge bg={repo.type === 'GitLab' ? 'success' : 'primary'}>
+                            {repo.type}
+                          </Badge>
+                        </td>
+                        <td>{repo.name}</td>
+                        <td>
+                          <a href={repo.url} target="_blank" rel="noopener noreferrer">
+                            View &rarr;
+                          </a>
+                        </td>
+                        <td className="text-center align-middle">
+                          <Button
+                            variant="link"
+                            size="sm"
+                            className="p-0 text-danger"
+                            onClick={() => handleRemoveManualRepo(repo.repoId)}
+                            title="Remove"
+                          >
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                              <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
+                              <path fillRule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
+                            </svg>
+                          </Button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </Table>
+              )}
+            />
           </>
         )}
 
@@ -769,42 +967,49 @@ function AddAppModal({ show, onHide, onAdd, existingAppIds = [] }) {
             </span>
           </div>
 
-          <Table bordered hover size="sm">
-            <thead className="bg-light">
-              <tr>
-                <th style={{ width: '40px' }}>
-                  <Form.Check
-                    type="checkbox"
-                    checked={selectedJira.length === availableJira.length && availableJira.length > 0}
-                    onChange={handleSelectAllJira}
-                  />
-                </th>
-                <th>Project Name</th>
-                <th>Link</th>
-              </tr>
-            </thead>
-            <tbody>
-              {availableJira.map(project => (
-                <tr key={project.projectKey}>
-                  <td>
-                    <Form.Check
-                      type="checkbox"
-                      checked={selectedJira.includes(project.projectKey)}
-                      onChange={() => handleJiraToggle(project.projectKey)}
-                    />
-                  </td>
-                  <td>
-                    <strong>{project.projectKey}</strong> - {project.projectName}
-                  </td>
-                  <td>
-                    <a href={project.url} target="_blank" rel="noopener noreferrer">
-                      View Board &rarr;
-                    </a>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </Table>
+          <PaginatedTableWrapper
+            data={availableJira}
+            itemsPerPage={5}
+            itemLabel="projects"
+            renderTable={(paginatedData) => (
+              <Table bordered hover size="sm">
+                <thead className="bg-light">
+                  <tr>
+                    <th style={{ width: '40px' }}>
+                      <Form.Check
+                        type="checkbox"
+                        checked={selectedJira.length === availableJira.length && availableJira.length > 0}
+                        onChange={handleSelectAllJira}
+                      />
+                    </th>
+                    <th>Project Name</th>
+                    <th>Link</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {paginatedData.map(project => (
+                    <tr key={project.projectKey}>
+                      <td>
+                        <Form.Check
+                          type="checkbox"
+                          checked={selectedJira.includes(project.projectKey)}
+                          onChange={() => handleJiraToggle(project.projectKey)}
+                        />
+                      </td>
+                      <td>
+                        <strong>{project.projectKey}</strong> - {project.projectName}
+                      </td>
+                      <td>
+                        <a href={project.url} target="_blank" rel="noopener noreferrer">
+                          View Board &rarr;
+                        </a>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </Table>
+            )}
+          />
         </>
       )}
 
@@ -812,43 +1017,50 @@ function AddAppModal({ show, onHide, onAdd, existingAppIds = [] }) {
       {manualJira.length > 0 && (
         <>
           <div className="mb-2 mt-3 small fw-bold">Manually Added</div>
-          <Table bordered hover size="sm">
-            <thead className="bg-light">
-              <tr>
-                <th>Project Name</th>
-                <th>Link</th>
-                <th style={{ width: '40px' }}></th>
-              </tr>
-            </thead>
-            <tbody>
-              {manualJira.map(project => (
-                <tr key={project.projectKey}>
-                  <td>
-                    <strong>{project.projectKey}</strong> - {project.projectName}
-                  </td>
-                  <td>
-                    <a href={project.url} target="_blank" rel="noopener noreferrer">
-                      View Board &rarr;
-                    </a>
-                  </td>
-                  <td className="text-center align-middle">
-                    <Button
-                      variant="link"
-                      size="sm"
-                      className="p-0 text-danger"
-                      onClick={() => handleRemoveManualJira(project.projectKey)}
-                      title="Remove"
-                    >
-                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                        <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
-                        <path fillRule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
-                      </svg>
-                    </Button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </Table>
+          <PaginatedTableWrapper
+            data={manualJira}
+            itemsPerPage={5}
+            itemLabel="projects"
+            renderTable={(paginatedData) => (
+              <Table bordered hover size="sm">
+                <thead className="bg-light">
+                  <tr>
+                    <th>Project Name</th>
+                    <th>Link</th>
+                    <th style={{ width: '40px' }}></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {paginatedData.map(project => (
+                    <tr key={project.projectKey}>
+                      <td>
+                        <strong>{project.projectKey}</strong> - {project.projectName}
+                      </td>
+                      <td>
+                        <a href={project.url} target="_blank" rel="noopener noreferrer">
+                          View Board &rarr;
+                        </a>
+                      </td>
+                      <td className="text-center align-middle">
+                        <Button
+                          variant="link"
+                          size="sm"
+                          className="p-0 text-danger"
+                          onClick={() => handleRemoveManualJira(project.projectKey)}
+                          title="Remove"
+                        >
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
+                            <path fillRule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
+                          </svg>
+                        </Button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </Table>
+            )}
+          />
         </>
       )}
 
@@ -916,41 +1128,48 @@ function AddAppModal({ show, onHide, onAdd, existingAppIds = [] }) {
         {addedDocs.length > 0 && (
           <>
             <div className="mb-2 small fw-bold">Added Documents ({addedDocs.length}/{DOC_TYPES.length})</div>
-            <Table bordered hover size="sm">
-              <thead className="bg-light">
-                <tr>
-                  <th>Document Type</th>
-                  <th>URL</th>
-                  <th style={{ width: '40px' }}></th>
-                </tr>
-              </thead>
-              <tbody>
-                {addedDocs.map(doc => (
-                  <tr key={doc.type}>
-                    <td>{doc.type}</td>
-                    <td>
-                      <a href={doc.url} target="_blank" rel="noopener noreferrer" className="text-truncate d-block" style={{ maxWidth: '300px' }}>
-                        {doc.url}
-                      </a>
-                    </td>
-                    <td className="text-center align-middle">
-                      <Button
-                        variant="link"
-                        size="sm"
-                        className="p-0 text-danger"
-                        onClick={() => handleRemoveDoc(doc.type)}
-                        title="Remove"
-                      >
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                          <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
-                          <path fillRule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
-                        </svg>
-                      </Button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </Table>
+            <PaginatedTableWrapper
+              data={addedDocs}
+              itemsPerPage={5}
+              itemLabel="docs"
+              renderTable={(paginatedData) => (
+                <Table bordered hover size="sm">
+                  <thead className="bg-light">
+                    <tr>
+                      <th>Document Type</th>
+                      <th>URL</th>
+                      <th style={{ width: '40px' }}></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {paginatedData.map(doc => (
+                      <tr key={doc.type}>
+                        <td>{doc.type}</td>
+                        <td>
+                          <a href={doc.url} target="_blank" rel="noopener noreferrer" className="text-truncate d-block" style={{ maxWidth: '300px' }}>
+                            {doc.url}
+                          </a>
+                        </td>
+                        <td className="text-center align-middle">
+                          <Button
+                            variant="link"
+                            size="sm"
+                            className="p-0 text-danger"
+                            onClick={() => handleRemoveDoc(doc.type)}
+                            title="Remove"
+                          >
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                              <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
+                              <path fillRule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
+                            </svg>
+                          </Button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </Table>
+              )}
+            />
           </>
         )}
 
@@ -993,6 +1212,12 @@ function AddAppModal({ show, onHide, onAdd, existingAppIds = [] }) {
                 <strong>{selectedApp?.name}</strong>
                 <span className="text-muted ms-2">({selectedApp?.cmdbId})</span>
                 <span className="text-muted ms-2">- {selectedApp?.tier}</span>
+              </td>
+            </tr>
+            <tr>
+              <th className="bg-light">Product</th>
+              <td>
+                <strong>{selectedProduct?.name}</strong>
               </td>
             </tr>
             <tr>
@@ -1076,6 +1301,8 @@ function AddAppModal({ show, onHide, onAdd, existingAppIds = [] }) {
     switch (currentStep) {
       case 'search':
         return renderSearchStep();
+      case 'product':
+        return renderProductStep();
       case 'details':
         return renderDetailsStep();
       case 'instances':
@@ -1096,6 +1323,10 @@ function AddAppModal({ show, onHide, onAdd, existingAppIds = [] }) {
   // Check if can proceed to next step
   const canProceed = () => {
     switch (currentStep) {
+      case 'product':
+        return selectedProduct !== null;
+      case 'instances':
+        return canProceedFromInstances;
       case 'repos':
         return canProceedFromRepos;
       case 'jira':
@@ -1114,7 +1345,11 @@ function AddAppModal({ show, onHide, onAdd, existingAppIds = [] }) {
   return (
     <Modal show={show} onHide={handleClose} size="lg">
       <Modal.Header closeButton>
-        <Modal.Title>Add Application to Product</Modal.Title>
+        <Modal.Title>
+          {currentStep === 'search' ? 'Search Application' :
+           currentStep === 'product' ? 'Select Product' :
+           `Add to ${selectedProduct?.name || 'Product'}`}
+        </Modal.Title>
       </Modal.Header>
       <Modal.Body style={{ minHeight: '450px' }}>
         <StepIndicator
@@ -1123,6 +1358,12 @@ function AddAppModal({ show, onHide, onAdd, existingAppIds = [] }) {
           labels={STEP_LABELS}
           onStepClick={handleStepClick}
         />
+
+        {error && (
+          <Alert variant="danger" dismissible onClose={() => setError(null)} className="mb-3">
+            {error}
+          </Alert>
+        )}
 
         {renderStepContent()}
       </Modal.Body>
@@ -1135,7 +1376,7 @@ function AddAppModal({ show, onHide, onAdd, existingAppIds = [] }) {
             Back
           </Button>
         )}
-        {!isLastStep && currentStep !== 'search' && (
+        {!isLastStep && currentStep !== 'search' && currentStep !== 'product' && (
           <Button
             variant="primary"
             onClick={handleNext}

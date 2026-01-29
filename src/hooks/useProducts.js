@@ -31,10 +31,6 @@ export function useProducts() {
     setProductApps(prev => prev.filter(pa => pa.productId !== id));
   }, [execute, setProducts, setProductApps]);
 
-  const getProductApps = useCallback(async (productId) => {
-    return execute(() => productsApi.getApps(productId));
-  }, [execute]);
-
   const addAppToProduct = useCallback(async (productId, appId) => {
     const association = await execute(() => productsApi.addApp(productId, appId));
     setProductApps(prev => [...prev, association]);
@@ -68,7 +64,6 @@ export function useProducts() {
     createProduct,
     updateProduct,
     deleteProduct,
-    getProductApps,
     addAppToProduct,
     removeAppFromProduct,
     getProductById,

@@ -80,3 +80,35 @@ export const docsApi = {
   update: (id, doc) => request(`/docs/${id}`, { method: 'PUT', body: doc }),
   delete: (id) => request(`/docs/${id}`, { method: 'DELETE' }),
 };
+
+// Lines of Business API
+export const linesOfBusinessApi = {
+  getAll: () => request('/lines-of-business'),
+};
+
+// Risk Stories API
+export const riskStoriesApi = {
+  getByApp: (appId) => request(`/apps/${appId}/risk-stories`),
+  create: (appId, data) => request(`/apps/${appId}/risk-stories`, { method: 'POST', body: data }),
+  update: (id, data) => request(`/risk-stories/${id}`, { method: 'PUT', body: data }),
+};
+
+// Business Outcomes API
+export const outcomesApi = {
+  getByApp: (appId) => request(`/apps/${appId}/outcomes`),
+  getEngagement: (id) => request(`/outcomes/${id}/engagement`),
+  saveEngagement: (id, data) => request(`/outcomes/${id}/engagement`, { method: 'PUT', body: data }),
+};
+
+// Guilds API
+export const guildsApi = {
+  getAll: () => request('/guilds'),
+  getByApp: (appId) => request(`/apps/${appId}/guild-assignments`),
+};
+
+// Deployments API
+export const deploymentsApi = {
+  getFixVersions: (projectKey) => request(`/backlogs/${projectKey}/fix-versions`),
+  getEnvironments: () => request('/deployment-environments'),
+  create: (data) => request('/deployments', { method: 'POST', body: data }),
+};

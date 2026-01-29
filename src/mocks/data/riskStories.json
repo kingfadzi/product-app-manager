@@ -1,0 +1,19 @@
+{
+  "app-1": [
+    { "id": "RISK-101", "summary": "Data encryption not enforced", "status": "Open", "updated": "2026-01-28T10:30:00" },
+    { "id": "RISK-98", "summary": "Missing disaster recovery plan", "status": "In Progress", "updated": "2026-01-27T14:15:00" },
+    { "id": "RISK-95", "summary": "API authentication weakness", "status": "Open", "updated": "2026-01-25T09:45:00" },
+    { "id": "RISK-92", "summary": "Logging insufficient for audit", "status": "Resolved", "updated": "2026-01-24T16:20:00" },
+    { "id": "RISK-88", "summary": "Third-party dependency vulnerabilities", "status": "Open", "updated": "2026-01-22T11:00:00" },
+    { "id": "RISK-85", "summary": "Session timeout too long", "status": "In Progress", "updated": "2026-01-20T08:30:00" },
+    { "id": "RISK-82", "summary": "Missing input validation", "status": "Open", "updated": "2026-01-18T13:45:00" },
+    { "id": "RISK-79", "summary": "Insecure data storage", "status": "Resolved", "updated": "2026-01-15T10:10:00" }
+  ],
+  "app-2": [
+    { "id": "RISK-110", "summary": "Weak password policy", "status": "Open", "updated": "2026-01-26T09:00:00" },
+    { "id": "RISK-105", "summary": "Outdated TLS configuration", "status": "In Progress", "updated": "2026-01-24T11:30:00" }
+  ],
+  "app-3": [
+    { "id": "RISK-115", "summary": "Missing rate limiting", "status": "Open", "updated": "2026-01-27T15:00:00" }
+  ]
+}

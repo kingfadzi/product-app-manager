@@ -4,39 +4,9 @@ import { useParams, useHistory } from 'react-router-dom';
 import { AppContext } from '../context/AppContext';
 import useApps from '../hooks/useApps';
 import PageLayout from '../components/layout/PageLayout';
+import StepIndicator from '../components/common/StepIndicator';
+import { riskStoriesApi, outcomesApi, guildsApi, deploymentsApi } from '../services/api';
 import '../styles/tabs.css';
-
-// Mock data for Risk Stories
-const mockRiskStories = [
-  { id: 'RISK-101', summary: 'Data encryption not enforced', status: 'Open', updated: '2026-01-28T10:30:00' },
-  { id: 'RISK-98', summary: 'Missing disaster recovery plan', status: 'In Progress', updated: '2026-01-27T14:15:00' },
-  { id: 'RISK-95', summary: 'API authentication weakness', status: 'Open', updated: '2026-01-25T09:45:00' },
-  { id: 'RISK-92', summary: 'Logging insufficient for audit', status: 'Resolved', updated: '2026-01-24T16:20:00' },
-  { id: 'RISK-88', summary: 'Third-party dependency vulnerabilities', status: 'Open', updated: '2026-01-22T11:00:00' },
-  { id: 'RISK-85', summary: 'Session timeout too long', status: 'In Progress', updated: '2026-01-20T08:30:00' },
-  { id: 'RISK-82', summary: 'Missing input validation', status: 'Open', updated: '2026-01-18T13:45:00' },
-  { id: 'RISK-79', summary: 'Insecure data storage', status: 'Resolved', updated: '2026-01-15T10:10:00' },
-];
-
-// Mock data for Business Outcomes
-const mockBusinessOutcomes = [
-  { id: 'BO-42', summary: 'Reduce payment processing time by 20%', status: 'On Track', updated: '2026-01-28T09:00:00', fixRelease: '2026-Q2', description: 'Optimize payment gateway integration to reduce processing latency', portfolioEpv: 'EPV-2026-042', navigatorId: 'NAV-1234' },
-  { id: 'BO-38', summary: 'Increase customer satisfaction to 95%', status: 'At Risk', updated: '2026-01-26T15:30:00', fixRelease: '2026-Q3', description: 'Improve UX and reduce friction in checkout flow', portfolioEpv: 'EPV-2026-038', navigatorId: 'NAV-1235' },
-  { id: 'BO-35', summary: 'Achieve 99.9% uptime SLA', status: 'On Track', updated: '2026-01-24T11:20:00', fixRelease: '2026-Q2', description: 'Implement redundancy and failover mechanisms', portfolioEpv: 'EPV-2026-035', navigatorId: 'NAV-1236' },
-  { id: 'BO-31', summary: 'Reduce operational costs by 15%', status: 'On Track', updated: '2026-01-21T14:00:00', fixRelease: '2026-Q4', description: 'Automate manual processes and optimize infrastructure', portfolioEpv: 'EPV-2026-031', navigatorId: 'NAV-1237' },
-  { id: 'BO-28', summary: 'Launch mobile payment feature', status: 'Completed', updated: '2026-01-19T16:45:00', fixRelease: '2026-Q1', description: 'Enable mobile wallet integration for iOS and Android', portfolioEpv: 'EPV-2026-028', navigatorId: 'NAV-1238' },
-  { id: 'BO-25', summary: 'Integrate with 5 new partners', status: 'At Risk', updated: '2026-01-17T10:30:00', fixRelease: '2026-Q3', description: 'Build API integrations for partner payment systems', portfolioEpv: 'EPV-2026-025', navigatorId: 'NAV-1239' },
-  { id: 'BO-22', summary: 'Improve fraud detection rate', status: 'On Track', updated: '2026-01-14T09:15:00', fixRelease: '2026-Q2', description: 'Implement ML-based fraud detection algorithms', portfolioEpv: 'EPV-2026-022', navigatorId: 'NAV-1240' },
-];
-
-// Mock data for Control SMEs (Guilds)
-const mockControlSmes = [
-  { id: 1, name: 'Sarah Chen', email: 's.chen@example.com', guild: 'Security', health: 'Green', blocked: false },
-  { id: 2, name: 'Mike Johnson', email: 'm.johnson@example.com', guild: 'Data', health: 'Amber', blocked: false },
-  { id: 3, name: 'Emma Williams', email: 'e.williams@example.com', guild: 'Ent. Architecture', health: 'Green', blocked: false },
-  { id: 4, name: 'James Brown', email: 'j.brown@example.com', guild: 'Accessibility', health: 'Red', blocked: true },
-  { id: 5, name: 'Lisa Davis', email: 'l.davis@example.com', guild: 'Srv. Transition', health: 'Green', blocked: false },
-];
 
 // Contact types
 const CONTACT_TYPES = [
@@ -69,6 +39,11 @@ function AppProfile() {
   const [backlogs, setBacklogs] = useState([]);
   const [contacts, setContacts] = useState([]);
   const [docs, setDocs] = useState([]);
+  const [riskStories, setRiskStories] = useState([]);
+  const [businessOutcomes, setBusinessOutcomes] = useState([]);
+  const [controlSmes, setControlSmes] = useState([]);
+  const [fixVersions, setFixVersions] = useState({});
+  const [deploymentEnvironments, setDeploymentEnvironments] = useState([]);
 
   // New contact form state
   const [newContact, setNewContact] = useState({ type: '', name: '', email: '' });
@@ -193,36 +168,6 @@ function AppProfile() {
     }
   });
 
-  // Mock fix versions for backlogs
-  const mockFixVersions = {
-    'PAY': [
-      { id: 'v1', name: '2026.1.0', releaseDate: '2026-02-15', status: 'Unreleased', issueCount: 12 },
-      { id: 'v2', name: '2026.2.0', releaseDate: '2026-03-30', status: 'Unreleased', issueCount: 8 },
-      { id: 'v3', name: '2025.4.0', releaseDate: '2025-12-01', status: 'Released', issueCount: 15 }
-    ],
-    'PAY-OPS': [
-      { id: 'v4', name: '2026.1.0-ops', releaseDate: '2026-02-01', status: 'Unreleased', issueCount: 5 }
-    ],
-    'FRAUD': [
-      { id: 'v5', name: '2026.1.0', releaseDate: '2026-02-20', status: 'Unreleased', issueCount: 7 },
-      { id: 'v6', name: '2026.2.0', releaseDate: '2026-04-15', status: 'Unreleased', issueCount: 4 }
-    ],
-    'CUST': [
-      { id: 'v7', name: '2026.1.0', releaseDate: '2026-02-10', status: 'Unreleased', issueCount: 9 },
-      { id: 'v8', name: '2026.2.0', releaseDate: '2026-03-25', status: 'Unreleased', issueCount: 6 },
-      { id: 'v9', name: '2025.4.0', releaseDate: '2025-12-15', status: 'Released', issueCount: 11 }
-    ],
-    'DATA': [
-      { id: 'v10', name: '2026.1.0', releaseDate: '2026-02-28', status: 'Unreleased', issueCount: 3 }
-    ]
-  };
-
-  // Mock environments
-  const mockEnvironments = [
-    { id: 'prod', name: 'Production', siId: 'SI-001' },
-    { id: 'dr', name: 'DR (Disaster Recovery)', siId: 'SI-002' }
-  ];
-
   const openDeploymentWizard = () => {
     setShowDeploymentWizard(true);
     setDeploymentStep(1);
@@ -271,7 +216,16 @@ function AppProfile() {
 
   const getFixVersionsForBacklog = () => {
     if (!deploymentData.selectedBacklog) return [];
-    return mockFixVersions[deploymentData.selectedBacklog.projectKey] || [];
+    return fixVersions[deploymentData.selectedBacklog.projectKey] || [];
+  };
+
+  const loadFixVersions = async (projectKey) => {
+    try {
+      const versions = await deploymentsApi.getFixVersions(projectKey);
+      setFixVersions(prev => ({ ...prev, [projectKey]: versions }));
+    } catch (err) {
+      console.error('Error loading fix versions:', err);
+    }
   };
 
   const closeOutcomeWizard = () => {
@@ -339,17 +293,24 @@ function AppProfile() {
 
   const loadData = async () => {
     try {
-      const [reposData, backlogsData, contactsData, docsData] = await Promise.all([
+      const [reposData, backlogsData, contactsData, docsData, riskData, outcomesData, smesData, envsData] = await Promise.all([
         getAppRepos(id),
         getAppBacklogs(id),
         getAppContacts(id),
         getAppDocs(id),
+        riskStoriesApi.getByApp(id),
+        outcomesApi.getByApp(id),
+        guildsApi.getByApp(id),
+        deploymentsApi.getEnvironments(),
       ]);
-      console.log('Loaded data:', { reposData, backlogsData, contactsData, docsData });
       setRepos(reposData || []);
       setBacklogs(backlogsData || []);
       setContacts(contactsData || []);
       setDocs(docsData || []);
+      setRiskStories(riskData || []);
+      setBusinessOutcomes(outcomesData || []);
+      setControlSmes(smesData || []);
+      setDeploymentEnvironments(envsData || []);
     } catch (err) {
       console.error('Error loading app data:', err);
     }
@@ -382,7 +343,7 @@ function AppProfile() {
     <PageLayout>
       {/* Breadcrumb Navigation */}
       <Breadcrumb>
-        <Breadcrumb.Item onClick={() => history.push('/')}>Stacks</Breadcrumb.Item>
+        <Breadcrumb.Item onClick={() => history.push('/')}>Home</Breadcrumb.Item>
         {appProducts.length > 0 ? (
           <Breadcrumb.Item onClick={() => history.push(`/products/${appProducts[0].id}`)}>
             {appProducts[0].name}
@@ -421,7 +382,7 @@ function AppProfile() {
 
       <Row>
         {/* Left Column */}
-        <Col md={6}>
+        <Col lg={6}>
           {/* Application Details Card with Tabs */}
           <Card className="mb-4 tabbed-card">
             <Tab.Container defaultActiveKey="overview">
@@ -801,7 +762,7 @@ function AppProfile() {
         </Col>
 
         {/* Right Column */}
-        <Col md={6}>
+        <Col lg={6}>
           {/* Governance & Controls Card with Tabs */}
           <Card className="mb-4 tabbed-card">
             <Tab.Container defaultActiveKey="outcomes">
@@ -828,7 +789,7 @@ function AppProfile() {
                   <Tab.Pane eventKey="outcomes">
                     <Table size="sm" className="mb-0" borderless>
                       <tbody>
-                        {mockBusinessOutcomes.slice(0, 2).map(item => (
+                        {businessOutcomes.slice(0, 2).map(item => (
                           <tr key={item.id} style={{ cursor: 'pointer' }} onClick={() => handleOutcomeClick(item)}>
                             <td>
                               <span className="text-primary">{item.id}</span>
@@ -851,7 +812,7 @@ function AppProfile() {
                   <Tab.Pane eventKey="risk">
                     <Table size="sm" className="mb-0" borderless>
                       <tbody>
-                        {mockRiskStories.slice(0, 2).map(item => (
+                        {riskStories.slice(0, 2).map(item => (
                           <tr key={item.id}>
                             <td>
                               <a href={`https://jira.example.com/browse/${item.id}`} target="_blank" rel="noopener noreferrer">
@@ -874,12 +835,12 @@ function AppProfile() {
 
                   {/* Guilds Tab */}
                   <Tab.Pane eventKey="guilds">
-                    {mockControlSmes.length === 0 ? (
+                    {controlSmes.length === 0 ? (
                       <p className="text-muted mb-0">No control SMEs assigned</p>
                     ) : (
                       <Table size="sm" className="mb-0" borderless>
                         <tbody>
-                          {mockControlSmes.map(sme => (
+                          {controlSmes.map(sme => (
                             <tr key={sme.id}>
                               <td>
                                 <a href={`mailto:${sme.email}`}>{sme.name}</a>
@@ -1038,7 +999,7 @@ function AppProfile() {
         </Modal.Header>
         <Modal.Body>
           {(() => {
-            const data = showModal === 'risks' ? mockRiskStories : mockBusinessOutcomes;
+            const data = showModal === 'risks' ? riskStories : businessOutcomes;
             const totalPages = Math.ceil(data.length / itemsPerPage);
             const startIndex = (currentPage - 1) * itemsPerPage;
             const paginatedData = data.slice(startIndex, startIndex + itemsPerPage);
@@ -1234,7 +1195,7 @@ function AppProfile() {
                   ) : (
                     <Table size="sm" className="mb-0" borderless>
                       <tbody>
-                        {mockControlSmes.filter(sme => wizardData.selectedGuilds.includes(sme.id)).map(sme => (
+                        {controlSmes.filter(sme => wizardData.selectedGuilds.includes(sme.id)).map(sme => (
                           <tr key={sme.id}>
                             <td>
                               <a href={`mailto:${sme.email}`}>{sme.name}</a>
@@ -1272,44 +1233,7 @@ function AppProfile() {
           {/* EDIT MODE - Wizard Steps */}
           {outcomeViewMode === 'edit' && (
             <>
-              {/* Step Progress Indicator */}
-              <div className="d-flex justify-content-between align-items-center my-3">
-                {['Details', 'Changes', 'Questionnaire', 'Request'].map((step, idx) => (
-                  <React.Fragment key={step}>
-                    <div className="text-center">
-                      <div
-                        style={{
-                          width: '32px',
-                          height: '32px',
-                          borderRadius: '50%',
-                          background: wizardStep === idx + 1 ? '#212529' : wizardStep > idx + 1 ? '#22c55e' : '#e9ecef',
-                          color: wizardStep >= idx + 1 ? '#fff' : '#6c757d',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          fontSize: '0.875rem',
-                          fontWeight: 600,
-                          margin: '0 auto 0.25rem'
-                        }}
-                      >
-                        {wizardStep > idx + 1 ? '✓' : idx + 1}
-                      </div>
-                      <div style={{ fontSize: '0.75rem', color: '#6c757d' }}>{step}</div>
-                    </div>
-                    {idx < 3 && (
-                      <div
-                        style={{
-                          flex: 1,
-                          height: '2px',
-                          background: wizardStep > idx + 1 ? '#22c55e' : '#e9ecef',
-                          margin: '0 0.5rem',
-                          marginBottom: '1rem'
-                        }}
-                      />
-                    )}
-                  </React.Fragment>
-                ))}
-              </div>
+              <StepIndicator steps={['Details', 'Changes', 'Questionnaire', 'Request']} currentStep={wizardStep} />
 
               {/* Step 1: Business Outcome Details */}
               {wizardStep === 1 && selectedOutcome && (
@@ -1462,7 +1386,7 @@ function AppProfile() {
                 <div>
                   <h6 className="mb-3">Request Guild Engagement</h6>
                   <p className="text-muted small">Select the guild members you want to engage with:</p>
-                  {mockControlSmes.map(sme => {
+                  {controlSmes.map(sme => {
                     const isRecommended =
                       (sme.guild === 'Data' && wizardData.questionnaire.impactsData === 'yes') ||
                       (sme.guild === 'Security' && wizardData.questionnaire.impactsSecurity === 'yes') ||
@@ -1548,44 +1472,7 @@ function AppProfile() {
           <Modal.Title style={{ fontSize: '1rem', fontWeight: 600 }}>Create New Release</Modal.Title>
         </Modal.Header>
         <Modal.Body style={{ paddingTop: 0 }}>
-          {/* Step Progress Indicator */}
-          <div className="d-flex justify-content-between align-items-center my-3">
-            {['Project', 'Version', 'Details', 'Environments', 'Attestation'].map((step, idx) => (
-              <React.Fragment key={step}>
-                <div className="text-center">
-                  <div
-                    style={{
-                      width: '32px',
-                      height: '32px',
-                      borderRadius: '50%',
-                      background: deploymentStep === idx + 1 ? '#212529' : deploymentStep > idx + 1 ? '#22c55e' : '#e9ecef',
-                      color: deploymentStep >= idx + 1 ? '#fff' : '#6c757d',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      fontSize: '0.875rem',
-                      fontWeight: 600,
-                      margin: '0 auto 0.25rem'
-                    }}
-                  >
-                    {deploymentStep > idx + 1 ? '✓' : idx + 1}
-                  </div>
-                  <div style={{ fontSize: '0.75rem', color: '#6c757d' }}>{step}</div>
-                </div>
-                {idx < 4 && (
-                  <div
-                    style={{
-                      flex: 1,
-                      height: '2px',
-                      background: deploymentStep > idx + 1 ? '#22c55e' : '#e9ecef',
-                      margin: '0 0.5rem',
-                      marginBottom: '1rem'
-                    }}
-                  />
-                )}
-              </React.Fragment>
-            ))}
-          </div>
+          <StepIndicator steps={['Project', 'Version', 'Details', 'Environments', 'Attestation']} currentStep={deploymentStep} />
 
           {/* Step 1: Select Jira Project (Backlog) */}
           {deploymentStep === 1 && (
@@ -1699,7 +1586,7 @@ function AppProfile() {
                   Business Outcomes <span className="text-muted">(in this release)</span>
                 </Form.Label>
                 <div style={{ fontSize: '0.8125rem' }}>
-                  {mockBusinessOutcomes.slice(0, 3).map(bo => (
+                  {businessOutcomes.slice(0, 3).map(bo => (
                     <div key={bo.id} className="mb-1">
                       <a href={`https://jira.example.com/browse/${bo.id}`} target="_blank" rel="noopener noreferrer">
                         {bo.id}
@@ -1727,7 +1614,7 @@ function AppProfile() {
                 Target Service Instances <span className="text-danger">*</span>
               </Form.Label>
               <div className="mb-3">
-                {mockEnvironments.map(env => (
+                {deploymentEnvironments.map(env => (
                   <Form.Check
                     key={env.id}
                     type="checkbox"
@@ -1748,7 +1635,7 @@ function AppProfile() {
                   <div><strong>Fix Version:</strong> {deploymentData.selectedVersion?.name}</div>
                   <div><strong>Navigator ID:</strong> {deploymentData.navigatorId || '-'}</div>
                   <div><strong>Environments:</strong> {deploymentData.environments.length > 0
-                    ? mockEnvironments.filter(e => deploymentData.environments.includes(e.id)).map(e => e.name).join(', ')
+                    ? deploymentEnvironments.filter(e => deploymentData.environments.includes(e.id)).map(e => e.name).join(', ')
                     : 'None selected'}</div>
                 </div>
               </Alert>
@@ -1815,7 +1702,7 @@ function AppProfile() {
                   <div><strong>Fix Version:</strong> {deploymentData.selectedVersion?.name}</div>
                   <div><strong>Navigator ID:</strong> {deploymentData.navigatorId || '-'}</div>
                   <div><strong>Environments:</strong> {deploymentData.environments.length > 0
-                    ? mockEnvironments.filter(e => deploymentData.environments.includes(e.id)).map(e => e.name).join(', ')
+                    ? deploymentEnvironments.filter(e => deploymentData.environments.includes(e.id)).map(e => e.name).join(', ')
                     : 'None selected'}</div>
                 </div>
               </Alert>

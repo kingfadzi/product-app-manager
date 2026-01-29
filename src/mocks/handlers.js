@@ -15,6 +15,14 @@ import availableJiraData from './data/availableJira.json';
 import allReposData from './data/allRepos.json';
 import allJiraData from './data/allJira.json';
 import outcomeEngagementsData from './data/outcomeEngagements.json';
+import linesOfBusinessData from './data/linesOfBusiness.json';
+import cmdbAppsData from './data/cmdbApps.json';
+import riskStoriesData from './data/riskStories.json';
+import businessOutcomesData from './data/businessOutcomes.json';
+import controlSmesData from './data/controlSmes.json';
+import fixVersionsData from './data/fixVersions.json';
+import deploymentEnvironmentsData from './data/deploymentEnvironments.json';
+import guildsData from './data/guilds.json';
 
 // In-memory data stores (mutable copies)
 let products = [...productsData];
@@ -31,11 +39,29 @@ const availableJira = { ...availableJiraData };
 const allRepos = [...allReposData];
 const allJira = [...allJiraData];
 let outcomeEngagements = { ...outcomeEngagementsData };
+const linesOfBusiness = [...linesOfBusinessData];
+const cmdbApps = [...cmdbAppsData];
+let riskStories = { ...riskStoriesData };
+let businessOutcomes = { ...businessOutcomesData };
+let controlSmes = { ...controlSmesData };
+const fixVersions = { ...fixVersionsData };
+const deploymentEnvironments = [...deploymentEnvironmentsData];
+const guilds = [...guildsData];
+let deployments = [];
 
 export const handlers = [
   // Products
   rest.get('/api/products', (req, res, ctx) => {
     return res(ctx.json(products));
+  }),
+
+  rest.get('/api/products/search', (req, res, ctx) => {
+    const query = req.url.searchParams.get('q') || '';
+    const results = products.filter(p =>
+      p.name.toLowerCase().includes(query.toLowerCase()) ||
+      (p.description && p.description.toLowerCase().includes(query.toLowerCase()))
+    );
+    return res(ctx.json(results));
   }),
 
   rest.get('/api/products/:id', (req, res, ctx) => {
@@ -143,14 +169,41 @@ export const handlers = [
     return res(ctx.json(apps[index]));
   }),
 
-  // CMDB Search (simulated)
+  // CMDB Search (simulated) - returns all matching apps with product membership info
   rest.get('/api/cmdb/search', (req, res, ctx) => {
     const query = req.url.searchParams.get('q') || '';
-    const results = apps.filter(a =>
+
+    // Search all CMDB apps (no exclusion)
+    const results = cmdbApps.filter(a =>
       a.name.toLowerCase().includes(query.toLowerCase()) ||
       a.cmdbId.toLowerCase().includes(query.toLowerCase())
     );
-    return res(ctx.json(results));
+
+    // Enrich with product membership info
+    const enriched = results.map(cmdbApp => {
+      // Find if this app is already onboarded
+      const onboardedApp = apps.find(a => a.cmdbId === cmdbApp.cmdbId);
+      if (onboardedApp) {
+        // Get all products this app belongs to
+        const appProducts = productApps
+          .filter(pa => pa.appId === onboardedApp.id)
+          .map(pa => {
+            const product = products.find(p => p.id === pa.productId);
+            return product ? { id: product.id, name: product.name } : null;
+          })
+          .filter(Boolean);
+
+        return {
+          ...cmdbApp,
+          isOnboarded: true,
+          onboardedAppId: onboardedApp.id,
+          memberOfProducts: appProducts
+        };
+      }
+      return { ...cmdbApp, isOnboarded: false, memberOfProducts: [] };
+    });
+
+    return res(ctx.json(enriched));
   }),
 
   // App Repos
@@ -366,5 +419,76 @@ export const handlers = [
   rest.put('/api/outcomes/:outcomeId/engagement', (req, res, ctx) => {
     outcomeEngagements[req.params.outcomeId] = req.body;
     return res(ctx.json(outcomeEngagements[req.params.outcomeId]));
+  }),
+
+  // Lines of Business
+  rest.get('/api/lines-of-business', (req, res, ctx) => {
+    return res(ctx.json(linesOfBusiness));
+  }),
+
+  // Risk Stories
+  rest.get('/api/apps/:appId/risk-stories', (req, res, ctx) => {
+    const appRiskStories = riskStories[req.params.appId] || [];
+    return res(ctx.json(appRiskStories));
+  }),
+
+  rest.post('/api/apps/:appId/risk-stories', (req, res, ctx) => {
+    const newStory = {
+      id: `RISK-${Date.now()}`,
+      updated: new Date().toISOString(),
+      ...req.body
+    };
+    if (!riskStories[req.params.appId]) {
+      riskStories[req.params.appId] = [];
+    }
+    riskStories[req.params.appId].push(newStory);
+    return res(ctx.status(201), ctx.json(newStory));
+  }),
+
+  rest.put('/api/risk-stories/:id', (req, res, ctx) => {
+    for (const appId of Object.keys(riskStories)) {
+      const index = riskStories[appId].findIndex(r => r.id === req.params.id);
+      if (index !== -1) {
+        riskStories[appId][index] = { ...riskStories[appId][index], ...req.body, updated: new Date().toISOString() };
+        return res(ctx.json(riskStories[appId][index]));
+      }
+    }
+    return res(ctx.status(404), ctx.json({ error: 'Risk story not found' }));
+  }),
+
+  // Business Outcomes
+  rest.get('/api/apps/:appId/outcomes', (req, res, ctx) => {
+    const appOutcomes = businessOutcomes[req.params.appId] || [];
+    return res(ctx.json(appOutcomes));
+  }),
+
+  // Guilds
+  rest.get('/api/guilds', (req, res, ctx) => {
+    return res(ctx.json(guilds));
+  }),
+
+  rest.get('/api/apps/:appId/guild-assignments', (req, res, ctx) => {
+    const appSmes = controlSmes[req.params.appId] || [];
+    return res(ctx.json(appSmes));
+  }),
+
+  // Deployments
+  rest.get('/api/backlogs/:projectKey/fix-versions', (req, res, ctx) => {
+    const versions = fixVersions[req.params.projectKey] || [];
+    return res(ctx.json(versions));
+  }),
+
+  rest.get('/api/deployment-environments', (req, res, ctx) => {
+    return res(ctx.json(deploymentEnvironments));
+  }),
+
+  rest.post('/api/deployments', (req, res, ctx) => {
+    const newDeployment = {
+      id: `deploy-${Date.now()}`,
+      createdAt: new Date().toISOString(),
+      ...req.body
+    };
+    deployments.push(newDeployment);
+    return res(ctx.status(201), ctx.json(newDeployment));
   }),
 ];

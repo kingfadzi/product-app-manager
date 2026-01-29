@@ -1,14 +1,15 @@
 # Product & App Manager
 
-A React 16.x MVP for managing Products and their associated Apps.
+A React 16.x application for managing Products and their associated Applications.
 
 ## Features
 
-- **Products**: Create, view, and manage products
-- **Apps**: View and edit application details
+- **Products**: Create, view, and manage products with a 3-step wizard
+- **Apps**: View and edit application details, track governance and controls
 - **Many-to-Many Relationships**: Link apps to multiple products
-- **App Details Management**: Track repos, backlogs, contacts, and documentation for each app
-- **3-Step Product Creation Wizard**: Streamlined product creation flow
+- **App Details Management**: Track repos, backlogs, contacts, and documentation
+- **Risk & Governance**: Track risk stories, business outcomes, and guild engagements
+- **Deployments**: Create releases with attestation workflow
 
 ## Tech Stack
 
@@ -21,13 +22,25 @@ A React 16.x MVP for managing Products and their associated Apps.
 
 ## Getting Started
 
+### Prerequisites
+
+- Node.js (v14 or higher recommended)
+- npm (v6 or higher)
+
 ### Installation
 
 ```bash
+# Clone the repository
+git clone <repository-url>
+cd product-app-manager
+
+# Install dependencies
 npm install --legacy-peer-deps
 ```
 
-### Development
+### Running the Application
+
+#### Development Mode
 
 ```bash
 npm start
@@ -35,7 +48,26 @@ npm start
 
 The app will start at [http://localhost:3000](http://localhost:3000).
 
-MSW will automatically intercept API requests and return mock data.
+MSW (Mock Service Worker) will automatically intercept API requests and return mock data - no backend server required.
+
+#### Production Build
+
+```bash
+# Create optimized production build
+npm run build
+
+# Serve the build locally (optional)
+npx serve -s build
+```
+
+### Available Scripts
+
+| Command | Description |
+|---------|-------------|
+| `npm start` | Start development server on port 3000 |
+| `npm run build` | Create production build in `/build` folder |
+| `npm test` | Run test suite |
+| `npm run eject` | Eject from Create React App (irreversible) |
 
 ## Project Structure
 
@@ -43,15 +75,18 @@ MSW will automatically intercept API requests and return mock data.
 src/
 ├── components/
 │   ├── layout/       # Header, Sidebar, PageLayout
-│   ├── products/     # Product-related components
-│   ├── apps/         # App-related components
-│   ├── wizard/       # Multi-step wizard components
-│   └── common/       # Shared components
+│   ├── products/     # Product-related components (AddAppModal)
+│   ├── apps/         # App-related components (RepoList, BacklogList, etc.)
+│   └── common/       # Shared components (CrudList, StepIndicator, etc.)
+├── constants/        # Shared constants (badge colors, labels)
 ├── context/          # React Context for global state
-├── hooks/            # Custom React hooks
-├── mocks/            # MSW handlers and mock data
+├── hooks/            # Custom React hooks (useApps, useProducts, usePagination)
+├── mocks/
+│   ├── data/         # Mock JSON data files
+│   └── handlers.js   # MSW request handlers
 ├── pages/            # Page components
-└── services/         # API service layer
+├── services/         # API service layer
+└── styles/           # CSS styles
 ```
 
 ## Routes
@@ -64,15 +99,72 @@ src/
 | `/products/new` | Create product wizard |
 | `/products/:id` | Product detail |
 | `/apps` | All apps list |
-| `/apps/:id` | App profile |
+| `/apps/:id` | App profile with governance tabs |
 | `/apps/:id/edit` | Edit app |
+| `/search` | Global search results |
 
 ## Data Model
 
-- **Product**: Contains name, description, and creation date
-- **App**: Application with CMDB ID, tier (gold/silver/bronze), status
+- **Product**: Contains name, description, stack, and line of business
+- **App**: Application with CMDB ID, tier (gold/silver/bronze), status, ResCat
 - **ProductApp**: Join table linking products and apps
 - **AppRepo**: Git repositories linked to an app
-- **AppBacklog**: Project backlogs (Jira/etc.)
-- **AppContact**: Key contacts (product owner, tech lead, etc.)
-- **AppDoc**: Documentation links (roadmap, architecture, runbook)
+- **AppBacklog**: Project backlogs (Jira projects)
+- **AppContact**: Key contacts (product owner, tech lead, business owner, SME)
+- **AppDoc**: Documentation links (roadmap, vision, architecture, runbook)
+- **RiskStory**: Security/compliance risk items
+- **BusinessOutcome**: Business objectives and their status
+- **GuildAssignment**: Control SME assignments per guild
+
+## API Endpoints (Mocked)
+
+The application uses MSW to mock the following API endpoints:
+
+### Products
+- `GET /api/products` - List all products
+- `POST /api/products` - Create product
+- `GET /api/products/:id` - Get product details
+- `PUT /api/products/:id` - Update product
+- `DELETE /api/products/:id` - Delete product
+
+### Apps
+- `GET /api/apps` - List all apps
+- `GET /api/apps/:id` - Get app details
+- `GET /api/apps/:id/repos` - Get app repositories
+- `GET /api/apps/:id/backlogs` - Get app backlogs
+- `GET /api/apps/:id/contacts` - Get app contacts
+- `GET /api/apps/:id/docs` - Get app documentation
+- `GET /api/apps/:id/risk-stories` - Get risk stories
+- `GET /api/apps/:id/outcomes` - Get business outcomes
+- `GET /api/apps/:id/guild-assignments` - Get guild SME assignments
+
+### Deployments
+- `GET /api/backlogs/:key/fix-versions` - Get Jira fix versions
+- `GET /api/deployment-environments` - Get deployment environments
+- `POST /api/deployments` - Create deployment
+
+## Troubleshooting
+
+### Common Issues
+
+**Port 3000 already in use:**
+```bash
+# Find and kill the process using port 3000
+lsof -i :3000
+kill -9 <PID>
+
+# Or start on a different port
+PORT=3001 npm start
+```
+
+**Dependency issues:**
+```bash
+# Clear npm cache and reinstall
+rm -rf node_modules package-lock.json
+npm cache clean --force
+npm install --legacy-peer-deps
+```
+
+**MSW not intercepting requests:**
+- Check browser console for MSW activation message
+- Ensure `src/mocks/browser.js` is imported in `src/index.js`

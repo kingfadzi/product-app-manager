@@ -1,0 +1,17 @@
+{
+  "app-1": [
+    { "id": "BO-42", "summary": "Reduce payment processing time by 20%", "status": "On Track", "updated": "2026-01-28T09:00:00", "fixRelease": "2026-Q2", "description": "Optimize payment gateway integration to reduce processing latency", "portfolioEpv": "EPV-2026-042", "navigatorId": "NAV-1234" },
+    { "id": "BO-38", "summary": "Increase customer satisfaction to 95%", "status": "At Risk", "updated": "2026-01-26T15:30:00", "fixRelease": "2026-Q3", "description": "Improve UX and reduce friction in checkout flow", "portfolioEpv": "EPV-2026-038", "navigatorId": "NAV-1235" },
+    { "id": "BO-35", "summary": "Achieve 99.9% uptime SLA", "status": "On Track", "updated": "2026-01-24T11:20:00", "fixRelease": "2026-Q2", "description": "Implement redundancy and failover mechanisms", "portfolioEpv": "EPV-2026-035", "navigatorId": "NAV-1236" },
+    { "id": "BO-31", "summary": "Reduce operational costs by 15%", "status": "On Track", "updated": "2026-01-21T14:00:00", "fixRelease": "2026-Q4", "description": "Automate manual processes and optimize infrastructure", "portfolioEpv": "EPV-2026-031", "navigatorId": "NAV-1237" },
+    { "id": "BO-28", "summary": "Launch mobile payment feature", "status": "Completed", "updated": "2026-01-19T16:45:00", "fixRelease": "2026-Q1", "description": "Enable mobile wallet integration for iOS and Android", "portfolioEpv": "EPV-2026-028", "navigatorId": "NAV-1238" },
+    { "id": "BO-25", "summary": "Integrate with 5 new partners", "status": "At Risk", "updated": "2026-01-17T10:30:00", "fixRelease": "2026-Q3", "description": "Build API integrations for partner payment systems", "portfolioEpv": "EPV-2026-025", "navigatorId": "NAV-1239" },
+    { "id": "BO-22", "summary": "Improve fraud detection rate", "status": "On Track", "updated": "2026-01-14T09:15:00", "fixRelease": "2026-Q2", "description": "Implement ML-based fraud detection algorithms", "portfolioEpv": "EPV-2026-022", "navigatorId": "NAV-1240" }
+  ],
+  "app-2": [
+    { "id": "BO-50", "summary": "Improve data accuracy to 99%", "status": "On Track", "updated": "2026-01-25T10:00:00", "fixRelease": "2026-Q2", "description": "Implement validation checks and data cleansing", "portfolioEpv": "EPV-2026-050", "navigatorId": "NAV-1250" }
+  ],
+  "app-3": [
+    { "id": "BO-55", "summary": "Launch self-service portal", "status": "In Progress", "updated": "2026-01-26T14:00:00", "fixRelease": "2026-Q3", "description": "Enable customers to manage their accounts online", "portfolioEpv": "EPV-2026-055", "navigatorId": "NAV-1255" }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "app-1": [
+    { "id": 1, "name": "Sarah Chen", "email": "s.chen@example.com", "guild": "Security", "health": "Green", "blocked": false },
+    { "id": 2, "name": "Mike Johnson", "email": "m.johnson@example.com", "guild": "Data", "health": "Amber", "blocked": false },
+    { "id": 3, "name": "Emma Williams", "email": "e.williams@example.com", "guild": "Ent. Architecture", "health": "Green", "blocked": false },
+    { "id": 4, "name": "James Brown", "email": "j.brown@example.com", "guild": "Accessibility", "health": "Red", "blocked": true },
+    { "id": 5, "name": "Lisa Davis", "email": "l.davis@example.com", "guild": "Srv. Transition", "health": "Green", "blocked": false }
+  ],
+  "app-2": [
+    { "id": 6, "name": "Tom Wilson", "email": "t.wilson@example.com", "guild": "Security", "health": "Green", "blocked": false },
+    { "id": 7, "name": "Alice Martin", "email": "a.martin@example.com", "guild": "Data", "health": "Green", "blocked": false }
+  ],
+  "app-3": [
+    { "id": 8, "name": "David Lee", "email": "d.lee@example.com", "guild": "Ent. Architecture", "health": "Amber", "blocked": false }
+  ]
+}

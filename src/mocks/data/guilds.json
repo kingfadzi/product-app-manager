@@ -1,0 +1,7 @@
+[
+  { "id": "data", "name": "Data", "color": "#ffc107" },
+  { "id": "security", "name": "Security", "color": "#dc3545" },
+  { "id": "accessibility", "name": "Accessibility", "color": "#007bff" },
+  { "id": "ent-arch", "name": "Ent. Architecture", "color": "#6f42c1" },
+  { "id": "srv-transition", "name": "Srv. Transition", "color": "#28a745" }
+]
