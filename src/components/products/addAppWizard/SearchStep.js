@@ -1,13 +1,33 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Form, ListGroup, Badge } from 'react-bootstrap';
-import useSearchableAPI from '../../../hooks/useSearchableAPI';
+import { appsApi } from '../../../services/api';
 import RemediationBox from '../../common/RemediationBox';
 import { useAddAppWizard } from './AddAppWizardContext';
 import { getTierBadgeColor } from './helpers';
 
 function SearchStep() {
   const { selectApp } = useAddAppWizard();
-  const { searchTerm, setSearchTerm, results, loading } = useSearchableAPI('/api/cmdb/search');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [results, setResults] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (searchTerm.length < 2) {
+      setResults([]);
+      return;
+    }
+
+    setLoading(true);
+    appsApi.searchCmdb(searchTerm)
+      .then(data => {
+        setResults(data);
+        setLoading(false);
+      })
+      .catch(() => {
+        setResults([]);
+        setLoading(false);
+      });
+  }, [searchTerm]);
 
   return (
     <>

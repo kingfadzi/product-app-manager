@@ -43,6 +43,23 @@ const transformers = {
     return data.results || data;
   },
 
+  // Transform backend search results to CMDB format for AddAppModal
+  cmdbSearchResults: (data) => {
+    if (USE_MOCK) return data;
+    // Backend returns { results: [...], query: "..." }
+    const results = data.results || data;
+    return results.map(app => ({
+      cmdbId: app.app_id,
+      id: app.app_id,
+      name: app.name,
+      tier: app.tier,
+      productOwner: app.owner,
+      resilienceCategory: app.resilience_category,
+      isOnboarded: false,
+      memberOfProducts: [],
+    }));
+  },
+
   // Transform backend stakeholders to contacts
   stakeholdersToContacts: (data) => {
     if (USE_MOCK) return data;
@@ -140,6 +157,7 @@ export const appsApi = {
   create: (app) => request(USE_MOCK ? '/apps' : '/v2/apps/', { method: 'POST', body: app }),
   update: (id, app) => request(USE_MOCK ? `/apps/${id}` : `/v2/apps/${id}/`, { method: 'PUT', body: app }),
   search: (query) => request(USE_MOCK ? `/apps/search?q=${encodeURIComponent(query)}` : `/search/applications/?q=${encodeURIComponent(query)}`).then(transformers.searchResults),
+  searchCmdb: (query) => request(USE_MOCK ? `/cmdb/search?q=${encodeURIComponent(query)}` : `/search/applications/?q=${encodeURIComponent(query)}`).then(transformers.cmdbSearchResults),
   getServiceInstances: (appId) => request(USE_MOCK ? `/apps/${appId}/service-instances` : `/release/${appId}/service-instances/`)
     .then(transformers.serviceInstances)
     .catch(() => []),
