@@ -135,17 +135,16 @@ erDiagram
 
 | Field | Values |
 |-------|--------|
-| `resCat` | `Critical` \| `High` \| `Medium` \| `Low` |
+| `resCat` | `Critical` \| `High` \| `Medium` \| `Low` \| `Not_Significant` |
 | `tier` | `Business Application` \| `Application Component` |
-| `operationalStatus` | `Production` \| `Development` \| `Deprecated` |
-| `Repo.role` | `backend` \| `frontend` \| `infra` \| `docs` |
+| `operationalStatus` | `Ceased` \| `Used in Production` |
 | `Backlog.purpose` | `product` \| `ops` \| `security` |
 | `Contact.role` | `product_owner` \| `tech_lead` \| `scrum_master` \| `support_lead` |
 | `GuildSme.role` | `security` \| `data` \| `operations` \| `enterprise_architecture` |
 | `Doc.type` | `Product Roadmap` \| `Architecture Vision` \| `runbook` \| `Service Vision` \| `Security Vision` \| `Test Strategy` |
-| `RiskStory.status` | `Open` \| `In Progress` \| `Resolved` |
-| `BusinessOutcome.status` | `On Track` \| `At Risk` \| `Completed` \| `In Progress` |
-| `ServiceInstance.environment` | `Prod` \| `DR` \| `UAT` \| `Dev` |
+| `RiskStory.status` | `Open` \| `In Progress` \| `Resolved` \| `Waived` |
+| `BusinessOutcome.status` | `On Track` \| `At Risk` \| `Completed` \| `In Progress` \| `Engaged` |
+| `ServiceInstance.environment` | `Prod` \| `DR` |
 | `ServiceInstance.status` | `Operational` \| `Standby` \| `Maintenance` |
 
 ## Notes
