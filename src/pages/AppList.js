@@ -1,7 +1,8 @@
-import React, { useState, useContext, useEffect } from 'react';
+import React, { useState, useContext, useEffect, useMemo } from 'react';
 import { Spinner, Alert, Breadcrumb, Button } from 'react-bootstrap';
 import { useHistory, useLocation } from 'react-router-dom';
 import { AppContext } from '../context/AppContext';
+import { useUser } from '../context/UserContext';
 import PageLayout from '../components/layout/PageLayout';
 import EmptyState from '../components/common/EmptyState';
 import TablePagination from '../components/common/TablePagination';
@@ -15,6 +16,19 @@ function AppList() {
   const history = useHistory();
   const location = useLocation();
   const { apps, loading, error } = useContext(AppContext);
+  const { currentUser, isMyApp } = useUser();
+
+  // Check if this is a global search (from header) or My Applications view
+  const params = new URLSearchParams(location.search);
+  const isGlobalSearch = params.has('search');
+
+  // Filter apps based on view mode
+  const baseApps = useMemo(() => {
+    if (isGlobalSearch) {
+      return apps; // Global search: all apps
+    }
+    return apps.filter(isMyApp); // My Applications: only user's apps
+  }, [apps, isGlobalSearch, isMyApp]);
 
   const [showAddWizard, setShowAddWizard] = useState(false);
 
@@ -45,7 +59,11 @@ function AppList() {
     filteredApps,
     hasActiveFilters,
     updateFilter,
-  } = useAppListFilters(apps, resetPage);
+  } = useAppListFilters(baseApps, resetPage);
+
+  // Page title based on view mode
+  const pageTitle = isGlobalSearch ? 'Search Results' : 'My Applications';
+  const myAppCount = apps.filter(isMyApp).length;
 
   // Update pagination when filtered apps change
   const paginationResult = usePagination(filteredApps, 10);
@@ -83,12 +101,21 @@ function AppList() {
     <PageLayout>
       <Breadcrumb>
         <Breadcrumb.Item onClick={() => history.push('/')}>Home</Breadcrumb.Item>
-        <Breadcrumb.Item active>My Applications</Breadcrumb.Item>
+        {isGlobalSearch && (
+          <Breadcrumb.Item onClick={() => history.push('/apps')}>My Applications</Breadcrumb.Item>
+        )}
+        <Breadcrumb.Item active>{pageTitle}</Breadcrumb.Item>
       </Breadcrumb>
 
       <div className="d-flex justify-content-between align-items-center mb-4">
-        <h1 className="mb-0">My Applications</h1>
-        <Button variant="dark" onClick={() => setShowAddWizard(true)}>+ Add Application</Button>
+        <h1 className="mb-0">
+          {pageTitle}
+          {!isGlobalSearch && <span className="text-muted ml-2" style={{ fontSize: '1rem', fontWeight: 'normal' }}>({myAppCount})</span>}
+          {isGlobalSearch && searchTerm && <span className="text-muted ml-2" style={{ fontSize: '1rem', fontWeight: 'normal' }}>for "{searchTerm}"</span>}
+        </h1>
+        {!isGlobalSearch && (
+          <Button variant="dark" onClick={() => setShowAddWizard(true)}>+ Add Application</Button>
+        )}
       </div>
 
       {error && <Alert variant="danger">{error}</Alert>}

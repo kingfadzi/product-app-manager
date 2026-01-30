@@ -1,16 +1,22 @@
-import React from 'react';
-import { Navbar, Nav, Container } from 'react-bootstrap';
-import { Link, useLocation } from 'react-router-dom';
+import React, { useState } from 'react';
+import { Navbar, Nav, Container, Form, FormControl, Dropdown } from 'react-bootstrap';
+import { Link, useLocation, useHistory } from 'react-router-dom';
 import { APP_NAME } from '../../constants/config';
-
-// Mock user - replace with actual auth context when available
-const currentUser = {
-  name: 'John Smith',
-  initials: 'JS'
-};
+import { useUser } from '../../context/UserContext';
 
 function Header() {
   const location = useLocation();
+  const history = useHistory();
+  const { currentUser, demoUsers, switchUser } = useUser();
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const handleSearchSubmit = (e) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      history.push(`/apps?search=${encodeURIComponent(searchQuery.trim())}`);
+      setSearchQuery('');
+    }
+  };
 
   return (
     <Navbar bg="dark" variant="dark" expand="lg" fixed="top" className="py-1">
@@ -50,15 +56,33 @@ function Header() {
               My Applications
             </Nav.Link>
           </Nav>
-          <Nav className="ml-auto d-flex align-items-center">
-            <span className="text-light d-flex align-items-center" style={{ fontSize: '13px' }}>
+
+          <Form inline onSubmit={handleSearchSubmit} className="mx-3" style={{ flex: 1, maxWidth: '400px' }}>
+            <FormControl
+              type="text"
+              placeholder="Search all apps..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              size="sm"
+              style={{ width: '100%', backgroundColor: '#495057', border: 'none', color: '#fff' }}
+              className="search-input"
+            />
+          </Form>
+
+          <Dropdown align="end">
+            <Dropdown.Toggle
+              variant="link"
+              id="user-dropdown"
+              className="d-flex align-items-center text-light text-decoration-none p-0"
+              style={{ fontSize: '13px' }}
+            >
               <span style={{
                 display: 'inline-flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 width: '26px',
                 height: '26px',
-                backgroundColor: '#6c757d',
+                backgroundColor: currentUser.isAdmin ? '#0d6efd' : '#6c757d',
                 borderRadius: '50%',
                 marginRight: '8px',
                 fontSize: '11px',
@@ -67,10 +91,31 @@ function Header() {
                 {currentUser.initials}
               </span>
               {currentUser.name}
-            </span>
-          </Nav>
+            </Dropdown.Toggle>
+            <Dropdown.Menu>
+              <Dropdown.Header>Switch User (Demo)</Dropdown.Header>
+              {demoUsers.map(user => (
+                <Dropdown.Item
+                  key={user.id}
+                  active={user.id === currentUser.id}
+                  onClick={() => switchUser(user.id)}
+                >
+                  {user.name}
+                  {user.isAdmin && <span className="text-muted ml-2">(All Apps)</span>}
+                </Dropdown.Item>
+              ))}
+            </Dropdown.Menu>
+          </Dropdown>
         </Navbar.Collapse>
       </Container>
+      <style>{`
+        .search-input::placeholder {
+          color: #adb5bd;
+        }
+        #user-dropdown::after {
+          margin-left: 0.5rem;
+        }
+      `}</style>
     </Navbar>
   );
 }
