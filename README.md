@@ -50,25 +50,13 @@ The app will start at [http://localhost:3000](http://localhost:3000).
 
 MSW (Mock Service Worker) will automatically intercept API requests and return mock data - no backend server required.
 
-#### Production Build
-
-```bash
-# Create optimized production build
-npm run build
-
-# Serve the build locally (optional)
-npx serve -s build
-```
-
 ### Available Scripts
 
 | Command | Description |
 |---------|-------------|
 | `npm start` | Start development server on port 3000 |
 | `npm run start:mock` | Start development server with MSW mocking enabled |
-| `npm run build` | Create production build in `/build` folder |
 | `npm test` | Run test suite |
-| `npm run eject` | Eject from Create React App (irreversible) |
 
 ### Generating API Documentation
 
@@ -110,29 +98,3 @@ src/
 - **RiskStory**: Security/compliance risk items
 - **BusinessOutcome**: Business objectives and their status
 - **GuildAssignment**: Control SME assignments per guild
-
-## Troubleshooting
-
-### Common Issues
-
-**Port 3000 already in use:**
-```bash
-# Find and kill the process using port 3000
-lsof -i :3000
-kill -9 <PID>
-
-# Or start on a different port
-PORT=3001 npm start
-```
-
-**Dependency issues:**
-```bash
-# Clear npm cache and reinstall
-rm -rf node_modules package-lock.json
-npm cache clean --force
-npm install --legacy-peer-deps
-```
-
-**MSW not intercepting requests:**
-- Check browser console for MSW activation message
-- Ensure `src/mocks/browser.js` is imported in `src/index.js`
