@@ -31,7 +31,7 @@ function useAppProfileData(appId) {
         riskStoriesApi.getByApp(appId).catch(() => []),
         outcomesApi.getByApp(appId).catch(() => []),
         guildSmesApi.getByApp(appId).catch(() => []),
-        deploymentsApi.getEnvironments(appId).catch(() => ({})),
+        deploymentsApi.getEnvironments().catch(() => []),
       ]);
       setRepos(reposData || []);
       setBacklogs(backlogsData || []);

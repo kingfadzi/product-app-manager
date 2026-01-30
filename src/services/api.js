@@ -235,9 +235,9 @@ export const guildsApi = {
 // Deployments API
 export const deploymentsApi = {
   getFixVersions: (projectKey) => request(USE_MOCK ? `/backlogs/${projectKey}/fix-versions` : `/jira/project-versions/${projectKey}/`).then(transformers.versionsToFixVersions),
-  getEnvironments: (appId) => request(USE_MOCK ? `/apps/${appId}/environments` : `/release/${appId}/service-instances/`)
-    .then(data => USE_MOCK ? data : (data.by_environment || {}))
-    .catch(() => ({})),
+  getEnvironments: () => request(USE_MOCK ? `/deployment-environments` : `/deployment-environments/`)
+    .then(data => Array.isArray(data) ? data : [])
+    .catch(() => []),
   create: (releaseId, data) => request(USE_MOCK ? `/releases/${releaseId}/deploy` : `/release/${releaseId}/deploy/`, { method: 'POST', body: data }),
   getGateStatus: (releaseId) => request(USE_MOCK ? `/releases/${releaseId}/gate-status` : `/release/${releaseId}/gate-status/`),
   createRelease: (appId, data) => request(USE_MOCK ? `/apps/${appId}/releases` : `/application/${appId}/release/create/`, { method: 'POST', body: data }),

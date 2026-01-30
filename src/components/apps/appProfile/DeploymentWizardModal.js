@@ -198,7 +198,7 @@ function Step3Details({ data, setData, businessOutcomes }) {
   );
 }
 
-function Step4Environments({ data, environments, toggleEnvironment }) {
+function Step4Environments({ data, environments = [], toggleEnvironment }) {
   return (
     <div>
       <h6 style={{ fontSize: '0.9375rem', fontWeight: 600, marginBottom: '1rem' }}>Target Environments</h6>
@@ -207,7 +207,7 @@ function Step4Environments({ data, environments, toggleEnvironment }) {
       </p>
       <Form.Label style={{ fontSize: '0.8125rem', fontWeight: 500 }}>Target Service Instances <span className="text-danger">*</span></Form.Label>
       <div className="mb-3">
-        {environments.map(env => (
+        {(environments || []).map(env => (
           <Form.Check key={env.id} type="checkbox" id={`env-${env.id}`}
             label={<span style={{ fontSize: '0.875rem' }}>{env.name} <small className="text-muted">({env.siId})</small></span>}
             checked={data.environments.includes(env.id)}
@@ -221,7 +221,7 @@ function Step4Environments({ data, environments, toggleEnvironment }) {
   );
 }
 
-function Step5Attestation({ data, environments, toggleAttestation }) {
+function Step5Attestation({ data, environments = [], toggleAttestation }) {
   const attestations = [
     { key: 'codeReviewed', label: 'All code changes have been peer reviewed and approved' },
     { key: 'testsPass', label: 'All automated tests pass successfully' },
@@ -257,8 +257,8 @@ function Step5Attestation({ data, environments, toggleAttestation }) {
   );
 }
 
-function ReleaseSummary({ data, environments }) {
-  const selectedEnvNames = environments.filter(e => data.environments.includes(e.id)).map(e => e.name).join(', ') || 'None selected';
+function ReleaseSummary({ data, environments = [] }) {
+  const selectedEnvNames = (environments || []).filter(e => data.environments.includes(e.id)).map(e => e.name).join(', ') || 'None selected';
   return (
     <Alert variant="light" style={{ fontSize: '0.8125rem', border: '1px solid #dee2e6', marginTop: '1.5rem' }}>
       <strong style={{ fontSize: '0.875rem' }}>Summary</strong>
