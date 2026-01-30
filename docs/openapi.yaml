@@ -1,0 +1,1947 @@
+openapi: 3.0.3
+info:
+  title: Product App Manager API
+  description: |
+    API for managing products, applications, and their associated resources.
+    This specification documents all endpoints used by the Product App Manager frontend.
+  version: 1.0.0
+  contact:
+    name: API Support
+
+servers:
+  - url: /api
+    description: Local development server
+
+tags:
+  - name: Products
+    description: Product management operations
+  - name: Product Apps
+    description: Product-App association operations
+  - name: Apps
+    description: Application management operations
+  - name: CMDB
+    description: Configuration Management Database operations
+  - name: Repos
+    description: Repository management operations
+  - name: Backlogs
+    description: Backlog/Jira project management operations
+  - name: Contacts
+    description: Contact management operations
+  - name: Docs
+    description: Documentation link management operations
+  - name: Portfolios
+    description: Portfolio lookup operations
+  - name: Transaction Cycles
+    description: Transaction cycle lookup operations
+  - name: Guilds
+    description: Guild and SME management operations
+  - name: Risk Stories
+    description: Risk story management operations
+  - name: Business Outcomes
+    description: Business outcome operations
+  - name: Service Instances
+    description: Service instance operations
+  - name: Deployments
+    description: Deployment operations
+
+paths:
+  # Products
+  /products:
+    get:
+      tags:
+        - Products
+      summary: List all products
+      operationId: getProducts
+      responses:
+        '200':
+          description: List of products
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Product'
+    post:
+      tags:
+        - Products
+      summary: Create a new product
+      operationId: createProduct
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductInput'
+      responses:
+        '201':
+          description: Product created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+
+  /products/search:
+    get:
+      tags:
+        - Products
+      summary: Search products by name or description
+      operationId: searchProducts
+      parameters:
+        - name: q
+          in: query
+          description: Search query string
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of matching products
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Product'
+
+  /products/apps/all:
+    get:
+      tags:
+        - Product Apps
+      summary: Get all product-app associations
+      operationId: getAllProductApps
+      responses:
+        '200':
+          description: List of all product-app associations
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ProductApp'
+
+  /products/{id}:
+    get:
+      tags:
+        - Products
+      summary: Get product by ID
+      operationId: getProductById
+      parameters:
+        - $ref: '#/components/parameters/ProductId'
+      responses:
+        '200':
+          description: Product details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    put:
+      tags:
+        - Products
+      summary: Update a product
+      operationId: updateProduct
+      parameters:
+        - $ref: '#/components/parameters/ProductId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductInput'
+      responses:
+        '200':
+          description: Product updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      tags:
+        - Products
+      summary: Delete a product
+      operationId: deleteProduct
+      parameters:
+        - $ref: '#/components/parameters/ProductId'
+      responses:
+        '204':
+          description: Product deleted successfully
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /products/{id}/apps:
+    get:
+      tags:
+        - Product Apps
+      summary: Get apps associated with a product
+      operationId: getProductApps
+      parameters:
+        - $ref: '#/components/parameters/ProductId'
+      responses:
+        '200':
+          description: List of apps associated with the product
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/App'
+
+  /products/{productId}/apps/{appId}:
+    post:
+      tags:
+        - Product Apps
+      summary: Add an app to a product
+      operationId: addAppToProduct
+      parameters:
+        - name: productId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: appId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '201':
+          description: App added to product successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductApp'
+        '409':
+          $ref: '#/components/responses/Conflict'
+    delete:
+      tags:
+        - Product Apps
+      summary: Remove an app from a product
+      operationId: removeAppFromProduct
+      parameters:
+        - name: productId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: appId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: App removed from product successfully
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  # Apps
+  /apps:
+    get:
+      tags:
+        - Apps
+      summary: List all apps
+      operationId: getApps
+      responses:
+        '200':
+          description: List of apps
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/App'
+    post:
+      tags:
+        - Apps
+      summary: Create a new app
+      operationId: createApp
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AppInput'
+      responses:
+        '201':
+          description: App created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/App'
+
+  /apps/{id}:
+    get:
+      tags:
+        - Apps
+      summary: Get app by ID
+      operationId: getAppById
+      parameters:
+        - $ref: '#/components/parameters/AppId'
+      responses:
+        '200':
+          description: App details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/App'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    put:
+      tags:
+        - Apps
+      summary: Update an app
+      operationId: updateApp
+      parameters:
+        - $ref: '#/components/parameters/AppId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AppInput'
+      responses:
+        '200':
+          description: App updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/App'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  # CMDB
+  /cmdb/search:
+    get:
+      tags:
+        - CMDB
+      summary: Search CMDB apps
+      operationId: searchCmdbApps
+      parameters:
+        - name: q
+          in: query
+          description: Search query string (searches name and cmdbId)
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of matching CMDB apps with onboarding status
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CmdbApp'
+
+  # App Repos
+  /apps/{appId}/repos:
+    get:
+      tags:
+        - Repos
+      summary: Get repos for an app
+      operationId: getAppRepos
+      parameters:
+        - $ref: '#/components/parameters/AppIdPath'
+      responses:
+        '200':
+          description: List of repos for the app
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Repo'
+    post:
+      tags:
+        - Repos
+      summary: Add a repo to an app
+      operationId: addRepoToApp
+      parameters:
+        - $ref: '#/components/parameters/AppIdPath'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RepoInput'
+      responses:
+        '201':
+          description: Repo added successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Repo'
+
+  /repos/{id}:
+    put:
+      tags:
+        - Repos
+      summary: Update a repo
+      operationId: updateRepo
+      parameters:
+        - $ref: '#/components/parameters/RepoId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RepoInput'
+      responses:
+        '200':
+          description: Repo updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Repo'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      tags:
+        - Repos
+      summary: Delete a repo
+      operationId: deleteRepo
+      parameters:
+        - $ref: '#/components/parameters/RepoId'
+      responses:
+        '204':
+          description: Repo deleted successfully
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /apps/{appId}/available-repos:
+    get:
+      tags:
+        - Repos
+      summary: Get available repos from DSI for an app
+      operationId: getAvailableRepos
+      parameters:
+        - $ref: '#/components/parameters/AppIdPath'
+      responses:
+        '200':
+          description: List of available repos from DSI
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AvailableRepo'
+
+  /repos/search:
+    get:
+      tags:
+        - Repos
+      summary: Global repo search
+      operationId: searchRepos
+      parameters:
+        - name: q
+          in: query
+          description: Search query (searches name and repoId)
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of matching repos
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/GlobalRepo'
+
+  # App Backlogs
+  /apps/{appId}/backlogs:
+    get:
+      tags:
+        - Backlogs
+      summary: Get backlogs for an app
+      operationId: getAppBacklogs
+      parameters:
+        - $ref: '#/components/parameters/AppIdPath'
+      responses:
+        '200':
+          description: List of backlogs for the app
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Backlog'
+    post:
+      tags:
+        - Backlogs
+      summary: Add a backlog to an app
+      operationId: addBacklogToApp
+      parameters:
+        - $ref: '#/components/parameters/AppIdPath'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BacklogInput'
+      responses:
+        '201':
+          description: Backlog added successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Backlog'
+
+  /backlogs/{id}:
+    put:
+      tags:
+        - Backlogs
+      summary: Update a backlog
+      operationId: updateBacklog
+      parameters:
+        - $ref: '#/components/parameters/BacklogId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BacklogInput'
+      responses:
+        '200':
+          description: Backlog updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Backlog'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      tags:
+        - Backlogs
+      summary: Delete a backlog
+      operationId: deleteBacklog
+      parameters:
+        - $ref: '#/components/parameters/BacklogId'
+      responses:
+        '204':
+          description: Backlog deleted successfully
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /apps/{appId}/available-jira:
+    get:
+      tags:
+        - Backlogs
+      summary: Get available Jira projects for an app
+      operationId: getAvailableJira
+      parameters:
+        - $ref: '#/components/parameters/AppIdPath'
+      responses:
+        '200':
+          description: List of available Jira projects
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AvailableJira'
+
+  /jira/search:
+    get:
+      tags:
+        - Backlogs
+      summary: Global Jira project search
+      operationId: searchJira
+      parameters:
+        - name: q
+          in: query
+          description: Search query (searches projectKey and projectName)
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of matching Jira projects
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/GlobalJira'
+
+  /backlogs/{projectKey}/fix-versions:
+    get:
+      tags:
+        - Backlogs
+      summary: Get fix versions for a backlog
+      operationId: getFixVersions
+      parameters:
+        - name: projectKey
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of fix versions
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/FixVersion'
+
+  # App Contacts
+  /apps/{appId}/contacts:
+    get:
+      tags:
+        - Contacts
+      summary: Get contacts for an app
+      operationId: getAppContacts
+      parameters:
+        - $ref: '#/components/parameters/AppIdPath'
+      responses:
+        '200':
+          description: List of contacts for the app
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Contact'
+    post:
+      tags:
+        - Contacts
+      summary: Add a contact to an app
+      operationId: addContactToApp
+      parameters:
+        - $ref: '#/components/parameters/AppIdPath'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContactInput'
+      responses:
+        '201':
+          description: Contact added successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Contact'
+
+  /contacts/{id}:
+    put:
+      tags:
+        - Contacts
+      summary: Update a contact
+      operationId: updateContact
+      parameters:
+        - $ref: '#/components/parameters/ContactId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContactInput'
+      responses:
+        '200':
+          description: Contact updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Contact'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      tags:
+        - Contacts
+      summary: Delete a contact
+      operationId: deleteContact
+      parameters:
+        - $ref: '#/components/parameters/ContactId'
+      responses:
+        '204':
+          description: Contact deleted successfully
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  # App Docs
+  /apps/{appId}/docs:
+    get:
+      tags:
+        - Docs
+      summary: Get docs for an app
+      operationId: getAppDocs
+      parameters:
+        - $ref: '#/components/parameters/AppIdPath'
+      responses:
+        '200':
+          description: List of docs for the app
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Doc'
+    post:
+      tags:
+        - Docs
+      summary: Add a doc to an app
+      operationId: addDocToApp
+      parameters:
+        - $ref: '#/components/parameters/AppIdPath'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DocInput'
+      responses:
+        '201':
+          description: Doc added successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Doc'
+
+  /docs/{id}:
+    put:
+      tags:
+        - Docs
+      summary: Update a doc
+      operationId: updateDoc
+      parameters:
+        - $ref: '#/components/parameters/DocId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DocInput'
+      responses:
+        '200':
+          description: Doc updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Doc'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      tags:
+        - Docs
+      summary: Delete a doc
+      operationId: deleteDoc
+      parameters:
+        - $ref: '#/components/parameters/DocId'
+      responses:
+        '204':
+          description: Doc deleted successfully
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  # Portfolios
+  /portfolios:
+    get:
+      tags:
+        - Portfolios
+      summary: List all portfolios
+      operationId: getPortfolios
+      responses:
+        '200':
+          description: List of portfolios
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Portfolio'
+
+  /portfolios/search:
+    get:
+      tags:
+        - Portfolios
+      summary: Search portfolios
+      operationId: searchPortfolios
+      parameters:
+        - name: q
+          in: query
+          description: Search query (searches name and id)
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of matching portfolios
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Portfolio'
+
+  # Transaction Cycles
+  /transaction-cycles:
+    get:
+      tags:
+        - Transaction Cycles
+      summary: List all transaction cycles
+      operationId: getTransactionCycles
+      responses:
+        '200':
+          description: List of transaction cycles
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TransactionCycle'
+
+  # Guilds
+  /guilds:
+    get:
+      tags:
+        - Guilds
+      summary: List all guilds
+      operationId: getGuilds
+      responses:
+        '200':
+          description: List of guilds
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Guild'
+
+  /apps/{appId}/guild-assignments:
+    get:
+      tags:
+        - Guilds
+      summary: Get guild assignments for an app
+      operationId: getGuildAssignments
+      parameters:
+        - $ref: '#/components/parameters/AppIdPath'
+      responses:
+        '200':
+          description: List of guild assignments
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/GuildAssignment'
+
+  /apps/{appId}/guild-smes:
+    get:
+      tags:
+        - Guilds
+      summary: Get guild SMEs for an app
+      operationId: getGuildSmes
+      parameters:
+        - $ref: '#/components/parameters/AppIdPath'
+      responses:
+        '200':
+          description: List of guild SMEs
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/GuildSme'
+    post:
+      tags:
+        - Guilds
+      summary: Add a guild SME to an app
+      operationId: addGuildSme
+      parameters:
+        - $ref: '#/components/parameters/AppIdPath'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GuildSmeInput'
+      responses:
+        '201':
+          description: Guild SME added successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  stakeholder_id:
+                    type: integer
+
+  /guild-smes/{id}:
+    delete:
+      tags:
+        - Guilds
+      summary: Delete a guild SME
+      operationId: deleteGuildSme
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Guild SME deleted successfully
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  # Service Instances
+  /apps/{appId}/service-instances:
+    get:
+      tags:
+        - Service Instances
+      summary: Get service instances for an app
+      operationId: getServiceInstances
+      parameters:
+        - $ref: '#/components/parameters/AppIdPath'
+      responses:
+        '200':
+          description: List of service instances
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ServiceInstance'
+
+  # Risk Stories
+  /apps/{appId}/risk-stories:
+    get:
+      tags:
+        - Risk Stories
+      summary: Get risk stories for an app
+      operationId: getRiskStories
+      parameters:
+        - $ref: '#/components/parameters/AppIdPath'
+      responses:
+        '200':
+          description: List of risk stories
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RiskStory'
+    post:
+      tags:
+        - Risk Stories
+      summary: Create a risk story for an app
+      operationId: createRiskStory
+      parameters:
+        - $ref: '#/components/parameters/AppIdPath'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RiskStoryInput'
+      responses:
+        '201':
+          description: Risk story created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RiskStory'
+
+  /risk-stories/{id}:
+    put:
+      tags:
+        - Risk Stories
+      summary: Update a risk story
+      operationId: updateRiskStory
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RiskStoryInput'
+      responses:
+        '200':
+          description: Risk story updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RiskStory'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  # Business Outcomes
+  /apps/{appId}/outcomes:
+    get:
+      tags:
+        - Business Outcomes
+      summary: Get business outcomes for an app
+      operationId: getBusinessOutcomes
+      parameters:
+        - $ref: '#/components/parameters/AppIdPath'
+      responses:
+        '200':
+          description: List of business outcomes
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/BusinessOutcome'
+
+  /outcomes/{outcomeId}/engagement:
+    get:
+      tags:
+        - Business Outcomes
+      summary: Get engagement details for an outcome
+      operationId: getOutcomeEngagement
+      parameters:
+        - name: outcomeId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Outcome engagement details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OutcomeEngagement'
+    put:
+      tags:
+        - Business Outcomes
+      summary: Update engagement for an outcome
+      operationId: updateOutcomeEngagement
+      parameters:
+        - name: outcomeId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OutcomeEngagement'
+      responses:
+        '200':
+          description: Outcome engagement updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OutcomeEngagement'
+
+  # Deployment Environments
+  /deployment-environments:
+    get:
+      tags:
+        - Deployments
+      summary: List deployment environments
+      operationId: getDeploymentEnvironments
+      responses:
+        '200':
+          description: List of deployment environments
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DeploymentEnvironment'
+
+  /deployments:
+    post:
+      tags:
+        - Deployments
+      summary: Create a deployment
+      operationId: createDeployment
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeploymentInput'
+      responses:
+        '201':
+          description: Deployment created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Deployment'
+
+components:
+  parameters:
+    ProductId:
+      name: id
+      in: path
+      required: true
+      description: Product ID
+      schema:
+        type: string
+
+    AppId:
+      name: id
+      in: path
+      required: true
+      description: App ID
+      schema:
+        type: string
+
+    AppIdPath:
+      name: appId
+      in: path
+      required: true
+      description: App ID
+      schema:
+        type: string
+
+    RepoId:
+      name: id
+      in: path
+      required: true
+      description: Repo ID
+      schema:
+        type: string
+
+    BacklogId:
+      name: id
+      in: path
+      required: true
+      description: Backlog ID
+      schema:
+        type: string
+
+    ContactId:
+      name: id
+      in: path
+      required: true
+      description: Contact ID
+      schema:
+        type: string
+
+    DocId:
+      name: id
+      in: path
+      required: true
+      description: Doc ID
+      schema:
+        type: string
+
+  responses:
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    Conflict:
+      description: Resource already exists
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+  schemas:
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+      required:
+        - error
+
+    # Products
+    Product:
+      type: object
+      properties:
+        id:
+          type: string
+          example: prod-1
+        name:
+          type: string
+          example: Payments Platform
+        stack:
+          type: string
+          example: Payments
+        description:
+          type: string
+          example: All payment services and processing applications
+        tc:
+          type: string
+          description: Transaction cycle ID
+          example: tc-7
+        createdAt:
+          type: string
+          format: date
+          example: '2024-01-01'
+      required:
+        - id
+        - name
+
+    ProductInput:
+      type: object
+      properties:
+        name:
+          type: string
+        stack:
+          type: string
+        description:
+          type: string
+        tc:
+          type: string
+      required:
+        - name
+
+    ProductApp:
+      type: object
+      properties:
+        productId:
+          type: string
+          example: prod-1
+        appId:
+          type: string
+          example: app-1
+        addedAt:
+          type: string
+          format: date
+          example: '2024-01-15'
+      required:
+        - productId
+        - appId
+        - addedAt
+
+    # Apps
+    App:
+      type: object
+      properties:
+        id:
+          type: string
+          example: app-1
+        name:
+          type: string
+          example: Payment Gateway
+        cmdbId:
+          type: string
+          example: APP-1234
+        description:
+          type: string
+          example: Core payment processing service
+        parent:
+          type: string
+          nullable: true
+          example: APP-1000
+        resCat:
+          type: string
+          enum: [Critical, High, Medium, Low]
+          example: Critical
+        tier:
+          type: string
+          enum: [Business Application, Application Component]
+          example: Business Application
+        stack:
+          type: string
+          example: Payments
+        productId:
+          type: string
+          example: prod-1
+        productName:
+          type: string
+          example: Payments Platform
+        tc:
+          type: string
+          example: tc-7
+        tcName:
+          type: string
+          example: Payments
+        productOwner:
+          type: string
+          example: Jane Williams
+        systemArchitect:
+          type: string
+          example: Robert Chen
+        operationalStatus:
+          type: string
+          enum: [Production, Maintenance, Development]
+          example: Production
+        repoCount:
+          type: integer
+          example: 3
+        backlogCount:
+          type: integer
+          example: 2
+        openRisks:
+          type: integer
+          example: 1
+      required:
+        - id
+        - name
+        - cmdbId
+
+    AppInput:
+      type: object
+      properties:
+        name:
+          type: string
+        cmdbId:
+          type: string
+        description:
+          type: string
+        parent:
+          type: string
+          nullable: true
+        resCat:
+          type: string
+        tier:
+          type: string
+        stack:
+          type: string
+        productId:
+          type: string
+        productName:
+          type: string
+        tc:
+          type: string
+        tcName:
+          type: string
+        productOwner:
+          type: string
+        systemArchitect:
+          type: string
+        operationalStatus:
+          type: string
+      required:
+        - name
+        - cmdbId
+
+    # CMDB
+    CmdbApp:
+      type: object
+      properties:
+        cmdbId:
+          type: string
+          example: APP-1234
+        name:
+          type: string
+          example: Payment Gateway
+        tier:
+          type: string
+          example: Gold
+        resCat:
+          type: string
+          example: Critical
+        productOwner:
+          type: string
+          example: Jane Williams
+        systemArchitect:
+          type: string
+          example: Robert Chen
+        operationalStatus:
+          type: string
+          example: Production
+        isOnboarded:
+          type: boolean
+          example: true
+        onboardedAppId:
+          type: string
+          nullable: true
+          example: app-1
+        memberOfProducts:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+              name:
+                type: string
+      required:
+        - cmdbId
+        - name
+
+    # Repos
+    Repo:
+      type: object
+      properties:
+        id:
+          type: string
+          example: repo-1
+        appId:
+          type: string
+          example: app-1
+        repoPath:
+          type: string
+          example: org/payment-gateway-api
+        repoName:
+          type: string
+          example: payment-gateway-api
+        role:
+          type: string
+          enum: [backend, frontend, infra, docs]
+          example: backend
+        isPrimary:
+          type: boolean
+          example: true
+      required:
+        - id
+        - appId
+        - repoPath
+        - repoName
+
+    RepoInput:
+      type: object
+      properties:
+        repoPath:
+          type: string
+        repoName:
+          type: string
+        role:
+          type: string
+        isPrimary:
+          type: boolean
+      required:
+        - repoPath
+        - repoName
+
+    AvailableRepo:
+      type: object
+      properties:
+        repoId:
+          type: string
+          example: repo-avail-1
+        name:
+          type: string
+          example: payment-gateway-api
+        type:
+          type: string
+          enum: [GitLab, BitBucket]
+          example: GitLab
+        url:
+          type: string
+          format: uri
+          example: https://gitlab.example.com/payments/payment-gateway-api
+      required:
+        - repoId
+        - name
+        - type
+        - url
+
+    GlobalRepo:
+      type: object
+      properties:
+        repoId:
+          type: string
+          example: repo-global-1
+        name:
+          type: string
+          example: shared-auth-library
+        type:
+          type: string
+          enum: [GitLab, BitBucket]
+          example: GitLab
+        url:
+          type: string
+          format: uri
+          example: https://gitlab.example.com/shared/auth-library
+      required:
+        - repoId
+        - name
+        - type
+        - url
+
+    # Backlogs
+    Backlog:
+      type: object
+      properties:
+        id:
+          type: string
+          example: backlog-1
+        appId:
+          type: string
+          example: app-1
+        projectKey:
+          type: string
+          example: PAY
+        projectName:
+          type: string
+          example: Payment Gateway
+        purpose:
+          type: string
+          enum: [product, ops]
+          example: product
+        isPrimary:
+          type: boolean
+          example: true
+      required:
+        - id
+        - appId
+        - projectKey
+        - projectName
+
+    BacklogInput:
+      type: object
+      properties:
+        projectKey:
+          type: string
+        projectName:
+          type: string
+        purpose:
+          type: string
+        isPrimary:
+          type: boolean
+      required:
+        - projectKey
+        - projectName
+
+    AvailableJira:
+      type: object
+      properties:
+        projectKey:
+          type: string
+          example: PAY
+        projectName:
+          type: string
+          example: Payment Gateway
+        url:
+          type: string
+          format: uri
+          example: https://jira.example.com/browse/PAY
+      required:
+        - projectKey
+        - projectName
+        - url
+
+    GlobalJira:
+      type: object
+      properties:
+        projectKey:
+          type: string
+          example: PLAT
+        projectName:
+          type: string
+          example: Platform Services
+        url:
+          type: string
+          format: uri
+          example: https://jira.example.com/browse/PLAT
+      required:
+        - projectKey
+        - projectName
+        - url
+
+    FixVersion:
+      type: object
+      properties:
+        id:
+          type: string
+          example: v1
+        name:
+          type: string
+          example: '2026.1.0'
+        releaseDate:
+          type: string
+          format: date
+          example: '2026-02-15'
+        status:
+          type: string
+          enum: [Unreleased, Released]
+          example: Unreleased
+        issueCount:
+          type: integer
+          example: 12
+      required:
+        - id
+        - name
+
+    # Contacts
+    Contact:
+      type: object
+      properties:
+        id:
+          type: string
+          example: contact-1
+        appId:
+          type: string
+          example: app-1
+        name:
+          type: string
+          example: John Smith
+        email:
+          type: string
+          format: email
+          example: john.smith@example.com
+        role:
+          type: string
+          enum: [product_owner, tech_lead, business_owner]
+          example: product_owner
+      required:
+        - id
+        - appId
+        - name
+        - email
+        - role
+
+    ContactInput:
+      type: object
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+          format: email
+        role:
+          type: string
+      required:
+        - name
+        - email
+        - role
+
+    # Docs
+    Doc:
+      type: object
+      properties:
+        id:
+          type: string
+          example: doc-1
+        appId:
+          type: string
+          example: app-1
+        title:
+          type: string
+          example: Payment Gateway Roadmap
+        url:
+          type: string
+          format: uri
+          example: https://confluence.example.com/payment-roadmap
+        type:
+          type: string
+          example: Product Roadmap
+      required:
+        - id
+        - appId
+        - title
+        - url
+        - type
+
+    DocInput:
+      type: object
+      properties:
+        title:
+          type: string
+        url:
+          type: string
+          format: uri
+        type:
+          type: string
+      required:
+        - title
+        - url
+        - type
+
+    # Portfolios
+    Portfolio:
+      type: object
+      properties:
+        id:
+          type: string
+          example: SVC-00001
+        name:
+          type: string
+          example: Digital Banking Services
+        owner:
+          type: string
+          example: John Smith
+        description:
+          type: string
+          example: Core digital banking platform services
+      required:
+        - id
+        - name
+
+    # Transaction Cycles
+    TransactionCycle:
+      type: object
+      properties:
+        id:
+          type: string
+          example: tc-1
+        name:
+          type: string
+          example: Retail Banking
+      required:
+        - id
+        - name
+
+    # Guilds
+    Guild:
+      type: object
+      properties:
+        id:
+          type: string
+          example: data
+        name:
+          type: string
+          example: Data
+        color:
+          type: string
+          example: '#ffc107'
+      required:
+        - id
+        - name
+        - color
+
+    GuildAssignment:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: Sarah Chen
+        email:
+          type: string
+          format: email
+          example: s.chen@example.com
+        guild:
+          type: string
+          example: Security
+        health:
+          type: string
+          enum: [Green, Amber, Red]
+          example: Green
+        blocked:
+          type: boolean
+          example: false
+      required:
+        - id
+        - name
+        - email
+        - guild
+
+    GuildSme:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: Sarah Chen
+        email:
+          type: string
+          format: email
+          example: s.chen@example.com
+        role:
+          type: string
+          example: security
+      required:
+        - id
+        - name
+        - email
+        - role
+
+    GuildSmeInput:
+      type: object
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+          format: email
+        guild:
+          type: string
+      required:
+        - name
+        - email
+        - guild
+
+    # Service Instances
+    ServiceInstance:
+      type: object
+      properties:
+        siId:
+          type: string
+          example: SI-001
+        name:
+          type: string
+          example: payment-gateway-prod-1
+        environment:
+          type: string
+          enum: [Prod, DR, UAT, Dev]
+          example: Prod
+        status:
+          type: string
+          enum: [Operational, Standby, Maintenance]
+          example: Operational
+      required:
+        - siId
+        - name
+        - environment
+        - status
+
+    # Risk Stories
+    RiskStory:
+      type: object
+      properties:
+        id:
+          type: string
+          example: RISK-101
+        summary:
+          type: string
+          example: Data encryption not enforced
+        status:
+          type: string
+          enum: [Open, In Progress, Resolved]
+          example: Open
+        updated:
+          type: string
+          format: date-time
+          example: '2026-01-28T10:30:00'
+      required:
+        - id
+        - summary
+        - status
+        - updated
+
+    RiskStoryInput:
+      type: object
+      properties:
+        summary:
+          type: string
+        status:
+          type: string
+      required:
+        - summary
+
+    # Business Outcomes
+    BusinessOutcome:
+      type: object
+      properties:
+        id:
+          type: string
+          example: BO-42
+        summary:
+          type: string
+          example: Reduce payment processing time by 20%
+        status:
+          type: string
+          enum: [On Track, At Risk, Completed, In Progress]
+          example: On Track
+        updated:
+          type: string
+          format: date-time
+          example: '2026-01-28T09:00:00'
+        fixRelease:
+          type: string
+          example: 2026-Q2
+        description:
+          type: string
+          example: Optimize payment gateway integration to reduce processing latency
+        portfolioEpv:
+          type: string
+          example: EPV-2026-042
+        navigatorId:
+          type: string
+          example: NAV-1234
+      required:
+        - id
+        - summary
+        - status
+        - updated
+
+    OutcomeEngagement:
+      type: object
+      properties:
+        productDeltaDoc:
+          type: string
+          format: uri
+          example: https://confluence.example.com/product-delta-42
+        architectureDeltaDoc:
+          type: string
+          format: uri
+          example: https://confluence.example.com/arch-delta-42
+        serviceVisionDeltaDoc:
+          type: string
+          format: uri
+          example: ''
+        questionnaire:
+          type: object
+          properties:
+            impactsData:
+              type: string
+              enum: ['yes', 'no', '']
+            impactsSecurity:
+              type: string
+              enum: ['yes', 'no', '']
+            impactsAccessibility:
+              type: string
+              enum: ['yes', 'no', '']
+            requiresArchReview:
+              type: string
+              enum: ['yes', 'no', '']
+            deploymentStrategy:
+              type: string
+              enum: [standard, feature-flag, '']
+        selectedGuilds:
+          type: array
+          items:
+            type: integer
+          example: [2, 3]
+
+    # Deployment Environments
+    DeploymentEnvironment:
+      type: object
+      properties:
+        id:
+          type: string
+          example: prod
+        name:
+          type: string
+          example: Production
+        siId:
+          type: string
+          example: SI-001
+      required:
+        - id
+        - name
+
+    # Deployments
+    Deployment:
+      type: object
+      properties:
+        id:
+          type: string
+          example: deploy-1706619600000
+        createdAt:
+          type: string
+          format: date-time
+          example: '2026-01-30T12:00:00Z'
+      required:
+        - id
+        - createdAt
+
+    DeploymentInput:
+      type: object
+      properties:
+        appId:
+          type: string
+        environmentId:
+          type: string
+        version:
+          type: string
+        notes:
+          type: string
+      required:
+        - appId
+        - environmentId
