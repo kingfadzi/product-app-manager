@@ -106,7 +106,10 @@ function ProductResultItem({ product, appProducts, onSelect }) {
           {isInThisProduct && (
             <Badge bg="secondary" className="ms-2">App already in this product</Badge>
           )}
-          <div className="text-muted small">{product.description}</div>
+          <div className="text-muted small">{product.id}</div>
+          {product.transactionCycle && (
+            <div className="text-muted small">{product.transactionCycle} ({product.transactionCycleId})</div>
+          )}
           {!isInThisProduct && otherProducts.length > 0 && (
             <div className="small mt-1">
               <Badge bg="warning" text="dark">Note</Badge>
@@ -114,6 +117,11 @@ function ProductResultItem({ product, appProducts, onSelect }) {
                 This app is already in: {otherProducts.map(p => p.name).join(', ')}
               </span>
             </div>
+          )}
+        </div>
+        <div className="text-end">
+          {product.stackId && (
+            <Badge bg="info">{product.stackId}</Badge>
           )}
         </div>
       </div>
