@@ -13,6 +13,7 @@ import {
   SourceCodeCard,
   RiskOutcomesModal,
   BusinessOutcomeModal,
+  RiskStoryModal,
   DeploymentWizardModal,
   useAppProfileData
 } from '../components/apps/appProfile';
@@ -48,7 +49,16 @@ function AppProfile() {
   // Modal states
   const [showModal, setShowModal] = useState(null);
   const [selectedOutcome, setSelectedOutcome] = useState(null);
+  const [selectedRisk, setSelectedRisk] = useState(null);
   const [showDeploymentWizard, setShowDeploymentWizard] = useState(false);
+
+  const handleItemClick = (item, type) => {
+    if (type === 'outcomes') {
+      setSelectedOutcome(item);
+    } else {
+      setSelectedRisk(item);
+    }
+  };
 
   const app = apps.find(a => a.id === id);
 
@@ -116,7 +126,7 @@ function AppProfile() {
         type={showModal}
         data={showModal === 'risks' ? riskStories : businessOutcomes}
         onHide={() => setShowModal(null)}
-        onOutcomeClick={setSelectedOutcome}
+        onItemClick={handleItemClick}
       />
 
       <BusinessOutcomeModal
@@ -129,6 +139,16 @@ function AppProfile() {
           setShowModal('outcomes');
         }}
         readOnly={readOnly}
+      />
+
+      <RiskStoryModal
+        show={!!selectedRisk}
+        risk={selectedRisk}
+        onHide={() => setSelectedRisk(null)}
+        onBack={() => {
+          setSelectedRisk(null);
+          setShowModal('risks');
+        }}
       />
 
       <DeploymentWizardModal

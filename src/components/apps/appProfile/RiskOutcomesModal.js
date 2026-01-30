@@ -4,7 +4,7 @@ import { formatShortDate } from './helpers';
 
 const ITEMS_PER_PAGE = 5;
 
-function RiskOutcomesModal({ show, type, data = [], onHide, onOutcomeClick }) {
+function RiskOutcomesModal({ show, type, data = [], onHide, onItemClick }) {
   const [currentPage, setCurrentPage] = useState(1);
 
   // Ensure data is an array
@@ -14,10 +14,8 @@ function RiskOutcomesModal({ show, type, data = [], onHide, onOutcomeClick }) {
   const paginatedData = items.slice(startIndex, startIndex + ITEMS_PER_PAGE);
 
   const handleItemClick = (item) => {
-    if (type === 'outcomes') {
-      onHide();
-      onOutcomeClick(item);
-    }
+    onHide();
+    onItemClick(item, type);
   };
 
   return (
@@ -52,17 +50,11 @@ function ItemsTable({ items, type, onItemClick }) {
         {items.map(item => (
           <tr
             key={item.id}
-            style={type === 'outcomes' ? { cursor: 'pointer' } : {}}
+            style={{ cursor: 'pointer' }}
             onClick={() => onItemClick(item)}
           >
             <td style={{ width: '100px' }}>
-              {type === 'risks' ? (
-                <a href={`https://jira.example.com/browse/${item.id}`} target="_blank" rel="noopener noreferrer">
-                  {item.id}
-                </a>
-              ) : (
-                <span className="text-primary">{item.id}</span>
-              )}
+              <span className="text-primary">{item.id}</span>
             </td>
             <td>{item.summary}</td>
             <td className="text-muted" style={{ width: '100px' }}>{item.status}</td>
