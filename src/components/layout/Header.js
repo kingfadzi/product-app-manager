@@ -69,7 +69,7 @@ function Header() {
             />
           </Form>
 
-          <Dropdown align="end">
+          <Dropdown align="end" className="mr-2">
             <Dropdown.Toggle
               variant="link"
               id="user-dropdown"
@@ -98,7 +98,7 @@ function Header() {
                 <span>Sign In</span>
               )}
             </Dropdown.Toggle>
-            <Dropdown.Menu>
+            <Dropdown.Menu style={{ right: 0, left: 'auto' }}>
               <Dropdown.Header>Switch User (Demo)</Dropdown.Header>
               {demoUsers.map(user => (
                 <Dropdown.Item
