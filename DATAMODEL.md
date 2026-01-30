@@ -1,6 +1,6 @@
 # Data Model
 
-Product App Manager schema reference.
+Schema reference.
 
 ## ERD
 
