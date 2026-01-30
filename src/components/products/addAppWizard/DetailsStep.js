@@ -1,25 +1,17 @@
 import React from 'react';
-import { Table, Badge, Alert } from 'react-bootstrap';
+import { Table, Badge } from 'react-bootstrap';
 import RemediationBox from '../../common/RemediationBox';
 import { useAddAppWizard } from './AddAppWizardContext';
 import { getResCatBadgeColor } from './helpers';
 
 function DetailsStep() {
-  const { selectedApp, selectedProduct, availableRepos, availableJira } = useAddAppWizard();
+  const { selectedApp, selectedProduct } = useAddAppWizard();
 
   if (!selectedApp) return null;
-
-  const missingRepos = availableRepos.length === 0;
-  const missingJira = availableJira.length === 0;
-  const showWarning = missingRepos || missingJira;
 
   return (
     <>
       <AppDetailsTable app={selectedApp} product={selectedProduct} />
-
-      {showWarning && (
-        <MissingDataWarning missingRepos={missingRepos} missingJira={missingJira} />
-      )}
 
       <RemediationBox
         dataSource="Application details are sourced from CMDB."
@@ -83,21 +75,6 @@ function AppDetailsTable({ app, product }) {
         </tr>
       </tbody>
     </Table>
-  );
-}
-
-function MissingDataWarning({ missingRepos, missingJira }) {
-  const missingText = missingRepos && missingJira
-    ? 'repositories and Jira projects'
-    : missingRepos
-    ? 'repositories'
-    : 'Jira projects';
-
-  return (
-    <Alert variant="warning">
-      <strong>Warning:</strong> This application is missing {missingText} in DSI.
-      You can add them manually in the following steps.
-    </Alert>
   );
 }
 
