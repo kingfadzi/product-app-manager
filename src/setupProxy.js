@@ -11,10 +11,13 @@ module.exports = function(app) {
   console.log(`[Proxy] Forwarding /api to ${target}`);
 
   app.use(
+    '/api',
     createProxyMiddleware({
       target,
       changeOrigin: true,
-      pathFilter: '/api',
+      pathRewrite: {
+        '^/api': '', // Strip /api prefix when forwarding to backend
+      },
     })
   );
 };
