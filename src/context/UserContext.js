@@ -2,16 +2,16 @@ import React, { createContext, useState, useContext } from 'react';
 
 // Demo users matching mock data productOwners/systemArchitects
 const demoUsers = [
-  { id: 'user-1', name: 'Jane Williams', email: 'jane.williams@example.com', initials: 'JW' },
-  { id: 'user-2', name: 'Sarah Connor', email: 'sarah.connor@example.com', initials: 'SC' },
-  { id: 'user-3', name: 'Tony Stark', email: 'tony.stark@example.com', initials: 'TS' },
-  { id: 'admin', name: 'Admin User', email: 'admin@example.com', initials: 'AD', isAdmin: true },
+  { id: 'guest', name: null, isGuest: true },
+  { id: 'user-1', name: 'Jane Williams', email: 'jane.williams@example.com', initials: 'JW', tc: 'tc-7' },
+  { id: 'user-2', name: 'Sarah Connor', email: 'sarah.connor@example.com', initials: 'SC', tc: 'tc-1' },
+  { id: 'user-3', name: 'Tony Stark', email: 'tony.stark@example.com', initials: 'TS', tc: 'tc-7' },
 ];
 
 const UserContext = createContext();
 
 export function UserProvider({ children }) {
-  const [currentUser, setCurrentUser] = useState(demoUsers[0]);
+  const [currentUser, setCurrentUser] = useState(demoUsers[0]); // Start as guest
 
   const switchUser = (userId) => {
     const user = demoUsers.find(u => u.id === userId);
@@ -21,12 +21,14 @@ export function UserProvider({ children }) {
   };
 
   const isMyApp = (app) => {
-    if (currentUser.isAdmin) return true;
+    if (currentUser.isGuest) return true; // Guest sees all
     return (
       app.productOwner === currentUser.name ||
       app.systemArchitect === currentUser.name
     );
   };
+
+  const isLoggedIn = !currentUser.isGuest;
 
   return (
     <UserContext.Provider value={{
@@ -34,6 +36,7 @@ export function UserProvider({ children }) {
       demoUsers,
       switchUser,
       isMyApp,
+      isLoggedIn,
     }}>
       {children}
     </UserContext.Provider>

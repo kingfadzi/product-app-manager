@@ -7,7 +7,7 @@ import { useUser } from '../../context/UserContext';
 function Header() {
   const location = useLocation();
   const history = useHistory();
-  const { currentUser, demoUsers, switchUser } = useUser();
+  const { currentUser, demoUsers, switchUser, isLoggedIn } = useUser();
   const [searchQuery, setSearchQuery] = useState('');
 
   const handleSearchSubmit = (e) => {
@@ -53,7 +53,7 @@ function Header() {
               to="/apps"
               active={location.pathname.startsWith('/apps')}
             >
-              My Applications
+              {isLoggedIn ? 'My Applications' : 'Applications'}
             </Nav.Link>
           </Nav>
 
@@ -76,21 +76,27 @@ function Header() {
               className="d-flex align-items-center text-light text-decoration-none p-0"
               style={{ fontSize: '13px' }}
             >
-              <span style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: '26px',
-                height: '26px',
-                backgroundColor: currentUser.isAdmin ? '#0d6efd' : '#6c757d',
-                borderRadius: '50%',
-                marginRight: '8px',
-                fontSize: '11px',
-                fontWeight: '500'
-              }}>
-                {currentUser.initials}
-              </span>
-              {currentUser.name}
+              {isLoggedIn ? (
+                <>
+                  <span style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: '26px',
+                    height: '26px',
+                    backgroundColor: '#6c757d',
+                    borderRadius: '50%',
+                    marginRight: '8px',
+                    fontSize: '11px',
+                    fontWeight: '500'
+                  }}>
+                    {currentUser.initials}
+                  </span>
+                  {currentUser.name}
+                </>
+              ) : (
+                <span>Sign In</span>
+              )}
             </Dropdown.Toggle>
             <Dropdown.Menu>
               <Dropdown.Header>Switch User (Demo)</Dropdown.Header>
@@ -100,8 +106,7 @@ function Header() {
                   active={user.id === currentUser.id}
                   onClick={() => switchUser(user.id)}
                 >
-                  {user.name}
-                  {user.isAdmin && <span className="text-muted ml-2">(All Apps)</span>}
+                  {user.isGuest ? 'Guest (Not Signed In)' : user.name}
                 </Dropdown.Item>
               ))}
             </Dropdown.Menu>

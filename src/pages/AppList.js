@@ -16,57 +16,63 @@ function AppList() {
   const history = useHistory();
   const location = useLocation();
   const { apps, loading, error } = useContext(AppContext);
-  const { currentUser, isMyApp } = useUser();
+  const { isMyApp, isLoggedIn } = useUser();
 
-  // Check if this is a global search (from header) or My Applications view
+  // Check if this is a global search (from header)
   const params = new URLSearchParams(location.search);
   const isGlobalSearch = params.has('search');
 
+  // Determine view mode
+  // Guest: always sees all apps
+  // Logged in: sees "My Apps" unless searching
+  const showAllApps = !isLoggedIn || isGlobalSearch;
+
   // Filter apps based on view mode
   const baseApps = useMemo(() => {
-    if (isGlobalSearch) {
-      return apps; // Global search: all apps
+    if (showAllApps) {
+      return apps;
     }
-    return apps.filter(isMyApp); // My Applications: only user's apps
-  }, [apps, isGlobalSearch, isMyApp]);
+    return apps.filter(isMyApp);
+  }, [apps, showAllApps, isMyApp]);
 
   const [showAddWizard, setShowAddWizard] = useState(false);
 
   // Pagination
   const {
-    currentPage,
-    setCurrentPage,
-    totalPages,
-    paginatedData: paginatedApps,
-    startIndex,
-    endIndex,
-    totalItems,
-    showPagination,
     resetPage
   } = usePagination([], 10);
 
   // Filters
   const {
     searchTerm,
-    setSearchTerm,
     resCatFilter,
     stackFilter,
     productFilter,
     tcFilter,
+    tierFilter,
     stacks,
     productOptions,
     tcOptions,
+    tierOptions,
     filteredApps,
     hasActiveFilters,
     updateFilter,
   } = useAppListFilters(baseApps, resetPage);
 
-  // Page title based on view mode
-  const pageTitle = isGlobalSearch ? 'Search Results' : 'My Applications';
-  const myAppCount = apps.filter(isMyApp).length;
-
   // Update pagination when filtered apps change
   const paginationResult = usePagination(filteredApps, 10);
+
+  // Page title and count
+  const getPageTitle = () => {
+    if (isGlobalSearch) return 'Search Results';
+    if (!isLoggedIn) return 'Applications';
+    return 'My Applications';
+  };
+  const pageTitle = getPageTitle();
+  const myAppCount = apps.filter(isMyApp).length;
+
+  // Show TC filter for guest or search results (not for "My Applications")
+  const showTcFilter = !isLoggedIn || isGlobalSearch;
 
   // Handle addApp query param
   useEffect(() => {
@@ -101,7 +107,7 @@ function AppList() {
     <PageLayout>
       <Breadcrumb>
         <Breadcrumb.Item onClick={() => history.push('/')}>Home</Breadcrumb.Item>
-        {isGlobalSearch && (
+        {isGlobalSearch && isLoggedIn && (
           <Breadcrumb.Item onClick={() => history.push('/apps')}>My Applications</Breadcrumb.Item>
         )}
         <Breadcrumb.Item active>{pageTitle}</Breadcrumb.Item>
@@ -110,10 +116,14 @@ function AppList() {
       <div className="d-flex justify-content-between align-items-center mb-4">
         <h1 className="mb-0">
           {pageTitle}
-          {!isGlobalSearch && <span className="text-muted ml-2" style={{ fontSize: '1rem', fontWeight: 'normal' }}>({myAppCount})</span>}
-          {isGlobalSearch && searchTerm && <span className="text-muted ml-2" style={{ fontSize: '1rem', fontWeight: 'normal' }}>for "{searchTerm}"</span>}
+          {isLoggedIn && !isGlobalSearch && (
+            <span className="text-muted ml-2" style={{ fontSize: '1rem', fontWeight: 'normal' }}>({myAppCount})</span>
+          )}
+          {isGlobalSearch && searchTerm && (
+            <span className="text-muted ml-2" style={{ fontSize: '1rem', fontWeight: 'normal' }}>for "{searchTerm}"</span>
+          )}
         </h1>
-        {!isGlobalSearch && (
+        {isLoggedIn && !isGlobalSearch && (
           <Button variant="dark" onClick={() => setShowAddWizard(true)}>+ Add Application</Button>
         )}
       </div>
@@ -121,16 +131,17 @@ function AppList() {
       {error && <Alert variant="danger">{error}</Alert>}
 
       <AppListFilters
-        searchTerm={searchTerm}
-        setSearchTerm={setSearchTerm}
         stackFilter={stackFilter}
         productFilter={productFilter}
         tcFilter={tcFilter}
+        tierFilter={tierFilter}
         resCatFilter={resCatFilter}
         stacks={stacks}
         productOptions={productOptions}
         tcOptions={tcOptions}
+        tierOptions={tierOptions}
         updateFilter={updateFilter}
+        showTcFilter={showTcFilter}
       />
 
       {filteredApps.length === 0 ? (

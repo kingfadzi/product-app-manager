@@ -4,27 +4,20 @@ import { Row, Col, Form } from 'react-bootstrap';
 const RESCAT_OPTIONS = ['Critical', 'High', 'Medium', 'Low'];
 
 function AppListFilters({
-  searchTerm,
-  setSearchTerm,
   stackFilter,
   productFilter,
   tcFilter,
+  tierFilter,
   resCatFilter,
   stacks,
   productOptions,
   tcOptions,
-  updateFilter
+  tierOptions,
+  updateFilter,
+  showTcFilter = true
 }) {
   return (
     <Row className="mb-3 g-2">
-      <Col xs={12} sm={6} lg={3}>
-        <Form.Control
-          type="text"
-          placeholder="Search apps..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-        />
-      </Col>
       <Col xs={6} sm={3} lg={2}>
         <FilterSelect
           value={stackFilter}
@@ -41,12 +34,22 @@ function AppListFilters({
           options={productOptions}
         />
       </Col>
+      {showTcFilter && (
+        <Col xs={6} sm={3} lg={2}>
+          <FilterSelect
+            value={tcFilter}
+            onChange={(v) => updateFilter('tc', v)}
+            placeholder="All TCs"
+            options={tcOptions}
+          />
+        </Col>
+      )}
       <Col xs={6} sm={3} lg={2}>
         <FilterSelect
-          value={tcFilter}
-          onChange={(v) => updateFilter('tc', v)}
-          placeholder="All TCs"
-          options={tcOptions}
+          value={tierFilter}
+          onChange={(v) => updateFilter('tier', v)}
+          placeholder="All Tiers"
+          options={tierOptions.map(t => ({ id: t, name: t }))}
         />
       </Col>
       <Col xs={6} sm={3} lg={2}>

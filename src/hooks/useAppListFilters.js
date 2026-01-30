@@ -10,6 +10,7 @@ function useAppListFilters(apps, resetPage) {
   const [stackFilter, setStackFilter] = useState('');
   const [productFilter, setProductFilter] = useState('');
   const [tcFilter, setTcFilter] = useState('');
+  const [tierFilter, setTierFilter] = useState('');
 
   // Sync filters from URL
   useEffect(() => {
@@ -19,6 +20,7 @@ function useAppListFilters(apps, resetPage) {
     setStackFilter(params.get('stack') || '');
     setProductFilter(params.get('product') || '');
     setTcFilter(params.get('tc') || '');
+    setTierFilter(params.get('tier') || '');
     resetPage();
   }, [location.search, resetPage]);
 
@@ -65,6 +67,12 @@ function useAppListFilters(apps, resetPage) {
     return unique.sort((a, b) => a.name.localeCompare(b.name));
   }, [apps]);
 
+  // Unique tiers
+  const tierOptions = useMemo(() => {
+    const unique = [...new Set(apps.map(app => app.tier).filter(Boolean))];
+    return unique.sort();
+  }, [apps]);
+
   // Filtered apps
   const filteredApps = useMemo(() => {
     return apps.filter(app => {
@@ -77,23 +85,25 @@ function useAppListFilters(apps, resetPage) {
       const matchesStack = !stackFilter || app.stack === stackFilter;
       const matchesProduct = !productFilter || app.productId === productFilter;
       const matchesTc = !tcFilter || app.tc === tcFilter;
+      const matchesTier = !tierFilter || app.tier === tierFilter;
 
-      return matchesSearch && matchesResCat && matchesStack && matchesProduct && matchesTc;
+      return matchesSearch && matchesResCat && matchesStack && matchesProduct && matchesTc && matchesTier;
     });
-  }, [apps, searchTerm, resCatFilter, stackFilter, productFilter, tcFilter]);
+  }, [apps, searchTerm, resCatFilter, stackFilter, productFilter, tcFilter, tierFilter]);
 
-  const hasActiveFilters = searchTerm || resCatFilter || stackFilter || productFilter || tcFilter;
+  const hasActiveFilters = searchTerm || resCatFilter || stackFilter || productFilter || tcFilter || tierFilter;
 
   return {
     searchTerm,
-    setSearchTerm,
     resCatFilter,
     stackFilter,
     productFilter,
     tcFilter,
+    tierFilter,
     stacks,
     productOptions,
     tcOptions,
+    tierOptions,
     filteredApps,
     hasActiveFilters,
     updateFilter,
