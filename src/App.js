@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import { AppProvider } from './context/AppContext';
+import Header from './components/layout/Header';
 import {
   HomePage,
   Dashboard,
@@ -19,6 +20,8 @@ function App() {
   return (
     <AppProvider>
       <Router>
+        <Header />
+        <div style={{ paddingTop: '56px' }}>
         <Switch>
           <Route exact path="/" component={HomePage} />
           <Route exact path="/search" component={SearchResults} />
@@ -30,6 +33,7 @@ function App() {
           <Route exact path="/apps/:id" component={AppProfile} />
           <Route exact path="/apps/:id/edit" component={AppEdit} />
         </Switch>
+        </div>
       </Router>
     </AppProvider>
   );
