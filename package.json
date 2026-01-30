@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "description": "Product & App Management UI",
   "private": true,
-  "proxy": "http://localhost:8000",
   "dependencies": {
     "ajv": "^8.17.1",
     "bootstrap": "^4.6.2",
@@ -21,6 +20,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
+    "start:mock": "REACT_APP_USE_MOCK=true react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"

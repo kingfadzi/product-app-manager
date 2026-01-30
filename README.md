@@ -88,13 +88,4 @@ src/
 
 ## Data Model
 
-- **Product**: Contains name, description, stack, and line of business
-- **App**: Application with CMDB ID, tier (gold/silver/bronze), status, ResCat
-- **ProductApp**: Join table linking products and apps
-- **AppRepo**: Git repositories linked to an app
-- **AppBacklog**: Project backlogs (Jira projects)
-- **AppContact**: Key contacts (product owner, tech lead, business owner, SME)
-- **AppDoc**: Documentation links (roadmap, vision, architecture, runbook)
-- **RiskStory**: Security/compliance risk items
-- **BusinessOutcome**: Business objectives and their status
-- **GuildAssignment**: Control SME assignments per guild
+See [DATAMODEL.md](DATAMODEL.md) for schema reference and ERD.
