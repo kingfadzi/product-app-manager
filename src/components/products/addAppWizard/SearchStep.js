@@ -107,7 +107,7 @@ function SearchResultItem({ app, onSelect }) {
           )}
           <div className="text-muted small">{app.cmdbId}</div>
           {app.transactionCycle && (
-            <div className="text-muted small">TC: {app.transactionCycle}</div>
+            <div className="text-muted small">{app.transactionCycle} ({app.transactionCycleId})</div>
           )}
         </div>
         <div className="text-end">
