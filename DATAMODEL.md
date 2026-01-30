@@ -149,8 +149,9 @@ erDiagram
 
 ## Notes
 
+> **Important:** Apps in a Product must be from the same SNOW family hierarchy (parent-child or siblings only).
+
 - `ProductApp` is a many-to-many join: an App can belong to multiple Products
-- Apps in a Product must be from the same SNOW family hierarchy (parent-child or siblings only)
 - `App.cmdbId` is the external CMDB identifier (e.g., `APP-1234`)
 - `App.parent` references another App's cmdbId for hierarchy
 - `Contact` and `GuildSme` share the same backend table (`stakeholders`) differentiated by `stakeholder_type`
