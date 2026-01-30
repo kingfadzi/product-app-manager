@@ -112,6 +112,7 @@ function AppProfile() {
             onViewOutcomes={() => setShowModal('outcomes')}
             onViewRisks={() => setShowModal('risks')}
             onOutcomeClick={setSelectedOutcome}
+            onRiskClick={setSelectedRisk}
             onAddGuildSme={addGuildSme}
             onRemoveGuildSme={removeGuildSme}
             readOnly={readOnly}

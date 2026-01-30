@@ -4,7 +4,7 @@ import { formatShortDate, getHealthColor, getGuildRoleLabel } from './helpers';
 import { GUILD_SME_TYPES } from './constants';
 import DeleteIcon from '../../products/addAppWizard/DeleteIcon';
 
-function GovernanceCard({ businessOutcomes, riskStories, guildSmes, onViewOutcomes, onViewRisks, onOutcomeClick, onAddGuildSme, onRemoveGuildSme, readOnly }) {
+function GovernanceCard({ businessOutcomes, riskStories, guildSmes, onViewOutcomes, onViewRisks, onOutcomeClick, onRiskClick, onAddGuildSme, onRemoveGuildSme, readOnly }) {
   return (
     <Card className="mb-4 tabbed-card">
       <Tab.Container defaultActiveKey="outcomes">
@@ -27,7 +27,7 @@ function GovernanceCard({ businessOutcomes, riskStories, guildSmes, onViewOutcom
               />
             </Tab.Pane>
             <Tab.Pane eventKey="risk">
-              <RiskStoriesTab stories={riskStories} onViewMore={onViewRisks} />
+              <RiskStoriesTab stories={riskStories} onViewMore={onViewRisks} onItemClick={onRiskClick} />
             </Tab.Pane>
             <Tab.Pane eventKey="guilds">
               <GuildsTab
@@ -75,7 +75,7 @@ function OutcomesTab({ outcomes = [], onViewMore, onItemClick }) {
   );
 }
 
-function RiskStoriesTab({ stories = [], onViewMore }) {
+function RiskStoriesTab({ stories = [], onViewMore, onItemClick }) {
   const items = Array.isArray(stories) ? stories : [];
   if (items.length === 0) {
     return <p className="text-muted mb-0">No risk stories available</p>;
@@ -85,12 +85,8 @@ function RiskStoriesTab({ stories = [], onViewMore }) {
       <Table size="sm" className="mb-0" borderless>
         <tbody>
           {items.slice(0, 2).map(item => (
-            <tr key={item.id}>
-              <td>
-                <a href={`https://jira.example.com/browse/${item.id}`} target="_blank" rel="noopener noreferrer">
-                  {item.id}
-                </a>
-              </td>
+            <tr key={item.id} style={{ cursor: 'pointer' }} onClick={() => onItemClick(item)}>
+              <td><span className="text-primary">{item.id}</span></td>
               <td>{item.summary}</td>
               <td className="text-muted">{item.status}</td>
               <td className="text-muted" style={{ whiteSpace: 'nowrap' }}>{formatShortDate(item.updated)}</td>
