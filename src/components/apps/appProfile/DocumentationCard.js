@@ -5,7 +5,7 @@ import DeleteIcon from '../../products/addAppWizard/DeleteIcon';
 const PRODUCT_DOC_TYPES = ['Product Vision', 'Product Roadmap'];
 const TECH_DOC_TYPES = ['Architecture Vision', 'Service Vision', 'Security Vision', 'Test Strategy'];
 
-function DocumentationCard({ docs, onAddDoc, onRemoveDoc }) {
+function DocumentationCard({ docs, onAddDoc, onRemoveDoc, readOnly }) {
   const [editing, setEditing] = useState(false);
   const [newDoc, setNewDoc] = useState({ type: '', title: '', url: '' });
 
@@ -22,13 +22,15 @@ function DocumentationCard({ docs, onAddDoc, onRemoveDoc }) {
         <Card.Header>
           <div className="d-flex justify-content-between align-items-center">
             <strong>Documentation</strong>
-            <Button
-              variant={editing ? "outline-secondary" : "outline-primary"}
-              size="sm"
-              onClick={() => { setEditing(!editing); setNewDoc({ type: '', title: '', url: '' }); }}
-            >
-              {editing ? 'Done' : 'Edit'}
-            </Button>
+            {!readOnly && (
+              <Button
+                variant={editing ? "outline-secondary" : "outline-primary"}
+                size="sm"
+                onClick={() => { setEditing(!editing); setNewDoc({ type: '', title: '', url: '' }); }}
+              >
+                {editing ? 'Done' : 'Edit'}
+              </Button>
+            )}
           </div>
           <Nav variant="tabs" className="mt-2">
             <Nav.Item><Nav.Link eventKey="product">Product</Nav.Link></Nav.Item>

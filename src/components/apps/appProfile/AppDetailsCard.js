@@ -5,7 +5,7 @@ import { CONTACT_TYPES } from './constants';
 import { getResCatBadgeClass, getContactRoleLabel } from './helpers';
 import DeleteIcon from '../../products/addAppWizard/DeleteIcon';
 
-function AppDetailsCard({ app, contacts, appProducts, onAddContact, onRemoveContact }) {
+function AppDetailsCard({ app, contacts, appProducts, onAddContact, onRemoveContact, readOnly }) {
   const history = useHistory();
   const [editing, setEditing] = useState(false);
   const [newContact, setNewContact] = useState({ type: '', name: '', email: '' });
@@ -47,6 +47,7 @@ function AppDetailsCard({ app, contacts, appProducts, onAddContact, onRemoveCont
                 setNewContact={setNewContact}
                 onAdd={handleAdd}
                 onRemove={onRemoveContact}
+                readOnly={readOnly}
               />
             </Tab.Pane>
             <Tab.Pane eventKey="products">
@@ -91,19 +92,21 @@ function DetailRow({ label, value }) {
   );
 }
 
-function ContactsTab({ contacts = [], editing, setEditing, newContact, setNewContact, onAdd, onRemove }) {
+function ContactsTab({ contacts = [], editing, setEditing, newContact, setNewContact, onAdd, onRemove, readOnly }) {
   const items = Array.isArray(contacts) ? contacts : [];
   return (
     <>
-      <div className="d-flex justify-content-end mb-2">
-        <Button
-          variant={editing ? "outline-secondary" : "outline-primary"}
-          size="sm"
-          onClick={() => { setEditing(!editing); setNewContact({ type: '', name: '', email: '' }); }}
-        >
-          {editing ? 'Done' : 'Edit'}
-        </Button>
-      </div>
+      {!readOnly && (
+        <div className="d-flex justify-content-end mb-2">
+          <Button
+            variant={editing ? "outline-secondary" : "outline-primary"}
+            size="sm"
+            onClick={() => { setEditing(!editing); setNewContact({ type: '', name: '', email: '' }); }}
+          >
+            {editing ? 'Done' : 'Edit'}
+          </Button>
+        </div>
+      )}
 
       {items.length === 0 ? (
         <p className="text-muted mb-0">No contacts added</p>

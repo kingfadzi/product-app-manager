@@ -2,12 +2,14 @@ import React, { useContext, useState } from 'react';
 import { Form, InputGroup, Button, Spinner, Alert } from 'react-bootstrap';
 import { useHistory } from 'react-router-dom';
 import { AppContext } from '../context/AppContext';
+import { useUser } from '../context/UserContext';
 import PageLayout from '../components/layout/PageLayout';
 import { APP_NAME } from '../constants/config';
 
 function HomePage() {
   const history = useHistory();
   const { loading, error } = useContext(AppContext);
+  const { isLoggedIn } = useUser();
   const [searchQuery, setSearchQuery] = useState('');
 
   const handleSearchSubmit = (e) => {
@@ -38,11 +40,13 @@ function HomePage() {
 
   return (
     <PageLayout>
-      <div className="d-flex justify-content-end mb-4">
-        <Button variant="dark" onClick={() => history.push('/apps?addApp=true')}>
-          + Add Application
-        </Button>
-      </div>
+      {isLoggedIn && (
+        <div className="d-flex justify-content-end mb-4">
+          <Button variant="dark" onClick={() => history.push('/apps?addApp=true')}>
+            + Add Application
+          </Button>
+        </div>
+      )}
 
       <div className="d-flex justify-content-center align-items-center" style={{ minHeight: '50vh' }}>
         <div style={{ width: '100%', maxWidth: '600px' }}>

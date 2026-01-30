@@ -4,7 +4,7 @@ import { formatShortDate, getHealthColor, getGuildRoleLabel } from './helpers';
 import { GUILD_SME_TYPES } from './constants';
 import DeleteIcon from '../../products/addAppWizard/DeleteIcon';
 
-function GovernanceCard({ businessOutcomes, riskStories, guildSmes, onViewOutcomes, onViewRisks, onOutcomeClick, onAddGuildSme, onRemoveGuildSme }) {
+function GovernanceCard({ businessOutcomes, riskStories, guildSmes, onViewOutcomes, onViewRisks, onOutcomeClick, onAddGuildSme, onRemoveGuildSme, readOnly }) {
   return (
     <Card className="mb-4 tabbed-card">
       <Tab.Container defaultActiveKey="outcomes">
@@ -34,6 +34,7 @@ function GovernanceCard({ businessOutcomes, riskStories, guildSmes, onViewOutcom
                 smes={guildSmes}
                 onAdd={onAddGuildSme}
                 onRemove={onRemoveGuildSme}
+                readOnly={readOnly}
               />
             </Tab.Pane>
             <Tab.Pane eventKey="audit">
@@ -106,7 +107,7 @@ function RiskStoriesTab({ stories = [], onViewMore }) {
   );
 }
 
-function GuildsTab({ smes = [], onAdd, onRemove }) {
+function GuildsTab({ smes = [], onAdd, onRemove, readOnly }) {
   const [editing, setEditing] = useState(false);
   const [newSme, setNewSme] = useState({ role: '', name: '', email: '' });
 
@@ -128,15 +129,17 @@ function GuildsTab({ smes = [], onAdd, onRemove }) {
 
   return (
     <>
-      <div className="d-flex justify-content-end mb-2">
-        <Button
-          variant={editing ? "outline-secondary" : "outline-primary"}
-          size="sm"
-          onClick={() => { setEditing(!editing); setNewSme({ role: '', name: '', email: '' }); }}
-        >
-          {editing ? 'Done' : 'Edit'}
-        </Button>
-      </div>
+      {!readOnly && (
+        <div className="d-flex justify-content-end mb-2">
+          <Button
+            variant={editing ? "outline-secondary" : "outline-primary"}
+            size="sm"
+            onClick={() => { setEditing(!editing); setNewSme({ role: '', name: '', email: '' }); }}
+          >
+            {editing ? 'Done' : 'Edit'}
+          </Button>
+        </div>
+      )}
 
       {items.length === 0 ? (
         <p className="text-muted mb-0">No guild SMEs assigned</p>

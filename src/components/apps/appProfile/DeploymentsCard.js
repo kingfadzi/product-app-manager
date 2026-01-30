@@ -1,14 +1,14 @@
 import React from 'react';
 import { Card, Tab, Nav, Button } from 'react-bootstrap';
 
-function DeploymentsCard({ onCreateDeployment }) {
+function DeploymentsCard({ onCreateDeployment, readOnly }) {
   return (
     <Card className="mb-4 tabbed-card">
       <Tab.Container defaultActiveKey="releases">
         <Card.Header>
           <div className="d-flex justify-content-between align-items-center">
             <strong>Deployments</strong>
-            <Button variant="dark" size="sm" onClick={onCreateDeployment}>+ Create</Button>
+            {!readOnly && <Button variant="dark" size="sm" onClick={onCreateDeployment}>+ Create</Button>}
           </div>
           <Nav variant="tabs" className="mt-2">
             <Nav.Item><Nav.Link eventKey="releases">Releases</Nav.Link></Nav.Item>

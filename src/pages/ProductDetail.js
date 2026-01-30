@@ -2,6 +2,7 @@ import React, { useState, useContext } from 'react';
 import { Card, Table, Button, Alert, Breadcrumb } from 'react-bootstrap';
 import { useParams, useHistory } from 'react-router-dom';
 import { AppContext } from '../context/AppContext';
+import { useUser } from '../context/UserContext';
 import useProducts from '../hooks/useProducts';
 import PageLayout from '../components/layout/PageLayout';
 import AddAppModal from '../components/products/AddAppModal';
@@ -13,6 +14,7 @@ function ProductDetail() {
   const { id } = useParams();
   const history = useHistory();
   const { apps } = useContext(AppContext);
+  const { isLoggedIn } = useUser();
   const {
     getProductById,
     getAppsForProduct,
@@ -118,9 +120,11 @@ function ProductDetail() {
           <h2 className="mb-1">{product.name}</h2>
           <span className="text-muted">{product.description || 'No description'}</span>
         </div>
-        <Button variant="outline-primary" size="sm" onClick={() => setShowAddModal(true)}>
-          Add Application
-        </Button>
+        {isLoggedIn && (
+          <Button variant="outline-primary" size="sm" onClick={() => setShowAddModal(true)}>
+            Add Application
+          </Button>
+        )}
       </div>
 
 
@@ -133,9 +137,11 @@ function ProductDetail() {
         <Card className="text-center py-5">
           <Card.Body>
             <p className="text-muted mb-3">No applications added to this product yet</p>
-            <Button variant="primary" size="sm" onClick={() => setShowAddModal(true)}>
-              Add Application
-            </Button>
+            {isLoggedIn && (
+              <Button variant="primary" size="sm" onClick={() => setShowAddModal(true)}>
+                Add Application
+              </Button>
+            )}
           </Card.Body>
         </Card>
       ) : (

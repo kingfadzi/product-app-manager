@@ -2,6 +2,7 @@ import React, { useContext, useState } from 'react';
 import { Row, Col, Button, Alert, Breadcrumb } from 'react-bootstrap';
 import { useParams, useHistory } from 'react-router-dom';
 import { AppContext } from '../context/AppContext';
+import { useUser } from '../context/UserContext';
 import PageLayout from '../components/layout/PageLayout';
 import {
   AppHeader,
@@ -21,6 +22,8 @@ function AppProfile() {
   const { id } = useParams();
   const history = useHistory();
   const { apps, products, productApps } = useContext(AppContext);
+  const { isLoggedIn } = useUser();
+  const readOnly = !isLoggedIn;
 
   // Load app profile data
   const {
@@ -81,11 +84,13 @@ function AppProfile() {
             appProducts={appProducts}
             onAddContact={addContact}
             onRemoveContact={removeContact}
+            readOnly={readOnly}
           />
           <DocumentationCard
             docs={docs}
             onAddDoc={addDoc}
             onRemoveDoc={removeDoc}
+            readOnly={readOnly}
           />
         </Col>
 
@@ -99,8 +104,9 @@ function AppProfile() {
             onOutcomeClick={setSelectedOutcome}
             onAddGuildSme={addGuildSme}
             onRemoveGuildSme={removeGuildSme}
+            readOnly={readOnly}
           />
-          <DeploymentsCard onCreateDeployment={() => setShowDeploymentWizard(true)} />
+          <DeploymentsCard onCreateDeployment={() => setShowDeploymentWizard(true)} readOnly={readOnly} />
           <SourceCodeCard repos={repos} backlogs={backlogs} />
         </Col>
       </Row>
@@ -118,6 +124,7 @@ function AppProfile() {
         outcome={selectedOutcome}
         guildSmes={guildSmes}
         onHide={() => setSelectedOutcome(null)}
+        readOnly={readOnly}
       />
 
       <DeploymentWizardModal

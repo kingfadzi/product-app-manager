@@ -18,7 +18,7 @@ const INITIAL_WIZARD_DATA = {
   selectedGuilds: []
 };
 
-function BusinessOutcomeModal({ show, outcome, guildSmes, onHide }) {
+function BusinessOutcomeModal({ show, outcome, guildSmes, onHide, readOnly }) {
   const [viewMode, setViewMode] = useState('review');
   const [wizardStep, setWizardStep] = useState(1);
   const [wizardData, setWizardData] = useState(INITIAL_WIZARD_DATA);
@@ -82,7 +82,7 @@ function BusinessOutcomeModal({ show, outcome, guildSmes, onHide }) {
           <Modal.Title style={{ fontSize: '1rem', fontWeight: 600 }}>
             {outcome.id} - {outcome.summary}
           </Modal.Title>
-          {viewMode === 'review' && (
+          {viewMode === 'review' && !readOnly && (
             <Button variant="outline-primary" size="sm" onClick={() => setViewMode('edit')}>
               Guild Engagement
             </Button>
