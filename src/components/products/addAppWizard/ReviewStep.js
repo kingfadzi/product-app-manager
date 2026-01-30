@@ -38,14 +38,39 @@ function ReviewStep() {
 
 function ApplicationRow({ app }) {
   return (
-    <tr>
-      <th style={{ width: '30%' }} className="bg-light">Application</th>
-      <td>
-        <strong>{app?.name}</strong>
-        <span className="text-muted ms-2">({app?.cmdbId})</span>
-        <span className="text-muted ms-2">- {app?.tier}</span>
-      </td>
-    </tr>
+    <>
+      <tr>
+        <th style={{ width: '30%' }} className="bg-light">Application</th>
+        <td>
+          <strong>{app?.name}</strong>
+          <span className="text-muted ms-2">({app?.cmdbId})</span>
+        </td>
+      </tr>
+      <tr>
+        <th className="bg-light">Tier / Stack</th>
+        <td>{app?.tier} {app?.stack && <span className="text-muted">/ {app?.stack}</span>}</td>
+      </tr>
+      <tr>
+        <th className="bg-light">Transaction Cycle</th>
+        <td>{app?.transactionCycle ? `${app.transactionCycle} (${app.transactionCycleId})` : <span className="text-muted">Not set</span>}</td>
+      </tr>
+      <tr>
+        <th className="bg-light">Operational Status</th>
+        <td>{app?.operationalStatus || <span className="text-muted">Not set</span>}</td>
+      </tr>
+      <tr>
+        <th className="bg-light">Resilience Category</th>
+        <td>{app?.resilienceCategory || <span className="text-muted">Not set</span>}</td>
+      </tr>
+      <tr>
+        <th className="bg-light">Product Owner</th>
+        <td>{app?.productOwner || <span className="text-muted">Not set</span>}</td>
+      </tr>
+      <tr>
+        <th className="bg-light">System Architect</th>
+        <td>{app?.systemArchitect || <span className="text-muted">Not set</span>}</td>
+      </tr>
+    </>
   );
 }
 
@@ -55,6 +80,8 @@ function ProductRow({ product }) {
       <th className="bg-light">Product</th>
       <td>
         <strong>{product?.name}</strong>
+        {product?.id && <span className="text-muted ms-2">({product.id})</span>}
+        {product?.stackId && <span className="text-muted ms-2">- {product.stackId}</span>}
       </td>
     </tr>
   );
