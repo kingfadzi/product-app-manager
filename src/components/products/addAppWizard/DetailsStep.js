@@ -5,7 +5,7 @@ import { useAddAppWizard } from './AddAppWizardContext';
 import { getResCatBadgeColor } from './helpers';
 
 function DetailsStep() {
-  const { selectedApp, availableRepos, availableJira } = useAddAppWizard();
+  const { selectedApp, selectedProduct, availableRepos, availableJira } = useAddAppWizard();
 
   if (!selectedApp) return null;
 
@@ -15,7 +15,7 @@ function DetailsStep() {
 
   return (
     <>
-      <AppDetailsTable app={selectedApp} />
+      <AppDetailsTable app={selectedApp} product={selectedProduct} />
 
       {showWarning && (
         <MissingDataWarning missingRepos={missingRepos} missingJira={missingJira} />
@@ -31,7 +31,7 @@ function DetailsStep() {
   );
 }
 
-function AppDetailsTable({ app }) {
+function AppDetailsTable({ app, product }) {
   return (
     <Table bordered>
       <tbody>
@@ -42,6 +42,10 @@ function AppDetailsTable({ app }) {
         <tr>
           <th>Application Name</th>
           <td>{app.name}</td>
+        </tr>
+        <tr>
+          <th>Product</th>
+          <td>{product ? `${product.name} (${product.id})` : <span className="text-muted">Not selected</span>}</td>
         </tr>
         <tr>
           <th>Transaction Cycle</th>
