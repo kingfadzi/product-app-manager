@@ -83,11 +83,11 @@ function AppList() {
     <PageLayout>
       <Breadcrumb>
         <Breadcrumb.Item onClick={() => history.push('/')}>Home</Breadcrumb.Item>
-        <Breadcrumb.Item active>Applications</Breadcrumb.Item>
+        <Breadcrumb.Item active>My Applications</Breadcrumb.Item>
       </Breadcrumb>
 
       <div className="d-flex justify-content-between align-items-center mb-4">
-        <h1 className="mb-0">Applications</h1>
+        <h1 className="mb-0">My Applications</h1>
         <Button variant="dark" onClick={() => setShowAddWizard(true)}>+ Add Application</Button>
       </div>
 

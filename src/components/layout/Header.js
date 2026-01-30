@@ -47,7 +47,7 @@ function Header() {
               to="/apps"
               active={location.pathname.startsWith('/apps')}
             >
-              Apps
+              My Applications
             </Nav.Link>
           </Nav>
           <Nav className="ml-auto d-flex align-items-center">
