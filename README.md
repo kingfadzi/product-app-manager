@@ -65,6 +65,7 @@ npx serve -s build
 | Command | Description |
 |---------|-------------|
 | `npm start` | Start development server on port 3000 |
+| `npm run start:mock` | Start development server with MSW mocking enabled |
 | `npm run build` | Create production build in `/build` folder |
 | `npm test` | Run test suite |
 | `npm run eject` | Eject from Create React App (irreversible) |
@@ -97,20 +98,6 @@ src/
 └── styles/           # CSS styles
 ```
 
-## Routes
-
-| Path | Description |
-|------|-------------|
-| `/` | Homepage with search and metrics |
-| `/stacks` | Stacks dashboard |
-| `/products` | Product list |
-| `/products/new` | Create product wizard |
-| `/products/:id` | Product detail |
-| `/apps` | All apps list |
-| `/apps/:id` | App profile with governance tabs |
-| `/apps/:id/edit` | Edit app |
-| `/search` | Global search results |
-
 ## Data Model
 
 - **Product**: Contains name, description, stack, and line of business
@@ -123,33 +110,6 @@ src/
 - **RiskStory**: Security/compliance risk items
 - **BusinessOutcome**: Business objectives and their status
 - **GuildAssignment**: Control SME assignments per guild
-
-## API Endpoints (Mocked)
-
-The application uses MSW to mock the following API endpoints:
-
-### Products
-- `GET /api/products` - List all products
-- `POST /api/products` - Create product
-- `GET /api/products/:id` - Get product details
-- `PUT /api/products/:id` - Update product
-- `DELETE /api/products/:id` - Delete product
-
-### Apps
-- `GET /api/apps` - List all apps
-- `GET /api/apps/:id` - Get app details
-- `GET /api/apps/:id/repos` - Get app repositories
-- `GET /api/apps/:id/backlogs` - Get app backlogs
-- `GET /api/apps/:id/contacts` - Get app contacts
-- `GET /api/apps/:id/docs` - Get app documentation
-- `GET /api/apps/:id/risk-stories` - Get risk stories
-- `GET /api/apps/:id/outcomes` - Get business outcomes
-- `GET /api/apps/:id/guild-assignments` - Get guild SME assignments
-
-### Deployments
-- `GET /api/backlogs/:key/fix-versions` - Get Jira fix versions
-- `GET /api/deployment-environments` - Get deployment environments
-- `POST /api/deployments` - Create deployment
 
 ## Troubleshooting
 
