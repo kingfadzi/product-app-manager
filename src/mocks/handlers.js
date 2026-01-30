@@ -480,12 +480,15 @@ export const handlers = [
   // Guild SMEs (for Guilds tab in Governance card)
   rest.get('/api/apps/:appId/guild-smes', (req, res, ctx) => {
     const appSmes = controlSmes[req.params.appId] || [];
-    // Transform guild field to role for consistency with backend format
+    // Include both role (for backend compatibility) and guild (display name)
     const transformed = appSmes.map(sme => ({
       id: sme.id,
       name: sme.name,
       email: sme.email,
       role: sme.guild.toLowerCase().replace(/[.\s]/g, '_'),
+      guild: sme.guild,
+      health: sme.health,
+      blocked: sme.blocked,
     }));
     return res(ctx.json(transformed));
   }),
