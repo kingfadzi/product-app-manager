@@ -20,6 +20,10 @@ A React 16.x application for managing Products and their associated Applications
 - MSW (Mock Service Worker) for API mocking
 - React Context for state management
 
+## Data Model
+
+See [DATAMODEL.md](DATAMODEL.md) for schema reference and ERD.
+
 ## Getting Started
 
 ### Prerequisites
@@ -85,7 +89,3 @@ src/
 ├── services/         # API service layer
 └── styles/           # CSS styles
 ```
-
-## Data Model
-
-See [DATAMODEL.md](DATAMODEL.md) for schema reference and ERD.
