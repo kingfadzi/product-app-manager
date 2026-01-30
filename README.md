@@ -69,6 +69,14 @@ npx serve -s build
 | `npm test` | Run test suite |
 | `npm run eject` | Eject from Create React App (irreversible) |
 
+### Generating API Documentation
+
+```bash
+npx @redocly/cli build-docs docs/openapi.yaml --output docs/index.html
+```
+
+Open `docs/index.html` in a browser to view the API documentation.
+
 ## Project Structure
 
 ```
