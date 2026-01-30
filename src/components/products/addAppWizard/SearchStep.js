@@ -106,6 +106,9 @@ function SearchResultItem({ app, onSelect }) {
             </Badge>
           )}
           <div className="text-muted small">{app.cmdbId}</div>
+          {app.transactionCycle && (
+            <div className="text-muted small">TC: {app.transactionCycle}</div>
+          )}
         </div>
         <div className="text-end">
           <Badge bg={getTierBadgeColor(app.tier)}>{app.tier}</Badge>

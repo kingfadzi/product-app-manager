@@ -46,16 +46,18 @@ const transformers = {
   // Transform backend search results to CMDB format for AddAppModal
   cmdbSearchResults: (data) => {
     if (USE_MOCK) return data;
-    // Backend returns { results: [...], query: "..." }
+    // Backend returns array of apps directly
     const results = data.results || data;
     return results.map(app => ({
-      cmdbId: app.app_id,
-      id: app.app_id,
+      cmdbId: app.cmdbId,
+      id: app.cmdbId,
       name: app.name,
       tier: app.tier,
-      productOwner: app.owner,
-      resilienceCategory: app.resilience_category,
-      isOnboarded: false,
+      productOwner: app.productOwner,
+      resilienceCategory: app.resCat,
+      transactionCycle: app.transactionCycle,
+      transactionCycleId: app.transactionCycleId,
+      isOnboarded: app.isOnboarded || false,
       memberOfProducts: [],
     }));
   },
