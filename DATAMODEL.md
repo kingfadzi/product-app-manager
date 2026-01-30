@@ -101,7 +101,7 @@ erDiagram
         string appId FK
         string summary
         string status
-        string fixRelease
+        array fixReleases
     }
     ServiceInstance {
         string siId PK
@@ -128,7 +128,7 @@ erDiagram
 | `Doc` | Documentation link | `id`, `appId`, `title`, `url`, `type` |
 | `GuildSme` | Guild subject matter expert | `id`, `appId`, `name`, `email`, `role` |
 | `RiskStory` | Risk/security item | `id`, `appId`, `summary`, `status` |
-| `BusinessOutcome` | Business objective | `id`, `appId`, `summary`, `status`, `fixRelease` |
+| `BusinessOutcome` | Business objective | `id`, `appId`, `summary`, `status`, `fixReleases` |
 | `ServiceInstance` | Deployment instance | `siId`, `appId`, `name`, `environment`, `status` |
 
 ## Enums

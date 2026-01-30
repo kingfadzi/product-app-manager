@@ -1840,9 +1840,11 @@ components:
           type: string
           format: date-time
           example: '2026-01-28T09:00:00'
-        fixRelease:
-          type: string
-          example: 2026-Q2
+        fixReleases:
+          type: array
+          items:
+            type: string
+          example: ["2026-Q2", "2026-Q3"]
         description:
           type: string
           example: Optimize payment gateway integration to reduce processing latency

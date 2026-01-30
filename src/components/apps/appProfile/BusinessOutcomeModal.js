@@ -163,8 +163,8 @@ function DetailsCard({ outcome }) {
         <Table size="sm" className="mb-0" borderless>
           <tbody>
             <tr>
-              <td className="text-muted" style={{ width: '120px' }}>Fix Release</td>
-              <td>{outcome.fixRelease}</td>
+              <td className="text-muted" style={{ width: '120px' }}>Fix Releases</td>
+              <td>{(outcome.fixReleases || []).join(', ') || '-'}</td>
               <td className="text-muted" style={{ width: '120px' }}>Status</td>
               <td>{outcome.status}</td>
             </tr>
@@ -307,7 +307,7 @@ function Step1Details({ outcome }) {
       <h6 className="mb-3">Business Outcome Details</h6>
       <table className="table table-sm table-borderless">
         <tbody>
-          <tr><td className="text-muted" style={{ width: '140px' }}>Fix Release</td><td>{outcome.fixRelease}</td></tr>
+          <tr><td className="text-muted" style={{ width: '140px' }}>Fix Releases</td><td>{(outcome.fixReleases || []).join(', ') || '-'}</td></tr>
           <tr><td className="text-muted">Description</td><td>{outcome.description}</td></tr>
           <tr><td className="text-muted">Portfolio EPV</td><td>{outcome.portfolioEpv}</td></tr>
           <tr><td className="text-muted">Navigator ID</td><td>{outcome.navigatorId}</td></tr>
