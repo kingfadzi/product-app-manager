@@ -1,9 +1,9 @@
 openapi: 3.0.3
 info:
-  title: Product App Manager API
+  title: Lean Control API
   description: |
-    API for managing products, applications, and their associated resources.
-    This specification documents all endpoints used by the Product App Manager frontend.
+    Application and Product Management Platform.
+    This specification documents all API endpoints used by the Lean Control frontend.
   version: 1.0.0
   contact:
     name: API Support
