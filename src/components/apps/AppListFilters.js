@@ -18,6 +18,16 @@ function AppListFilters({
 }) {
   return (
     <Row className="mb-3 g-2 justify-content-end">
+      {showTcFilter && (
+        <Col xs={6} sm={3} lg={2}>
+          <FilterSelect
+            value={tcFilter}
+            onChange={(v) => updateFilter('tc', v)}
+            placeholder="All TCs"
+            options={tcOptions}
+          />
+        </Col>
+      )}
       <Col xs={6} sm={3} lg={2}>
         <FilterSelect
           value={stackFilter}
@@ -34,16 +44,6 @@ function AppListFilters({
           options={productOptions}
         />
       </Col>
-      {showTcFilter && (
-        <Col xs={6} sm={3} lg={2}>
-          <FilterSelect
-            value={tcFilter}
-            onChange={(v) => updateFilter('tc', v)}
-            placeholder="All TCs"
-            options={tcOptions}
-          />
-        </Col>
-      )}
       <Col xs={6} sm={3} lg={2}>
         <FilterSelect
           value={tierFilter}
