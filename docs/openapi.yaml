@@ -1,6 +1,6 @@
 openapi: 3.0.3
 info:
-  title: Lean Control Frontend
+  title: Lean Control Frontend API Requirements
   description: API consumed by the Lean Control frontend.
   version: 1.0.0
   contact:
