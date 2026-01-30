@@ -1,13 +1,33 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Form, ListGroup, Badge, Alert } from 'react-bootstrap';
-import useSearchableAPI from '../../../hooks/useSearchableAPI';
+import { productsApi } from '../../../services/api';
 import { useAddAppWizard } from './AddAppWizardContext';
 
 function ProductStep() {
   const { selectedApp, selectedProduct, selectProduct } = useAddAppWizard();
-  const { searchTerm, setSearchTerm, results, loading } = useSearchableAPI('/api/products/search');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [results, setResults] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   const appProducts = selectedApp?.memberOfProducts || [];
+
+  useEffect(() => {
+    if (searchTerm.length < 2) {
+      setResults([]);
+      return;
+    }
+
+    setLoading(true);
+    productsApi.search(searchTerm)
+      .then(data => {
+        setResults(data);
+        setLoading(false);
+      })
+      .catch(() => {
+        setResults([]);
+        setLoading(false);
+      });
+  }, [searchTerm]);
 
   return (
     <>

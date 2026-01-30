@@ -148,6 +148,7 @@ export const productsApi = {
   getAllProductApps: () => request(USE_MOCK ? '/products/apps/all' : '/v2/products/apps/all/'),
   addApp: (productId, appId) => request(USE_MOCK ? `/products/${productId}/apps/${appId}` : `/v2/products/${productId}/apps/${appId}/`, { method: 'POST' }),
   removeApp: (productId, appId) => request(USE_MOCK ? `/products/${productId}/apps/${appId}` : `/v2/products/${productId}/apps/${appId}/`, { method: 'DELETE' }),
+  search: (query) => request(USE_MOCK ? `/products/search?q=${encodeURIComponent(query)}` : `/v2/products/search/?q=${encodeURIComponent(query)}`),
 };
 
 // Apps API
