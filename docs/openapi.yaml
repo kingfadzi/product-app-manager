@@ -1848,9 +1848,6 @@ components:
         description:
           type: string
           example: Optimize payment gateway integration to reduce processing latency
-        portfolioEpv:
-          type: string
-          example: EPV-2026-042
         navigatorId:
           type: string
           example: NAV-1234

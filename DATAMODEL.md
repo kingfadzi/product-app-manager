@@ -156,4 +156,4 @@ erDiagram
 - `App.parent` references another App's cmdbId for hierarchy
 - `Contact` and `GuildSme` share the same backend table (`stakeholders`) differentiated by `stakeholder_type`
 - `Backlog.projectKey` maps to Jira project key
-- `BusinessOutcome.portfolioEpv` and `navigatorId` are external system references
+- `BusinessOutcome.navigatorId` references the Navigator planning platform
