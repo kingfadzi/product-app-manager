@@ -44,26 +44,38 @@ function AppDetailsTable({ app }) {
           <td>{app.name}</td>
         </tr>
         <tr>
+          <th>Transaction Cycle</th>
+          <td>{app.transactionCycle ? `${app.transactionCycle} (${app.transactionCycleId})` : <span className="text-muted">Not set</span>}</td>
+        </tr>
+        <tr>
           <th>Product Owner</th>
-          <td>{app.productOwner}</td>
+          <td>{app.productOwner || <span className="text-muted">Not set</span>}</td>
         </tr>
         <tr>
           <th>System Architect</th>
-          <td>{app.systemArchitect}</td>
+          <td>{app.systemArchitect || <span className="text-muted">Not set</span>}</td>
         </tr>
         <tr>
           <th>Application Tier</th>
           <td>{app.tier}</td>
         </tr>
         <tr>
+          <th>Stack</th>
+          <td>{app.stack || <span className="text-muted">Not set</span>}</td>
+        </tr>
+        <tr>
           <th>Resilience Category</th>
           <td>
-            <Badge bg={getResCatBadgeColor(app.resCat)}>{app.resCat}</Badge>
+            {app.resilienceCategory ? (
+              <Badge bg={getResCatBadgeColor(app.resilienceCategory)}>{app.resilienceCategory}</Badge>
+            ) : (
+              <span className="text-muted">Not set</span>
+            )}
           </td>
         </tr>
         <tr>
           <th>Operational Status</th>
-          <td>{app.operationalStatus}</td>
+          <td>{app.operationalStatus || <span className="text-muted">Not set</span>}</td>
         </tr>
       </tbody>
     </Table>
