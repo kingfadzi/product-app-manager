@@ -124,6 +124,10 @@ function AppProfile() {
         outcome={selectedOutcome}
         guildSmes={guildSmes}
         onHide={() => setSelectedOutcome(null)}
+        onBack={() => {
+          setSelectedOutcome(null);
+          setShowModal('outcomes');
+        }}
         readOnly={readOnly}
       />
 

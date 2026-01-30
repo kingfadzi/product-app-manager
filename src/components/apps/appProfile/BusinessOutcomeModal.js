@@ -18,7 +18,7 @@ const INITIAL_WIZARD_DATA = {
   selectedGuilds: []
 };
 
-function BusinessOutcomeModal({ show, outcome, guildSmes, onHide, readOnly }) {
+function BusinessOutcomeModal({ show, outcome, guildSmes, onHide, onBack, readOnly }) {
   const [viewMode, setViewMode] = useState('review');
   const [wizardStep, setWizardStep] = useState(1);
   const [wizardData, setWizardData] = useState(INITIAL_WIZARD_DATA);
@@ -106,7 +106,9 @@ function BusinessOutcomeModal({ show, outcome, guildSmes, onHide, readOnly }) {
       <Modal.Footer style={{ justifyContent: 'space-between' }}>
         {viewMode === 'review' ? (
           <>
-            <div />
+            <Button variant="outline-secondary" onClick={onBack} style={{ fontSize: '0.875rem' }}>
+              ← Back to List
+            </Button>
             <Button variant="secondary" onClick={handleClose} style={{ fontSize: '0.875rem' }}>
               Close
             </Button>
