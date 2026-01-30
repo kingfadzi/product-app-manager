@@ -17,7 +17,7 @@ function AppListFilters({
   showTcFilter = true
 }) {
   return (
-    <Row className="mb-3 g-2">
+    <Row className="mb-3 g-2 justify-content-end">
       <Col xs={6} sm={3} lg={2}>
         <FilterSelect
           value={stackFilter}
