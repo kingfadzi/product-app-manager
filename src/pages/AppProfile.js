@@ -22,7 +22,7 @@ import '../styles/tabs.css';
 function AppProfile() {
   const { id } = useParams();
   const history = useHistory();
-  const { apps, products, productApps } = useContext(AppContext);
+  const { apps, products } = useContext(AppContext);
   const { isLoggedIn } = useUser();
   const readOnly = !isLoggedIn;
 
@@ -62,11 +62,16 @@ function AppProfile() {
 
   const app = apps.find(a => a.id === id || a.cmdbId === id);
 
-  // Find products this app belongs to
-  const appProductIds = productApps
-    .filter(pa => pa.appId === id || pa.appId === app?.id || pa.appId === app?.cmdbId)
-    .map(pa => pa.productId);
-  const appProducts = products.filter(p => appProductIds.includes(p.id));
+  // Get products this app belongs to from app.memberOfProducts
+  // Look up full product details from products array to get stack info
+  const appProducts = (app?.memberOfProducts || []).map(p => {
+    const fullProduct = products.find(prod => prod.id === p.productId);
+    return {
+      id: p.productId,
+      name: p.productName,
+      stack: fullProduct?.stackId || null,
+    };
+  });
 
   if (!app) {
     return (

@@ -27,7 +27,7 @@ async function request(endpoint, options = {}) {
   const data = await response.json();
 
   if (!response.ok) {
-    throw new Error(data.error || 'An error occurred');
+    throw new Error(data.detail || data.error || 'An error occurred');
   }
 
   return data;
@@ -61,7 +61,7 @@ const transformers = {
       transactionCycle: app.transactionCycle,
       transactionCycleId: app.transactionCycleId,
       isOnboarded: app.isOnboarded || false,
-      memberOfProducts: [],
+      memberOfProducts: app.memberOfProducts || [],
     }));
   },
 
@@ -132,7 +132,7 @@ const transformers = {
     }));
   },
 
-  // Transform backend available repos
+  // Transform backend available repos (GitLab)
   availableRepos: (data) => {
     if (USE_MOCK) return data;
     if (!data) return [];
@@ -144,6 +144,19 @@ const transformers = {
       type: 'GitLab',
       defaultBranch: repo.defaultBranch,
       lastActivity: repo.lastActivity,
+    }));
+  },
+
+  // Transform backend available Bitbucket repos
+  availableBitbucketRepos: (data) => {
+    if (USE_MOCK) return data;
+    if (!data) return [];
+    return data.map(repo => ({
+      repoId: repo.slug || repo.name,
+      name: repo.name,
+      slug: repo.slug,
+      url: repo.url,
+      type: 'Bitbucket',
     }));
   },
 
@@ -194,6 +207,7 @@ export const appsApi = {
 export const reposApi = {
   getByApp: (appId) => request(USE_MOCK ? `/apps/${appId}/repos` : `/v2/apps/${appId}/repos/`),
   getAvailable: (appId) => request(USE_MOCK ? `/apps/${appId}/available-repos` : `/v2/apps/${appId}/available-repos/`).then(transformers.availableRepos),
+  getAvailableBitbucket: (appId) => request(USE_MOCK ? `/apps/${appId}/available-bitbucket-repos` : `/v2/apps/${appId}/available-bitbucket-repos/`).then(transformers.availableBitbucketRepos),
   create: (appId, repo) => request(USE_MOCK ? `/apps/${appId}/repos` : `/v2/apps/${appId}/repos/`, { method: 'POST', body: repo }),
   update: (id, repo) => request(USE_MOCK ? `/repos/${id}` : `/v2/repos/${id}/`, { method: 'PUT', body: repo }),
   delete: (id) => request(USE_MOCK ? `/repos/${id}` : `/v2/repos/${id}/`, { method: 'DELETE' }),

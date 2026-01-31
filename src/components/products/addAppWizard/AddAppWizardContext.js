@@ -33,6 +33,10 @@ export function AddAppWizardProvider({ children, onComplete, onClose }) {
   // Error handling
   const [error, setError] = useState(null);
 
+  // Submit result
+  const [submitError, setSubmitError] = useState(null);
+  const [submitSuccess, setSubmitSuccess] = useState(false);
+
   // Auto-dismiss error after 5 seconds
   useEffect(() => {
     if (error) {
@@ -50,11 +54,13 @@ export function AddAppWizardProvider({ children, onComplete, onClose }) {
     Promise.all([
       appsApi.getServiceInstances(appId).catch(() => []),
       reposApi.getAvailable(appId).catch(() => []),
+      reposApi.getAvailableBitbucket(appId).catch(() => []),
       backlogsApi.getAvailable(appId).catch(() => []),
     ])
-      .then(([instances, repos, jira]) => {
+      .then(([instances, gitlabRepos, bitbucketRepos, jira]) => {
         setServiceInstances(instances || []);
-        setAvailableRepos(repos || []);
+        // Combine GitLab and Bitbucket repos
+        setAvailableRepos([...(gitlabRepos || []), ...(bitbucketRepos || [])]);
         setAvailableJira(jira || []);
       })
       .catch(() => {
@@ -69,9 +75,14 @@ export function AddAppWizardProvider({ children, onComplete, onClose }) {
   const goToStep = useCallback((step) => setCurrentStep(step), []);
 
   const goBack = useCallback(() => {
+    // If app is already onboarded and we're on review, go back to product
+    if (selectedApp?.isOnboarded && currentStep === 'review') {
+      setCurrentStep('product');
+      return;
+    }
     const idx = STEPS.indexOf(currentStep);
     if (idx > 0) setCurrentStep(STEPS[idx - 1]);
-  }, [currentStep]);
+  }, [currentStep, selectedApp]);
 
   const goNext = useCallback(() => {
     const idx = STEPS.indexOf(currentStep);
@@ -86,8 +97,13 @@ export function AddAppWizardProvider({ children, onComplete, onClose }) {
 
   const selectProduct = useCallback((product) => {
     setSelectedProduct(product);
-    setCurrentStep('details');
-  }, []);
+    // If app is already onboarded, skip to review (just adding to another product)
+    if (selectedApp?.isOnboarded) {
+      setCurrentStep('review');
+    } else {
+      setCurrentStep('details');
+    }
+  }, [selectedApp]);
 
   // Repo helpers
   const toggleRepo = useCallback((repoId) => {
@@ -193,14 +209,25 @@ export function AddAppWizardProvider({ children, onComplete, onClose }) {
   }, [currentStep, selectedProduct, serviceInstances, totalSelectedRepos, totalSelectedJira, addedDocs]);
 
   // Finish
-  const finish = useCallback(() => {
-    onComplete([selectedApp], {
-      productId: selectedProduct.id,
-      productName: selectedProduct.name,
-      repos: getAllSelectedRepos(),
-      jiraProjects: getAllSelectedJira(),
-      documentation: addedDocs
-    });
+  const finish = useCallback(async () => {
+    setSubmitError(null);
+    setSubmitSuccess(false);
+    try {
+      await onComplete([selectedApp], {
+        productId: selectedProduct.id,
+        productName: selectedProduct.name,
+        repos: getAllSelectedRepos(),
+        jiraProjects: getAllSelectedJira(),
+        documentation: addedDocs
+      });
+      // Success - go to result step
+      setSubmitSuccess(true);
+      setCurrentStep('result');
+    } catch (err) {
+      // Error - go to result step with error
+      setSubmitError(err.message || 'Failed to add application. Please try again.');
+      setCurrentStep('result');
+    }
   }, [selectedApp, selectedProduct, getAllSelectedRepos, getAllSelectedJira, addedDocs, onComplete]);
 
   // Reset
@@ -217,9 +244,14 @@ export function AddAppWizardProvider({ children, onComplete, onClose }) {
     setManualJira([]);
     setAddedDocs([]);
     setError(null);
+    setSubmitError(null);
+    setSubmitSuccess(false);
   }, []);
 
   const handleClose = useCallback(() => {
+    if (process.env.NODE_ENV !== 'production') {
+      console.debug('[AddAppWizard] handleClose -> reset + onClose');
+    }
     reset();
     onClose();
   }, [reset, onClose]);
@@ -238,6 +270,8 @@ export function AddAppWizardProvider({ children, onComplete, onClose }) {
     manualJira,
     addedDocs,
     error,
+    submitError,
+    submitSuccess,
 
     // Computed
     totalSelectedRepos,

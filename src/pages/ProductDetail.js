@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useCallback } from 'react';
 import { Card, Table, Button, Alert, Breadcrumb } from 'react-bootstrap';
 import { useParams, useHistory } from 'react-router-dom';
 import { AppContext } from '../context/AppContext';
@@ -9,7 +9,7 @@ import AddAppModal from '../components/products/AddAppModal';
 import ConfirmModal from '../components/common/ConfirmModal';
 import TablePagination from '../components/common/TablePagination';
 import { usePagination } from '../hooks/usePagination';
-import { reposApi, backlogsApi, docsApi, appsApi } from '../services/api';
+import { reposApi, backlogsApi, docsApi, appsApi, productsApi } from '../services/api';
 
 function ProductDetail() {
   const { id } = useParams();
@@ -19,13 +19,20 @@ function ProductDetail() {
   const {
     getProductById,
     getAppsForProduct,
-    addAppToProduct,
+    setProductApps,
     removeAppFromProduct,
     error
   } = useProducts();
 
   const [showAddModal, setShowAddModal] = useState(false);
   const [removeConfirm, setRemoveConfirm] = useState(null);
+
+  const handleAddModalHide = useCallback(() => {
+    if (process.env.NODE_ENV !== 'production') {
+      console.debug('[AddAppModal] onHide -> setShowAddModal(false)');
+    }
+    setShowAddModal(false);
+  }, []);
 
   const product = getProductById(id);
   const productAppIds = getAppsForProduct(id);
@@ -48,7 +55,11 @@ function ProductDetail() {
       // Onboard the app and get the internal app ID
       // Use productId from wizard metadata, not from URL
       const productId = metadata.productId || id;
-      const association = await addAppToProduct(productId, app.cmdbId || app.id, metadata);
+      // Call API directly to avoid useProducts re-render on error
+      // This will throw on error - wizard catches and displays
+      const association = await productsApi.addApp(productId, app.cmdbId || app.id);
+      // Update productApps state on success
+      setProductApps(prev => [...prev, association]);
       const appId = association?.appId;
 
       if (appId) {
@@ -95,7 +106,7 @@ function ProductDetail() {
         }
       }
     }
-    setShowAddModal(false);
+    // Don't close here - let wizard handle closing on success
   };
 
   const handleRemoveApp = async () => {
@@ -143,7 +154,9 @@ function ProductDetail() {
       {/* Breadcrumb Navigation */}
       <Breadcrumb>
         <Breadcrumb.Item onClick={() => history.push('/')}>Home</Breadcrumb.Item>
-        <Breadcrumb.Item onClick={() => history.push(`/products?stack=${product.stack}`)}>{product.stack}</Breadcrumb.Item>
+        {product.stackId && (
+          <Breadcrumb.Item onClick={() => history.push(`/products?stack=${product.stackId}`)}>{product.stackId}</Breadcrumb.Item>
+        )}
         <Breadcrumb.Item active>{product.name}</Breadcrumb.Item>
       </Breadcrumb>
 
@@ -244,7 +257,7 @@ function ProductDetail() {
 
       <AddAppModal
         show={showAddModal}
-        onHide={() => setShowAddModal(false)}
+        onHide={handleAddModalHide}
         onAdd={handleAddApps}
         existingAppIds={productAppIds}
       />

@@ -13,7 +13,8 @@ import {
   ReposStep,
   JiraStep,
   DocsStep,
-  ReviewStep
+  ReviewStep,
+  ResultStep
 } from './addAppWizard';
 
 function AddAppModal({ show, onHide, onAdd, existingAppIds = [] }) {
@@ -27,6 +28,7 @@ function AddAppModal({ show, onHide, onAdd, existingAppIds = [] }) {
 function AddAppModalContent({ show }) {
   const {
     currentStep,
+    selectedApp,
     selectedProduct,
     error,
     setError,
@@ -38,27 +40,41 @@ function AddAppModalContent({ show }) {
     handleClose
   } = useAddAppWizard();
 
-  const currentIndex = STEPS.indexOf(currentStep);
+  const isAddingToProduct = selectedApp?.isOnboarded;
+  const isResultStep = currentStep === 'result';
+
+  // When adding to product, only show search, product, review steps
+  // Don't show result step in indicator - it's a final confirmation
+  const visibleSteps = isAddingToProduct
+    ? ['search', 'product', 'review']
+    : STEPS.filter(s => s !== 'result');
+  const visibleLabels = isAddingToProduct
+    ? { search: 'Search', product: 'Product', review: 'Confirm' }
+    : STEP_LABELS;
+
+  const currentIndex = visibleSteps.indexOf(currentStep);
   const isFirstStep = currentIndex === 0;
-  const isLastStep = currentIndex === STEPS.length - 1;
+  const isLastStep = currentStep === 'review';
 
   return (
-    <Modal show={show} onHide={handleClose} size="lg">
+    <Modal show={show} onHide={handleClose} backdrop="static" keyboard={false} size="lg">
       <Modal.Header closeButton>
         <Modal.Title>
-          <ModalTitle step={currentStep} productName={selectedProduct?.name} />
+          <ModalTitle step={currentStep} productName={selectedProduct?.name} isAddingToProduct={isAddingToProduct} />
         </Modal.Title>
       </Modal.Header>
 
       <Modal.Body style={{ minHeight: '450px' }}>
-        <StepIndicator
-          currentStep={currentStep}
-          steps={STEPS}
-          labels={STEP_LABELS}
-          onStepClick={goToStep}
-        />
+        {!isResultStep && (
+          <StepIndicator
+            currentStep={currentStep}
+            steps={visibleSteps}
+            labels={visibleLabels}
+            onStepClick={goToStep}
+          />
+        )}
 
-        {error && (
+        {error && !isResultStep && (
           <Alert variant="danger" dismissible onClose={() => setError(null)} className="mb-3">
             {error}
           </Alert>
@@ -73,6 +89,7 @@ function AddAppModalContent({ show }) {
           isLastStep={isLastStep}
           currentStep={currentStep}
           canProceed={canProceed()}
+          isAddingToProduct={isAddingToProduct}
           onClose={handleClose}
           onBack={goBack}
           onNext={goNext}
@@ -83,10 +100,12 @@ function AddAppModalContent({ show }) {
   );
 }
 
-function ModalTitle({ step, productName }) {
+function ModalTitle({ step, productName, isAddingToProduct }) {
   if (step === 'search') return 'Search Application';
   if (step === 'product') return 'Select Product';
-  return `Add to ${productName || 'Product'}`;
+  if (step === 'result') return 'Result';
+  if (isAddingToProduct) return `Add to ${productName || 'Product'}`;
+  return `Onboard to ${productName || 'Product'}`;
 }
 
 function StepContent({ step }) {
@@ -107,13 +126,25 @@ function StepContent({ step }) {
       return <DocsStep />;
     case 'review':
       return <ReviewStep />;
+    case 'result':
+      return <ResultStep />;
     default:
       return null;
   }
 }
 
-function FooterButtons({ isFirstStep, isLastStep, currentStep, canProceed, onClose, onBack, onNext, onFinish }) {
-  const showNextButton = !isLastStep && currentStep !== 'search' && currentStep !== 'product';
+function FooterButtons({ isFirstStep, isLastStep, currentStep, canProceed, isAddingToProduct, onClose, onBack, onNext, onFinish }) {
+  // Result step only shows Close button
+  if (currentStep === 'result') {
+    return (
+      <Button variant="primary" onClick={onClose}>
+        Close
+      </Button>
+    );
+  }
+
+  const isReviewStep = currentStep === 'review';
+  const showNextButton = !isReviewStep && currentStep !== 'search' && currentStep !== 'product';
 
   return (
     <>
@@ -130,9 +161,9 @@ function FooterButtons({ isFirstStep, isLastStep, currentStep, canProceed, onClo
           Next
         </Button>
       )}
-      {isLastStep && (
+      {isReviewStep && (
         <Button variant="success" onClick={onFinish}>
-          Add Application
+          {isAddingToProduct ? 'Add to Product' : 'Add Application'}
         </Button>
       )}
     </>

@@ -100,11 +100,6 @@ function SearchResultItem({ app, onSelect }) {
       <div className="d-flex justify-content-between align-items-start">
         <div>
           <strong>{app.name}</strong>
-          {hasProducts && (
-            <Badge bg="warning" text="dark" className="ms-2">
-              In: {app.memberOfProducts.map(p => p.name).join(', ')}
-            </Badge>
-          )}
           <div className="text-muted small">{app.cmdbId}</div>
           {app.transactionCycle && (
             <div className="text-muted small">{app.transactionCycle} ({app.transactionCycleId})</div>
@@ -115,6 +110,14 @@ function SearchResultItem({ app, onSelect }) {
           <div className="text-muted small">{app.productOwner}</div>
         </div>
       </div>
+      {hasProducts && (
+        <div className="mt-2">
+          <Badge bg="warning" text="dark">Already in:</Badge>
+          <span className="text-muted small ms-2">
+            {app.memberOfProducts.map(p => p.productName).join(', ')}
+          </span>
+        </div>
+      )}
     </ListGroup.Item>
   );
 }

@@ -15,6 +15,7 @@ function ReviewStep() {
 
   const allRepos = getAllSelectedRepos();
   const allJira = getAllSelectedJira();
+  const isAddingToProduct = selectedApp?.isOnboarded;
 
   return (
     <>
@@ -22,15 +23,21 @@ function ReviewStep() {
         <tbody>
           <ApplicationRow app={selectedApp} />
           <ProductRow product={selectedProduct} />
-          <InstancesRow instances={serviceInstances} />
-          <ReposRow repos={allRepos} />
-          <JiraRow projects={allJira} />
-          <DocsRow docs={addedDocs} />
+          {!isAddingToProduct && (
+            <>
+              <InstancesRow instances={serviceInstances} />
+              <ReposRow repos={allRepos} />
+              <JiraRow projects={allJira} />
+              <DocsRow docs={addedDocs} />
+            </>
+          )}
         </tbody>
       </Table>
 
       <Alert variant="info" className="small mb-0">
-        Review your selections above. Click "Add Application" to complete onboarding.
+        {isAddingToProduct
+          ? 'Review above. Click "Add to Product" to add this application to the selected product.'
+          : 'Review your selections above. Click "Add Application" to complete onboarding.'}
       </Alert>
     </>
   );

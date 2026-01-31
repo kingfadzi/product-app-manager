@@ -90,8 +90,7 @@ function renderProductResults(searchTerm, results, loading, appProducts, onSelec
 }
 
 function ProductResultItem({ product, appProducts, onSelect }) {
-  const isInThisProduct = appProducts.some(p => p.id === product.id);
-  const otherProducts = appProducts.filter(p => p.id !== product.id);
+  const isInThisProduct = appProducts.some(p => p.productId === product.id);
 
   return (
     <ListGroup.Item
@@ -109,14 +108,6 @@ function ProductResultItem({ product, appProducts, onSelect }) {
           <div className="text-muted small">{product.id}</div>
           {product.transactionCycle && (
             <div className="text-muted small">{product.transactionCycle} ({product.transactionCycleId})</div>
-          )}
-          {!isInThisProduct && otherProducts.length > 0 && (
-            <div className="small mt-1">
-              <Badge bg="warning" text="dark">Note</Badge>
-              <span className="text-muted ms-2">
-                This app is already in: {otherProducts.map(p => p.name).join(', ')}
-              </span>
-            </div>
           )}
         </div>
         <div className="text-end">

@@ -8,3 +8,4 @@ export { default as ReposStep } from './ReposStep';
 export { default as JiraStep } from './JiraStep';
 export { default as DocsStep } from './DocsStep';
 export { default as ReviewStep } from './ReviewStep';
+export { default as ResultStep } from './ResultStep';

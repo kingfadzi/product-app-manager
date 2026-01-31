@@ -57,6 +57,7 @@ export function useProducts() {
   return {
     products,
     productApps,
+    setProductApps,
     loading,
     error,
     clearError,

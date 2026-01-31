@@ -197,19 +197,26 @@ function ProductsTab({ products = [], history }) {
   }
 
   return (
-    <ListGroup variant="flush">
-      {items.map(product => (
-        <ListGroup.Item
-          key={product.id}
-          action
-          onClick={() => history.push(`/products/${product.id}`)}
-          className="px-0"
-        >
-          {product.name}
-          <span className="text-muted ml-2">({product.stack})</span>
-        </ListGroup.Item>
-      ))}
-    </ListGroup>
+    <Table size="sm" hover className="mb-0">
+      <thead>
+        <tr>
+          <th>Product</th>
+          <th>Stack</th>
+        </tr>
+      </thead>
+      <tbody>
+        {items.map(product => (
+          <tr
+            key={product.id}
+            onClick={() => history.push(`/products/${product.id}`)}
+            style={{ cursor: 'pointer' }}
+          >
+            <td>{product.name}</td>
+            <td className="text-muted">{product.stack || '-'}</td>
+          </tr>
+        ))}
+      </tbody>
+    </Table>
   );
 }
 
