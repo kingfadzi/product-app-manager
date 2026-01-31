@@ -1,13 +1,10 @@
 import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
-import { STEPS, DOC_TYPES } from './constants';
+import { DOC_TYPES } from './constants';
 import { appsApi, reposApi, backlogsApi } from '../../../services/api';
 
 const AddAppWizardContext = createContext(null);
 
 export function AddAppWizardProvider({ children, onComplete, onClose }) {
-  // Navigation
-  const [currentStep, setCurrentStep] = useState('search');
-
   // Step 1: Search - selected app from CMDB
   const [selectedApp, setSelectedApp] = useState(null);
 
@@ -59,7 +56,6 @@ export function AddAppWizardProvider({ children, onComplete, onClose }) {
     ])
       .then(([instances, gitlabRepos, bitbucketRepos, jira]) => {
         setServiceInstances(instances || []);
-        // Combine GitLab and Bitbucket repos
         setAvailableRepos([...(gitlabRepos || []), ...(bitbucketRepos || [])]);
         setAvailableJira(jira || []);
       })
@@ -71,39 +67,14 @@ export function AddAppWizardProvider({ children, onComplete, onClose }) {
       });
   }, [selectedApp]);
 
-  // Navigation helpers
-  const goToStep = useCallback((step) => setCurrentStep(step), []);
-
-  const goBack = useCallback(() => {
-    // If app is already onboarded and we're on review, go back to product
-    if (selectedApp?.isOnboarded && currentStep === 'review') {
-      setCurrentStep('product');
-      return;
-    }
-    const idx = STEPS.indexOf(currentStep);
-    if (idx > 0) setCurrentStep(STEPS[idx - 1]);
-  }, [currentStep, selectedApp]);
-
-  const goNext = useCallback(() => {
-    const idx = STEPS.indexOf(currentStep);
-    if (idx < STEPS.length - 1) setCurrentStep(STEPS[idx + 1]);
-  }, [currentStep]);
-
-  // Selection helpers
+  // Selection helpers - data only, navigation handled by wizard
   const selectApp = useCallback((app) => {
     setSelectedApp(app);
-    setCurrentStep('product');
   }, []);
 
   const selectProduct = useCallback((product) => {
     setSelectedProduct(product);
-    // If app is already onboarded, skip to review (just adding to another product)
-    if (selectedApp?.isOnboarded) {
-      setCurrentStep('review');
-    } else {
-      setCurrentStep('details');
-    }
-  }, [selectedApp]);
+  }, []);
 
   // Repo helpers
   const toggleRepo = useCallback((repoId) => {
@@ -190,9 +161,9 @@ export function AddAppWizardProvider({ children, onComplete, onClose }) {
   const totalSelectedRepos = selectedRepos.length + manualRepos.length;
   const totalSelectedJira = selectedJira.length + manualJira.length;
 
-  // Validation
-  const canProceed = useCallback(() => {
-    switch (currentStep) {
+  // Validation - used to enable/disable next button
+  const canProceed = useCallback((stepName) => {
+    switch (stepName) {
       case 'product':
         return selectedProduct !== null;
       case 'instances':
@@ -206,9 +177,9 @@ export function AddAppWizardProvider({ children, onComplete, onClose }) {
       default:
         return true;
     }
-  }, [currentStep, selectedProduct, serviceInstances, totalSelectedRepos, totalSelectedJira, addedDocs]);
+  }, [selectedProduct, serviceInstances, totalSelectedRepos, totalSelectedJira, addedDocs]);
 
-  // Finish
+  // Finish - submit and return success/failure
   const finish = useCallback(async () => {
     setSubmitError(null);
     setSubmitSuccess(false);
@@ -220,19 +191,16 @@ export function AddAppWizardProvider({ children, onComplete, onClose }) {
         jiraProjects: getAllSelectedJira(),
         documentation: addedDocs
       });
-      // Success - go to result step
       setSubmitSuccess(true);
-      setCurrentStep('result');
+      return true;
     } catch (err) {
-      // Error - go to result step with error
       setSubmitError(err.message || 'Failed to add application. Please try again.');
-      setCurrentStep('result');
+      return false;
     }
   }, [selectedApp, selectedProduct, getAllSelectedRepos, getAllSelectedJira, addedDocs, onComplete]);
 
   // Reset
   const reset = useCallback(() => {
-    setCurrentStep('search');
     setSelectedApp(null);
     setSelectedProduct(null);
     setServiceInstances([]);
@@ -249,16 +217,12 @@ export function AddAppWizardProvider({ children, onComplete, onClose }) {
   }, []);
 
   const handleClose = useCallback(() => {
-    if (process.env.NODE_ENV !== 'production') {
-      console.debug('[AddAppWizard] handleClose -> reset + onClose');
-    }
     reset();
     onClose();
   }, [reset, onClose]);
 
   const value = {
     // State
-    currentStep,
     selectedApp,
     selectedProduct,
     serviceInstances,
@@ -281,9 +245,6 @@ export function AddAppWizardProvider({ children, onComplete, onClose }) {
 
     // Actions
     setError,
-    goToStep,
-    goBack,
-    goNext,
     selectApp,
     selectProduct,
     toggleRepo,
@@ -299,6 +260,7 @@ export function AddAppWizardProvider({ children, onComplete, onClose }) {
     canProceed,
     finish,
     handleClose,
+    reset,
   };
 
   return (

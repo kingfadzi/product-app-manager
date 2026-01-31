@@ -5,8 +5,10 @@ import RemediationBox from '../../common/RemediationBox';
 import { useAddAppWizard } from './AddAppWizardContext';
 import { getTierBadgeColor } from './helpers';
 
-function SearchStep() {
+function SearchStep({ onSelect }) {
+  // Use prop if provided, otherwise fall back to context (for backwards compat)
   const { selectApp } = useAddAppWizard();
+  const handleSelect = onSelect || selectApp;
   const [searchTerm, setSearchTerm] = useState('');
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -41,7 +43,7 @@ function SearchStep() {
       </Form.Group>
 
       <ListGroup style={{ maxHeight: '350px', overflow: 'auto' }}>
-        {renderSearchResults(searchTerm, results, loading, selectApp)}
+        {renderSearchResults(searchTerm, results, loading, handleSelect)}
       </ListGroup>
 
       <RemediationBox

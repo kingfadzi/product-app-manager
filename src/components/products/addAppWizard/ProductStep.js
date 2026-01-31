@@ -3,8 +3,10 @@ import { Form, ListGroup, Badge, Alert } from 'react-bootstrap';
 import { productsApi } from '../../../services/api';
 import { useAddAppWizard } from './AddAppWizardContext';
 
-function ProductStep() {
+function ProductStep({ onSelect }) {
   const { selectedApp, selectedProduct, selectProduct } = useAddAppWizard();
+  // Use prop if provided, otherwise fall back to context
+  const handleSelect = onSelect || selectProduct;
   const [searchTerm, setSearchTerm] = useState('');
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -42,7 +44,7 @@ function ProductStep() {
       </Form.Group>
 
       <ListGroup style={{ maxHeight: '300px', overflow: 'auto' }}>
-        {renderProductResults(searchTerm, results, loading, appProducts, selectProduct)}
+        {renderProductResults(searchTerm, results, loading, appProducts, handleSelect)}
       </ListGroup>
 
       {selectedProduct && (

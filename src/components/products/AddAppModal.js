@@ -1,11 +1,9 @@
 import React from 'react';
 import { Modal, Button, Alert } from 'react-bootstrap';
-import StepIndicator from '../common/StepIndicator';
+import StepWizard from 'react-step-wizard';
 import {
   AddAppWizardProvider,
   useAddAppWizard,
-  STEPS,
-  STEP_LABELS,
   SearchStep,
   ProductStep,
   DetailsStep,
@@ -17,6 +15,19 @@ import {
   ResultStep
 } from './addAppWizard';
 
+// Step indices for navigation
+const STEP_INDICES = {
+  SEARCH: 1,
+  PRODUCT: 2,
+  DETAILS: 3,
+  INSTANCES: 4,
+  REPOS: 5,
+  JIRA: 6,
+  DOCS: 7,
+  REVIEW: 8,
+  RESULT: 9
+};
+
 function AddAppModal({ show, onHide, onAdd, existingAppIds = [] }) {
   return (
     <AddAppWizardProvider onComplete={onAdd} onClose={onHide}>
@@ -27,146 +38,237 @@ function AddAppModal({ show, onHide, onAdd, existingAppIds = [] }) {
 
 function AddAppModalContent({ show }) {
   const {
-    currentStep,
-    selectedApp,
     selectedProduct,
     error,
     setError,
-    goToStep,
-    goBack,
-    goNext,
-    canProceed,
-    finish,
     handleClose
   } = useAddAppWizard();
-
-  const isAddingToProduct = selectedApp?.isOnboarded;
-  const isResultStep = currentStep === 'result';
-
-  // When adding to product, only show search, product, review steps
-  // Don't show result step in indicator - it's a final confirmation
-  const visibleSteps = isAddingToProduct
-    ? ['search', 'product', 'review']
-    : STEPS.filter(s => s !== 'result');
-  const visibleLabels = isAddingToProduct
-    ? { search: 'Search', product: 'Product', review: 'Confirm' }
-    : STEP_LABELS;
-
-  const currentIndex = visibleSteps.indexOf(currentStep);
-  const isFirstStep = currentIndex === 0;
-  const isLastStep = currentStep === 'review';
 
   return (
     <Modal show={show} onHide={handleClose} backdrop="static" keyboard={false} size="lg">
       <Modal.Header closeButton>
         <Modal.Title>
-          <ModalTitle step={currentStep} productName={selectedProduct?.name} isAddingToProduct={isAddingToProduct} />
+          {selectedProduct ? `Onboard to ${selectedProduct.name}` : 'Add Application'}
         </Modal.Title>
       </Modal.Header>
 
       <Modal.Body style={{ minHeight: '450px' }}>
-        {!isResultStep && (
-          <StepIndicator
-            currentStep={currentStep}
-            steps={visibleSteps}
-            labels={visibleLabels}
-            onStepClick={goToStep}
-          />
-        )}
-
-        {error && !isResultStep && (
+        {error && (
           <Alert variant="danger" dismissible onClose={() => setError(null)} className="mb-3">
             {error}
           </Alert>
         )}
 
-        <StepContent step={currentStep} />
+        <StepWizard isHashEnabled={false} transitions={{}}>
+          <SearchStepWrapper stepName="search" />
+          <ProductStepWrapper stepName="product" />
+          <DetailsStepWrapper stepName="details" />
+          <InstancesStepWrapper stepName="instances" />
+          <ReposStepWrapper stepName="repos" />
+          <JiraStepWrapper stepName="jira" />
+          <DocsStepWrapper stepName="docs" />
+          <ReviewStepWrapper stepName="review" />
+          <ResultStepWrapper stepName="result" />
+        </StepWizard>
       </Modal.Body>
-
-      <Modal.Footer>
-        <FooterButtons
-          isFirstStep={isFirstStep}
-          isLastStep={isLastStep}
-          currentStep={currentStep}
-          canProceed={canProceed()}
-          isAddingToProduct={isAddingToProduct}
-          onClose={handleClose}
-          onBack={goBack}
-          onNext={goNext}
-          onFinish={finish}
-        />
-      </Modal.Footer>
     </Modal>
   );
 }
 
-function ModalTitle({ step, productName, isAddingToProduct }) {
-  if (step === 'search') return 'Search Application';
-  if (step === 'product') return 'Select Product';
-  if (step === 'result') return 'Result';
-  if (isAddingToProduct) return `Add to ${productName || 'Product'}`;
-  return `Onboard to ${productName || 'Product'}`;
+// Step wrappers with navigation
+function SearchStepWrapper(props) {
+  const { selectApp } = useAddAppWizard();
+
+  const handleSelect = (app) => {
+    selectApp(app);
+    props.nextStep();
+  };
+
+  return <SearchStep onSelect={handleSelect} />;
 }
 
-function StepContent({ step }) {
-  switch (step) {
-    case 'search':
-      return <SearchStep />;
-    case 'product':
-      return <ProductStep />;
-    case 'details':
-      return <DetailsStep />;
-    case 'instances':
-      return <InstancesStep />;
-    case 'repos':
-      return <ReposStep />;
-    case 'jira':
-      return <JiraStep />;
-    case 'docs':
-      return <DocsStep />;
-    case 'review':
-      return <ReviewStep />;
-    case 'result':
-      return <ResultStep />;
-    default:
-      return null;
-  }
-}
+function ProductStepWrapper(props) {
+  const { selectProduct, selectedApp, handleClose } = useAddAppWizard();
+  const isAddingToProduct = selectedApp?.isOnboarded;
 
-function FooterButtons({ isFirstStep, isLastStep, currentStep, canProceed, isAddingToProduct, onClose, onBack, onNext, onFinish }) {
-  // Result step only shows Close button
-  if (currentStep === 'result') {
-    return (
-      <Button variant="primary" onClick={onClose}>
-        Close
-      </Button>
-    );
-  }
-
-  const isReviewStep = currentStep === 'review';
-  const showNextButton = !isReviewStep && currentStep !== 'search' && currentStep !== 'product';
+  const handleSelect = (product) => {
+    selectProduct(product);
+    if (isAddingToProduct) {
+      // Skip to review step
+      props.goToStep(STEP_INDICES.REVIEW);
+    } else {
+      props.nextStep();
+    }
+  };
 
   return (
-    <>
-      <Button variant="secondary" onClick={onClose}>
+    <div>
+      <ProductStep onSelect={handleSelect} />
+      <NavButtons
+        onCancel={handleClose}
+        onBack={props.previousStep}
+        showBack={true}
+      />
+    </div>
+  );
+}
+
+function DetailsStepWrapper(props) {
+  const { handleClose } = useAddAppWizard();
+  return (
+    <div>
+      <DetailsStep />
+      <NavButtons
+        onCancel={handleClose}
+        onBack={props.previousStep}
+        onNext={props.nextStep}
+        showBack={true}
+        showNext={true}
+      />
+    </div>
+  );
+}
+
+function InstancesStepWrapper(props) {
+  const { canProceed, handleClose } = useAddAppWizard();
+  return (
+    <div>
+      <InstancesStep />
+      <NavButtons
+        onCancel={handleClose}
+        onBack={props.previousStep}
+        onNext={props.nextStep}
+        showBack={true}
+        showNext={true}
+        canProceed={canProceed('instances')}
+      />
+    </div>
+  );
+}
+
+function ReposStepWrapper(props) {
+  const { canProceed, handleClose } = useAddAppWizard();
+  return (
+    <div>
+      <ReposStep />
+      <NavButtons
+        onCancel={handleClose}
+        onBack={props.previousStep}
+        onNext={props.nextStep}
+        showBack={true}
+        showNext={true}
+        canProceed={canProceed('repos')}
+      />
+    </div>
+  );
+}
+
+function JiraStepWrapper(props) {
+  const { canProceed, handleClose } = useAddAppWizard();
+  return (
+    <div>
+      <JiraStep />
+      <NavButtons
+        onCancel={handleClose}
+        onBack={props.previousStep}
+        onNext={props.nextStep}
+        showBack={true}
+        showNext={true}
+        canProceed={canProceed('jira')}
+      />
+    </div>
+  );
+}
+
+function DocsStepWrapper(props) {
+  const { canProceed, handleClose } = useAddAppWizard();
+  return (
+    <div>
+      <DocsStep />
+      <NavButtons
+        onCancel={handleClose}
+        onBack={props.previousStep}
+        onNext={props.nextStep}
+        showBack={true}
+        showNext={true}
+        canProceed={canProceed('docs')}
+      />
+    </div>
+  );
+}
+
+function ReviewStepWrapper(props) {
+  const { finish, handleClose, selectedApp } = useAddAppWizard();
+  const isAddingToProduct = selectedApp?.isOnboarded;
+
+  const handleBack = () => {
+    if (isAddingToProduct) {
+      props.goToStep(STEP_INDICES.PRODUCT);
+    } else {
+      props.previousStep();
+    }
+  };
+
+  const handleSubmit = async () => {
+    await finish();
+    props.nextStep();
+  };
+
+  return (
+    <div>
+      <ReviewStep />
+      <div className="d-flex justify-content-between mt-4">
+        <Button variant="secondary" onClick={handleClose}>
+          Cancel
+        </Button>
+        <div>
+          <Button variant="outline-secondary" onClick={handleBack} className="me-2">
+            Back
+          </Button>
+          <Button variant="success" onClick={handleSubmit}>
+            {isAddingToProduct ? 'Add to Product' : 'Add Application'}
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ResultStepWrapper(props) {
+  const { handleClose } = useAddAppWizard();
+
+  return (
+    <div>
+      <ResultStep />
+      <div className="d-flex justify-content-end mt-4">
+        <Button variant="primary" onClick={handleClose}>
+          Close
+        </Button>
+      </div>
+    </div>
+  );
+}
+
+// Reusable navigation buttons
+function NavButtons({ onCancel, onBack, onNext, showBack, showNext, canProceed = true }) {
+  return (
+    <div className="d-flex justify-content-between mt-4">
+      <Button variant="secondary" onClick={onCancel}>
         Cancel
       </Button>
-      {!isFirstStep && (
-        <Button variant="outline-secondary" onClick={onBack}>
-          Back
-        </Button>
-      )}
-      {showNextButton && (
-        <Button variant="primary" onClick={onNext} disabled={!canProceed}>
-          Next
-        </Button>
-      )}
-      {isReviewStep && (
-        <Button variant="success" onClick={onFinish}>
-          {isAddingToProduct ? 'Add to Product' : 'Add Application'}
-        </Button>
-      )}
-    </>
+      <div>
+        {showBack && (
+          <Button variant="outline-secondary" onClick={onBack} className="me-2">
+            Back
+          </Button>
+        )}
+        {showNext && (
+          <Button variant="primary" onClick={onNext} disabled={!canProceed}>
+            Next
+          </Button>
+        )}
+      </div>
+    </div>
   );
 }
 
