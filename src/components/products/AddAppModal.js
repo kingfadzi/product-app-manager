@@ -235,12 +235,23 @@ function ReviewStepWrapper(props) {
 }
 
 function ResultStepWrapper(props) {
-  const { handleClose } = useAddAppWizard();
+  const { handleClose, submitError, submitSuccess } = useAddAppWizard();
+
+  const handleBack = () => {
+    props.previousStep();
+  };
 
   return (
     <div>
       <ResultStep />
-      <div className="d-flex justify-content-end mt-4">
+      <div className="d-flex justify-content-between mt-4">
+        <div>
+          {submitError && (
+            <Button variant="outline-secondary" onClick={handleBack}>
+              Back
+            </Button>
+          )}
+        </div>
         <Button variant="primary" onClick={handleClose}>
           Close
         </Button>
