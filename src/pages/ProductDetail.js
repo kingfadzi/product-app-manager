@@ -1,20 +1,20 @@
-import React, { useState, useContext, useCallback } from 'react';
+import React, { useState, useContext } from 'react';
 import { Card, Table, Button, Alert, Breadcrumb } from 'react-bootstrap';
 import { useParams, useHistory } from 'react-router-dom';
 import { AppContext } from '../context/AppContext';
 import { useUser } from '../context/UserContext';
 import useProducts from '../hooks/useProducts';
+import { useAppOnboarding } from '../hooks/useAppOnboarding';
 import PageLayout from '../components/layout/PageLayout';
 import AddAppModal from '../components/products/AddAppModal';
 import ConfirmModal from '../components/common/ConfirmModal';
 import TablePagination from '../components/common/TablePagination';
 import { usePagination } from '../hooks/usePagination';
-import { reposApi, backlogsApi, docsApi, appsApi, productsApi } from '../services/api';
 
 function ProductDetail() {
   const { id } = useParams();
   const history = useHistory();
-  const { apps, addApp } = useContext(AppContext);
+  const { apps } = useContext(AppContext);
   const { isLoggedIn } = useUser();
   const {
     getProductById,
@@ -27,12 +27,14 @@ function ProductDetail() {
   const [showAddModal, setShowAddModal] = useState(false);
   const [removeConfirm, setRemoveConfirm] = useState(null);
 
-  const handleAddModalHide = useCallback(() => {
-    if (process.env.NODE_ENV !== 'production') {
-      console.debug('[AddAppModal] onHide -> setShowAddModal(false)');
+  // App onboarding with product association update
+  const { onboardApp } = useAppOnboarding();
+  const handleAddApps = async (selectedApps, metadata) => {
+    const association = await onboardApp(selectedApps, metadata);
+    if (association) {
+      setProductApps(prev => [...prev, association]);
     }
-    setShowAddModal(false);
-  }, []);
+  };
 
   const product = getProductById(id);
   const productAppIds = getAppsForProduct(id);
@@ -50,88 +52,12 @@ function ProductDetail() {
     showPagination
   } = usePagination(productApps, 10);
 
-  const handleAddApps = async (selectedApps, metadata = {}) => {
-    for (const app of selectedApps) {
-      // Onboard the app and get the internal app ID
-      // Use productId from wizard metadata, not from URL
-      const productId = metadata.productId || id;
-      // Call API directly to avoid useProducts re-render on error
-      // This will throw on error - wizard catches and displays
-      const association = await productsApi.addApp(productId, app.cmdbId || app.id);
-      // Update productApps state on success
-      setProductApps(prev => [...prev, association]);
-      const appId = association?.appId;
-
-      if (appId) {
-        // Save repos
-        if (metadata.repos?.length > 0) {
-          for (const repo of metadata.repos) {
-            await reposApi.create(appId, {
-              name: repo.name,
-              url: repo.url,
-              gitlabId: repo.repoId,
-              defaultBranch: repo.defaultBranch || 'main',
-              isMonorepo: false,
-            }).catch(console.error);
-          }
-        }
-
-        // Save Jira projects
-        if (metadata.jiraProjects?.length > 0) {
-          for (const jira of metadata.jiraProjects) {
-            await backlogsApi.create(appId, {
-              projectKey: jira.projectKey,
-              projectName: jira.projectName,
-              projectUrl: jira.url,
-            }).catch(console.error);
-          }
-        }
-
-        // Save documentation
-        if (metadata.documentation?.length > 0) {
-          for (const doc of metadata.documentation) {
-            await docsApi.create(appId, {
-              title: doc.type,
-              url: doc.url,
-              type: doc.type,
-            }).catch(console.error);
-          }
-        }
-
-        // Fetch and add the new app to context
-        const cmdbId = app.cmdbId || app.id;
-        const newApp = await appsApi.getById(cmdbId);
-        if (newApp) {
-          addApp(newApp);
-        }
-      }
-    }
-    // Don't close here - let wizard handle closing on success
-  };
-
   const handleRemoveApp = async () => {
     if (removeConfirm) {
       await removeAppFromProduct(id, removeConfirm.id);
       setRemoveConfirm(null);
     }
   };
-
-  const tierColors = {
-    gold: 'warning',
-    silver: 'secondary',
-    bronze: 'info',
-  };
-
-  const statusColors = {
-    active: 'success',
-    maintenance: 'warning',
-    deprecated: 'danger',
-  };
-
-  // Count apps by tier
-  const goldApps = productApps.filter(a => a.tier === 'gold').length;
-  const silverApps = productApps.filter(a => a.tier === 'silver').length;
-  const bronzeApps = productApps.filter(a => a.tier === 'bronze').length;
 
   if (!product) {
     return (
@@ -257,7 +183,7 @@ function ProductDetail() {
 
       <AddAppModal
         show={showAddModal}
-        onHide={handleAddModalHide}
+        onHide={() => setShowAddModal(false)}
         onAdd={handleAddApps}
         existingAppIds={productAppIds}
       />

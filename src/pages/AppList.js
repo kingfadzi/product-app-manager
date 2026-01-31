@@ -8,15 +8,15 @@ import EmptyState from '../components/common/EmptyState';
 import TablePagination from '../components/common/TablePagination';
 import { usePagination } from '../hooks/usePagination';
 import useAppListFilters from '../hooks/useAppListFilters';
+import { useAppOnboarding } from '../hooks/useAppOnboarding';
 import AppListFilters from '../components/apps/AppListFilters';
 import AppsTable from '../components/apps/AppsTable';
 import AddAppModal from '../components/products/AddAppModal';
-import { productsApi, reposApi, backlogsApi, docsApi, appsApi } from '../services/api';
 
 function AppList() {
   const history = useHistory();
   const location = useLocation();
-  const { apps, loading, error, addApp } = useContext(AppContext);
+  const { apps, loading, error } = useContext(AppContext);
   const { isMyApp, isLoggedIn } = useUser();
 
   // Check if this is a global search (from header)
@@ -37,6 +37,9 @@ function AppList() {
   }, [apps, showAllApps, isMyApp]);
 
   const [showAddWizard, setShowAddWizard] = useState(false);
+
+  // App onboarding
+  const { onboardApp } = useAppOnboarding();
 
   // Pagination
   const {
@@ -85,61 +88,8 @@ function AppList() {
     }
   }, [location.search, history]);
 
-  const handleAddApp = async (selectedApps, metadata = {}) => {
-    if (selectedApps?.length > 0) {
-      const app = selectedApps[0];
-      const productId = metadata.productId;
-      const cmdbId = app.cmdbId || app.id;
-
-      // Onboard the app - let errors propagate to wizard for display
-      const association = await productsApi.addApp(productId, cmdbId);
-      const appId = association?.appId;
-
-      if (appId) {
-        // Save repos
-        if (metadata.repos?.length > 0) {
-          for (const repo of metadata.repos) {
-            await reposApi.create(appId, {
-              name: repo.name,
-              url: repo.url,
-              gitlabId: repo.repoId,
-              defaultBranch: repo.defaultBranch || 'main',
-              isMonorepo: false,
-            }).catch(console.error);
-          }
-        }
-
-        // Save Jira projects
-        if (metadata.jiraProjects?.length > 0) {
-          for (const jira of metadata.jiraProjects) {
-            await backlogsApi.create(appId, {
-              projectKey: jira.projectKey,
-              projectName: jira.projectName,
-              projectUrl: jira.url,
-            }).catch(console.error);
-          }
-        }
-
-        // Save documentation
-        if (metadata.documentation?.length > 0) {
-          for (const doc of metadata.documentation) {
-            await docsApi.create(appId, {
-              title: doc.type,
-              url: doc.url,
-              type: doc.type,
-            }).catch(console.error);
-          }
-        }
-
-        // Fetch the full app and add to context
-        const newApp = await appsApi.getById(cmdbId);
-        if (newApp) {
-          addApp(newApp);
-        }
-      }
-    }
-    // Don't close modal here - wizard handles closing via result step
-  };
+  // Wizard handles closing via result step - errors propagate to wizard for display
+  const handleAddApp = (selectedApps, metadata) => onboardApp(selectedApps, metadata);
 
   const handleRowClick = (appId) => history.push(`/apps/${appId}`);
 
