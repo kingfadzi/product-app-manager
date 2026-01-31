@@ -98,10 +98,10 @@ const transformers = {
     if (USE_MOCK) return data;
     const projects = data.projects || data;
     return projects.map(p => ({
-      id: p.project_key || p.key,
-      projectKey: p.project_key || p.key,
-      name: p.name || p.project_name,
-      url: p.url || `https://jira.example.com/browse/${p.project_key || p.key}`,
+      id: p.projectKey || p.project_key || p.key,
+      projectKey: p.projectKey || p.project_key || p.key,
+      projectName: p.projectName || p.project_name || p.name,
+      url: p.projectUrl || p.url || `https://jira.example.com/browse/${p.projectKey || p.key}`,
     }));
   },
 
@@ -123,7 +123,28 @@ const transformers = {
   serviceInstances: (data) => {
     if (USE_MOCK) return data;
     if (!data) return [];
-    return data.instances || data || [];
+    const instances = data.instances || data || [];
+    return instances.map(si => ({
+      siId: si.id,
+      name: si.name,
+      environment: si.environment,
+      status: si.status,
+    }));
+  },
+
+  // Transform backend available repos
+  availableRepos: (data) => {
+    if (USE_MOCK) return data;
+    if (!data) return [];
+    return data.map(repo => ({
+      repoId: repo.gitlabId,
+      name: repo.name,
+      slug: repo.slug,
+      url: repo.url,
+      type: 'GitLab',
+      defaultBranch: repo.defaultBranch,
+      lastActivity: repo.lastActivity,
+    }));
   },
 
   // Transform backend work items to risk stories format
@@ -172,7 +193,7 @@ export const appsApi = {
 // Repos API
 export const reposApi = {
   getByApp: (appId) => request(USE_MOCK ? `/apps/${appId}/repos` : `/v2/apps/${appId}/repos/`),
-  getAvailable: (appId) => request(USE_MOCK ? `/apps/${appId}/available-repos` : `/v2/apps/${appId}/available-repos/`),
+  getAvailable: (appId) => request(USE_MOCK ? `/apps/${appId}/available-repos` : `/v2/apps/${appId}/available-repos/`).then(transformers.availableRepos),
   create: (appId, repo) => request(USE_MOCK ? `/apps/${appId}/repos` : `/v2/apps/${appId}/repos/`, { method: 'POST', body: repo }),
   update: (id, repo) => request(USE_MOCK ? `/repos/${id}` : `/v2/repos/${id}/`, { method: 'PUT', body: repo }),
   delete: (id) => request(USE_MOCK ? `/repos/${id}` : `/v2/repos/${id}/`, { method: 'DELETE' }),
@@ -180,7 +201,8 @@ export const reposApi = {
 
 // Backlogs API (Jira Projects)
 export const backlogsApi = {
-  getByApp: (appId) => request(USE_MOCK ? `/apps/${appId}/backlogs` : `/jira/projects/${appId}/`).then(transformers.jiraProjectsToBacklogs),
+  getByApp: (appId) => request(USE_MOCK ? `/apps/${appId}/backlogs` : `/v2/apps/${appId}/backlogs/`),
+  getAvailable: (appId) => request(USE_MOCK ? `/apps/${appId}/available-jira` : `/jira/projects/${appId}/`).then(transformers.jiraProjectsToBacklogs),
   create: (appId, backlog) => request(USE_MOCK ? `/apps/${appId}/backlogs` : `/v2/apps/${appId}/backlogs/`, { method: 'POST', body: backlog }),
   update: (id, backlog) => request(USE_MOCK ? `/backlogs/${id}` : `/v2/backlogs/${id}/`, { method: 'PUT', body: backlog }),
   delete: (id) => request(USE_MOCK ? `/backlogs/${id}` : `/v2/backlogs/${id}/`, { method: 'DELETE' }),

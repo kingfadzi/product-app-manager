@@ -60,11 +60,11 @@ function AppProfile() {
     }
   };
 
-  const app = apps.find(a => a.id === id);
+  const app = apps.find(a => a.id === id || a.cmdbId === id);
 
   // Find products this app belongs to
   const appProductIds = productApps
-    .filter(pa => pa.appId === id)
+    .filter(pa => pa.appId === id || pa.appId === app?.id || pa.appId === app?.cmdbId)
     .map(pa => pa.productId);
   const appProducts = products.filter(p => appProductIds.includes(p.id));
 

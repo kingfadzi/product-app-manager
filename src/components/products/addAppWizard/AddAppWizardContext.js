@@ -50,7 +50,7 @@ export function AddAppWizardProvider({ children, onComplete, onClose }) {
     Promise.all([
       appsApi.getServiceInstances(appId).catch(() => []),
       reposApi.getAvailable(appId).catch(() => []),
-      backlogsApi.getByApp(appId).catch(() => []),
+      backlogsApi.getAvailable(appId).catch(() => []),
     ])
       .then(([instances, repos, jira]) => {
         setServiceInstances(instances || []);

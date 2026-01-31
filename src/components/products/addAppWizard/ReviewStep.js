@@ -121,7 +121,7 @@ function ReposRow({ repos }) {
               <Badge bg={getRepoTypeBadgeColor(repo.type)} className="me-1">
                 {repo.type}
               </Badge>
-              {repo.name}
+              {repo.slug || repo.name}
               {idx < repos.length - 1 && <br />}
             </span>
           ))

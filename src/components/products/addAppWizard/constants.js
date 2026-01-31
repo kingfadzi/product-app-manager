@@ -1,6 +1,15 @@
 // Wizard step names and labels
 export const STEPS = ['search', 'product', 'details', 'instances', 'repos', 'jira', 'docs', 'review'];
-export const STEP_LABELS = ['Search', 'Product', 'Details', 'Instances', 'Repos', 'Jira', 'Docs', 'Review'];
+export const STEP_LABELS = {
+  search: 'Search',
+  product: 'Product',
+  details: 'Details',
+  instances: 'Instances',
+  repos: 'Git',
+  jira: 'Jira',
+  docs: 'Docs',
+  review: 'Review'
+};
 
 // Required document types
 export const DOC_TYPES = [

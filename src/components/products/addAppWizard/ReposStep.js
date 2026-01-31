@@ -121,7 +121,7 @@ function AvailableReposTable({ repos, selectedRepos, onToggle, onSelectAll }) {
             />
           </th>
           <th>Type</th>
-          <th>Repository Name</th>
+          <th>Slug</th>
           <th>Link</th>
         </tr>
       </thead>
@@ -138,7 +138,7 @@ function AvailableReposTable({ repos, selectedRepos, onToggle, onSelectAll }) {
             <td>
               <Badge bg={getRepoTypeBadgeColor(repo.type)}>{repo.type}</Badge>
             </td>
-            <td>{repo.name}</td>
+            <td>{repo.slug || repo.name}</td>
             <td>
               <a href={repo.url} target="_blank" rel="noopener noreferrer">
                 View &rarr;
@@ -174,7 +174,7 @@ function ManualReposTable({ repos, onRemove }) {
       <thead className="bg-light">
         <tr>
           <th>Type</th>
-          <th>Repository Name</th>
+          <th>Slug</th>
           <th>Link</th>
           <th style={{ width: '40px' }}></th>
         </tr>
@@ -185,7 +185,7 @@ function ManualReposTable({ repos, onRemove }) {
             <td>
               <Badge bg={getRepoTypeBadgeColor(repo.type)}>{repo.type}</Badge>
             </td>
-            <td>{repo.name}</td>
+            <td>{repo.slug || repo.name}</td>
             <td>
               <a href={repo.url} target="_blank" rel="noopener noreferrer">
                 View &rarr;

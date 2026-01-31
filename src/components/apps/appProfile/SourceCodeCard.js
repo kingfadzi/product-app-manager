@@ -33,18 +33,28 @@ function ReposTab({ repos = [] }) {
     return <p className="text-muted mb-0">No repositories added</p>;
   }
 
+  // Extract slug from URL (e.g., "https://gitlab.example.com/group/repo" -> "group/repo")
+  const getSlug = (url) => {
+    if (!url) return '';
+    try {
+      const urlObj = new URL(url);
+      return urlObj.pathname.replace(/^\//, '');
+    } catch {
+      return url;
+    }
+  };
+
   return (
     <Table size="sm" className="mb-0" borderless>
       <tbody>
         {items.map(repo => (
           <tr key={repo.id}>
             <td>
-              <a href={`https://gitlab.com/${repo.repoPath}`} target="_blank" rel="noopener noreferrer">
-                {repo.repoName}
+              <a href={repo.url} target="_blank" rel="noopener noreferrer">
+                {getSlug(repo.url) || repo.name}
               </a>
             </td>
-            <td>{repo.role}</td>
-            <td className="text-muted">{repo.platform || 'GitLab'}</td>
+            <td className="text-muted">GitLab</td>
           </tr>
         ))}
       </tbody>
@@ -64,12 +74,11 @@ function BacklogsTab({ backlogs = [] }) {
         {items.map(backlog => (
           <tr key={backlog.id}>
             <td>
-              <a href={`https://jira.example.com/browse/${backlog.projectKey}`} target="_blank" rel="noopener noreferrer">
+              <a href={backlog.projectUrl || `https://jira.example.com/browse/${backlog.projectKey}`} target="_blank" rel="noopener noreferrer">
                 {backlog.projectKey}
               </a>
             </td>
             <td>{backlog.projectName}</td>
-            <td className="text-muted">{backlog.purpose}</td>
           </tr>
         ))}
       </tbody>

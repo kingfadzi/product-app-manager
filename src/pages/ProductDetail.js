@@ -9,11 +9,12 @@ import AddAppModal from '../components/products/AddAppModal';
 import ConfirmModal from '../components/common/ConfirmModal';
 import TablePagination from '../components/common/TablePagination';
 import { usePagination } from '../hooks/usePagination';
+import { reposApi, backlogsApi, docsApi, appsApi } from '../services/api';
 
 function ProductDetail() {
   const { id } = useParams();
   const history = useHistory();
-  const { apps } = useContext(AppContext);
+  const { apps, addApp } = useContext(AppContext);
   const { isLoggedIn } = useUser();
   const {
     getProductById,
@@ -44,7 +45,55 @@ function ProductDetail() {
 
   const handleAddApps = async (selectedApps, metadata = {}) => {
     for (const app of selectedApps) {
-      await addAppToProduct(id, app.id, metadata);
+      // Onboard the app and get the internal app ID
+      // Use productId from wizard metadata, not from URL
+      const productId = metadata.productId || id;
+      const association = await addAppToProduct(productId, app.cmdbId || app.id, metadata);
+      const appId = association?.appId;
+
+      if (appId) {
+        // Save repos
+        if (metadata.repos?.length > 0) {
+          for (const repo of metadata.repos) {
+            await reposApi.create(appId, {
+              name: repo.name,
+              url: repo.url,
+              gitlabId: repo.repoId,
+              defaultBranch: repo.defaultBranch || 'main',
+              isMonorepo: false,
+            }).catch(console.error);
+          }
+        }
+
+        // Save Jira projects
+        if (metadata.jiraProjects?.length > 0) {
+          for (const jira of metadata.jiraProjects) {
+            await backlogsApi.create(appId, {
+              projectKey: jira.projectKey,
+              projectName: jira.projectName,
+              projectUrl: jira.url,
+            }).catch(console.error);
+          }
+        }
+
+        // Save documentation
+        if (metadata.documentation?.length > 0) {
+          for (const doc of metadata.documentation) {
+            await docsApi.create(appId, {
+              title: doc.type,
+              url: doc.url,
+              type: doc.type,
+            }).catch(console.error);
+          }
+        }
+
+        // Fetch and add the new app to context
+        const cmdbId = app.cmdbId || app.id;
+        const newApp = await appsApi.getById(cmdbId);
+        if (newApp) {
+          addApp(newApp);
+        }
+      }
     }
     setShowAddModal(false);
   };

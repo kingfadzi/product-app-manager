@@ -11,11 +11,12 @@ import useAppListFilters from '../hooks/useAppListFilters';
 import AppListFilters from '../components/apps/AppListFilters';
 import AppsTable from '../components/apps/AppsTable';
 import AddAppModal from '../components/products/AddAppModal';
+import { productsApi, reposApi, backlogsApi, docsApi, appsApi } from '../services/api';
 
 function AppList() {
   const history = useHistory();
   const location = useLocation();
-  const { apps, loading, error } = useContext(AppContext);
+  const { apps, loading, error, addApp } = useContext(AppContext);
   const { isMyApp, isLoggedIn } = useUser();
 
   // Check if this is a global search (from header)
@@ -84,9 +85,65 @@ function AppList() {
     }
   }, [location.search, history]);
 
-  const handleAddApp = (selectedApps) => {
+  const handleAddApp = async (selectedApps, metadata = {}) => {
     if (selectedApps?.length > 0) {
-      history.push(`/apps/${selectedApps[0].id}`);
+      const app = selectedApps[0];
+      const productId = metadata.productId;
+      const cmdbId = app.cmdbId || app.id;
+
+      try {
+        // Onboard the app
+        const association = await productsApi.addApp(productId, cmdbId);
+        const appId = association?.appId;
+
+        if (appId) {
+          // Save repos
+          if (metadata.repos?.length > 0) {
+            for (const repo of metadata.repos) {
+              await reposApi.create(appId, {
+                name: repo.name,
+                url: repo.url,
+                gitlabId: repo.repoId,  // repoId is the gitlabId from transformer
+                defaultBranch: repo.defaultBranch || 'main',
+                isMonorepo: false,
+              }).catch(console.error);
+            }
+          }
+
+          // Save Jira projects
+          if (metadata.jiraProjects?.length > 0) {
+            for (const jira of metadata.jiraProjects) {
+              await backlogsApi.create(appId, {
+                projectKey: jira.projectKey,
+                projectName: jira.projectName,
+                projectUrl: jira.url,
+              }).catch(console.error);
+            }
+          }
+
+          // Save documentation
+          if (metadata.documentation?.length > 0) {
+            for (const doc of metadata.documentation) {
+              await docsApi.create(appId, {
+                title: doc.type,
+                url: doc.url,
+                type: doc.type,
+              }).catch(console.error);
+            }
+          }
+
+          // Fetch the full app and add to context
+          const newApp = await appsApi.getById(cmdbId);
+          if (newApp) {
+            addApp(newApp);
+          }
+
+          // Navigate to the onboarded app
+          history.push(`/apps/${cmdbId}`);
+        }
+      } catch (err) {
+        console.error('Failed to onboard app:', err);
+      }
     }
     setShowAddWizard(false);
   };
