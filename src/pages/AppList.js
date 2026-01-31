@@ -91,61 +91,54 @@ function AppList() {
       const productId = metadata.productId;
       const cmdbId = app.cmdbId || app.id;
 
-      try {
-        // Onboard the app
-        const association = await productsApi.addApp(productId, cmdbId);
-        const appId = association?.appId;
+      // Onboard the app - let errors propagate to wizard for display
+      const association = await productsApi.addApp(productId, cmdbId);
+      const appId = association?.appId;
 
-        if (appId) {
-          // Save repos
-          if (metadata.repos?.length > 0) {
-            for (const repo of metadata.repos) {
-              await reposApi.create(appId, {
-                name: repo.name,
-                url: repo.url,
-                gitlabId: repo.repoId,  // repoId is the gitlabId from transformer
-                defaultBranch: repo.defaultBranch || 'main',
-                isMonorepo: false,
-              }).catch(console.error);
-            }
+      if (appId) {
+        // Save repos
+        if (metadata.repos?.length > 0) {
+          for (const repo of metadata.repos) {
+            await reposApi.create(appId, {
+              name: repo.name,
+              url: repo.url,
+              gitlabId: repo.repoId,
+              defaultBranch: repo.defaultBranch || 'main',
+              isMonorepo: false,
+            }).catch(console.error);
           }
-
-          // Save Jira projects
-          if (metadata.jiraProjects?.length > 0) {
-            for (const jira of metadata.jiraProjects) {
-              await backlogsApi.create(appId, {
-                projectKey: jira.projectKey,
-                projectName: jira.projectName,
-                projectUrl: jira.url,
-              }).catch(console.error);
-            }
-          }
-
-          // Save documentation
-          if (metadata.documentation?.length > 0) {
-            for (const doc of metadata.documentation) {
-              await docsApi.create(appId, {
-                title: doc.type,
-                url: doc.url,
-                type: doc.type,
-              }).catch(console.error);
-            }
-          }
-
-          // Fetch the full app and add to context
-          const newApp = await appsApi.getById(cmdbId);
-          if (newApp) {
-            addApp(newApp);
-          }
-
-          // Navigate to the onboarded app
-          history.push(`/apps/${cmdbId}`);
         }
-      } catch (err) {
-        console.error('Failed to onboard app:', err);
+
+        // Save Jira projects
+        if (metadata.jiraProjects?.length > 0) {
+          for (const jira of metadata.jiraProjects) {
+            await backlogsApi.create(appId, {
+              projectKey: jira.projectKey,
+              projectName: jira.projectName,
+              projectUrl: jira.url,
+            }).catch(console.error);
+          }
+        }
+
+        // Save documentation
+        if (metadata.documentation?.length > 0) {
+          for (const doc of metadata.documentation) {
+            await docsApi.create(appId, {
+              title: doc.type,
+              url: doc.url,
+              type: doc.type,
+            }).catch(console.error);
+          }
+        }
+
+        // Fetch the full app and add to context
+        const newApp = await appsApi.getById(cmdbId);
+        if (newApp) {
+          addApp(newApp);
+        }
       }
     }
-    setShowAddWizard(false);
+    // Don't close modal here - wizard handles closing via result step
   };
 
   const handleRowClick = (appId) => history.push(`/apps/${appId}`);
