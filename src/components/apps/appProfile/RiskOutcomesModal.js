@@ -19,7 +19,7 @@ function RiskOutcomesModal({ show, type, data = [], onHide, onItemClick }) {
   };
 
   return (
-    <Modal show={show} onHide={onHide} size="lg">
+    <Modal show={show} onHide={onHide} size="lg" backdrop="static" keyboard={false}>
       <Modal.Header closeButton>
         <Modal.Title>
           {type === 'risks' ? 'Risk Stories' : 'Business Outcomes'}

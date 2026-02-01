@@ -1,5 +1,6 @@
 import React from 'react';
 import { Card, Tab, Nav, Table } from 'react-bootstrap';
+import { JIRA_BASE_URL } from '../../../constants/config';
 
 function SourceCodeCard({ repos, backlogs }) {
   return (
@@ -74,7 +75,7 @@ function BacklogsTab({ backlogs = [] }) {
         {items.map(backlog => (
           <tr key={backlog.id}>
             <td>
-              <a href={backlog.projectUrl || `https://jira.example.com/browse/${backlog.projectKey}`} target="_blank" rel="noopener noreferrer">
+              <a href={backlog.projectUrl || `${JIRA_BASE_URL}/browse/${backlog.projectKey}`} target="_blank" rel="noopener noreferrer">
                 {backlog.projectKey}
               </a>
             </td>

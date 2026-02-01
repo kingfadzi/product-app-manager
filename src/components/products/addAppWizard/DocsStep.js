@@ -129,7 +129,7 @@ function AddedDocsTable({ docs, onRemove }) {
       <div className="mb-2 small fw-bold">Added Documents ({docs.length}/{DOC_TYPES.length})</div>
       <PaginatedTableWrapper
         data={docs}
-        itemsPerPage={5}
+        itemsPerPage={10}
         itemLabel="docs"
         renderTable={renderTable}
       />

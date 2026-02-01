@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
-import { Card, Tab, Nav, Table, Button, Form } from 'react-bootstrap';
+import { Card, Tab, Nav, Table, Button, Form, Alert } from 'react-bootstrap';
 import { formatShortDate, getHealthColor, getGuildRoleLabel } from './helpers';
 import { GUILD_SME_TYPES } from './constants';
 import DeleteIcon from '../../products/addAppWizard/DeleteIcon';
 import SyncButton from '../../common/SyncButton';
 
-function GovernanceCard({ businessOutcomes, riskStories, guildSmes, onViewOutcomes, onViewRisks, onOutcomeClick, onRiskClick, onAddGuildSme, onRemoveGuildSme, onSync, syncing, readOnly }) {
+function GovernanceCard({ businessOutcomes, riskStories, guildSmes, onViewOutcomes, onViewRisks, onOutcomeClick, onRiskClick, onAddGuildSme, onRemoveGuildSme, onSync, syncing, syncError, readOnly }) {
   return (
     <Card className="mb-4 tabbed-card">
       <Tab.Container defaultActiveKey="outcomes">
@@ -16,6 +16,11 @@ function GovernanceCard({ businessOutcomes, riskStories, guildSmes, onViewOutcom
               <SyncButton onSync={onSync} syncing={syncing} title="Sync from Jira" />
             )}
           </div>
+          {syncError && (
+            <Alert variant="danger" className="mt-2 mb-0 py-2">
+              {syncError}
+            </Alert>
+          )}
           <Nav variant="tabs" className="mt-2">
             <Nav.Item><Nav.Link eventKey="outcomes">Business Outcomes</Nav.Link></Nav.Item>
             <Nav.Item><Nav.Link eventKey="risk">Risk Stories</Nav.Link></Nav.Item>

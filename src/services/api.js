@@ -1,3 +1,5 @@
+import { JIRA_BASE_URL } from '../constants/config';
+
 // API Configuration
 // Set REACT_APP_USE_MOCK=true in .env to use mock endpoints
 // Set REACT_APP_USE_MOCK=false to use real backend endpoints
@@ -101,7 +103,7 @@ const transformers = {
       id: p.projectKey || p.project_key || p.key,
       projectKey: p.projectKey || p.project_key || p.key,
       projectName: p.projectName || p.project_name || p.name,
-      url: p.projectUrl || p.url || `https://jira.example.com/browse/${p.projectKey || p.key}`,
+      url: p.projectUrl || p.url || `${JIRA_BASE_URL}/browse/${p.projectKey || p.key}`,
     }));
   },
 

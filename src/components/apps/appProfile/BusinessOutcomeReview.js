@@ -2,6 +2,7 @@ import React from 'react';
 import { Card, Table } from 'react-bootstrap';
 import { getHealthColor } from './helpers';
 import { formatYesNo, formatDeploymentStrategy } from './businessOutcomeConstants';
+import { JIRA_BASE_URL } from '../../../constants/config';
 
 /**
  * Review mode for BusinessOutcomeModal
@@ -53,7 +54,7 @@ function FixReleasesList({ releases }) {
   return releases.map((release, i) => (
     <span key={release}>
       {i > 0 && ', '}
-      <a href={`https://jira.example.com/issues/?jql=fixVersion="${release}"`} target="_blank" rel="noopener noreferrer">
+      <a href={`${JIRA_BASE_URL}/issues/?jql=fixVersion="${release}"`} target="_blank" rel="noopener noreferrer">
         {release}
       </a>
     </span>

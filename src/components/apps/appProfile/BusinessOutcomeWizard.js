@@ -2,6 +2,7 @@ import React from 'react';
 import { Form, Alert } from 'react-bootstrap';
 import StepIndicator from '../../common/StepIndicator';
 import { isGuildRecommended } from './businessOutcomeConstants';
+import { JIRA_BASE_URL } from '../../../constants/config';
 
 const WIZARD_STEPS = ['Details', 'Changes', 'Questionnaire', 'Request'];
 
@@ -50,7 +51,7 @@ function FixReleasesList({ releases }) {
   return releases.map((release, i) => (
     <span key={release}>
       {i > 0 && ', '}
-      <a href={`https://jira.example.com/issues/?jql=fixVersion="${release}"`} target="_blank" rel="noopener noreferrer">
+      <a href={`${JIRA_BASE_URL}/issues/?jql=fixVersion="${release}"`} target="_blank" rel="noopener noreferrer">
         {release}
       </a>
     </span>

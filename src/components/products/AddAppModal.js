@@ -222,7 +222,7 @@ function ReviewStepWrapper(props) {
           Cancel
         </Button>
         <div>
-          <Button variant="outline-secondary" onClick={handleBack} className="me-2">
+          <Button variant="outline-secondary" onClick={handleBack} style={{ marginRight: '0.5rem' }}>
             Back
           </Button>
           <Button variant="success" onClick={handleSubmit}>
@@ -269,7 +269,7 @@ function NavButtons({ onCancel, onBack, onNext, showBack, showNext, canProceed =
       </Button>
       <div>
         {showBack && (
-          <Button variant="outline-secondary" onClick={onBack} className="me-2">
+          <Button variant="outline-secondary" onClick={onBack} style={{ marginRight: '0.5rem' }}>
             Back
           </Button>
         )}

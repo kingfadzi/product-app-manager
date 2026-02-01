@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Modal, Button, Form, Alert } from 'react-bootstrap';
 import StepIndicator from '../../common/StepIndicator';
+import { JIRA_BASE_URL } from '../../../constants/config';
 
 const INITIAL_DATA = {
   selectedBacklog: null,
@@ -80,7 +81,7 @@ function DeploymentWizardModal({ show, onHide, backlogs, businessOutcomes, deplo
   };
 
   return (
-    <Modal show={show} onHide={handleClose} size="lg">
+    <Modal show={show} onHide={handleClose} size="lg" backdrop="static" keyboard={false}>
       <Modal.Header closeButton style={{ borderBottom: 'none', paddingBottom: 0 }}>
         <Modal.Title style={{ fontSize: '1rem', fontWeight: 600 }}>Create New Release</Modal.Title>
       </Modal.Header>
@@ -187,7 +188,7 @@ function Step3Details({ data, setData, businessOutcomes }) {
         <div style={{ fontSize: '0.8125rem' }}>
           {businessOutcomes.slice(0, 3).map(bo => (
             <div key={bo.id} className="mb-1">
-              <a href={`https://jira.example.com/browse/${bo.id}`} target="_blank" rel="noopener noreferrer">{bo.id}</a>
+              <a href={`${JIRA_BASE_URL}/browse/${bo.id}`} target="_blank" rel="noopener noreferrer">{bo.id}</a>
               <span className="text-muted ml-2">- {bo.summary}</span>
             </div>
           ))}

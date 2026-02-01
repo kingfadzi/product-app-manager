@@ -19,6 +19,7 @@ function useAppProfileData(appId) {
   const [fixVersions, setFixVersions] = useState({});
   const [loading, setLoading] = useState(true);
   const [syncing, setSyncing] = useState(false);
+  const [syncError, setSyncError] = useState(null);
 
   const loadData = useCallback(async () => {
     if (!appId) return;
@@ -112,6 +113,7 @@ function useAppProfileData(appId) {
 
   const syncGovernance = useCallback(async () => {
     setSyncing(true);
+    setSyncError(null);
     try {
       await syncApi.syncGovernance(appId);
       const [riskData, outcomesData] = await Promise.all([
@@ -122,6 +124,7 @@ function useAppProfileData(appId) {
       setBusinessOutcomes(outcomesData || []);
     } catch (err) {
       console.error('Error syncing governance data:', err);
+      setSyncError(err.message || 'Failed to sync governance data');
     } finally {
       setSyncing(false);
     }
@@ -139,6 +142,7 @@ function useAppProfileData(appId) {
     fixVersions,
     loading,
     syncing,
+    syncError,
     loadFixVersions,
     addContact,
     removeContact,

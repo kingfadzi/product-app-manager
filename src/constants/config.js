@@ -8,3 +8,6 @@ export const APP_DESCRIPTION = process.env.REACT_APP_DESCRIPTION || 'Application
 
 // Backend API URL (for non-proxied requests)
 export const API_URL = process.env.REACT_APP_API_URL || '';
+
+// Jira base URL for linking to issues
+export const JIRA_BASE_URL = process.env.REACT_APP_JIRA_URL || 'http://helios.butterflycluster.com:8080';

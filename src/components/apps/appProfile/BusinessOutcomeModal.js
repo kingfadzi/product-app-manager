@@ -66,7 +66,7 @@ function BusinessOutcomeModal({ show, outcome, guildSmes, onHide, onBack, readOn
   if (!outcome) return null;
 
   return (
-    <Modal show={show} onHide={handleClose} size="lg">
+    <Modal show={show} onHide={handleClose} size="lg" backdrop="static" keyboard={false}>
       <ModalHeader
         outcome={outcome}
         viewMode={viewMode}

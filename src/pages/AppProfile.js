@@ -38,6 +38,7 @@ function AppProfile() {
     deploymentEnvironments,
     fixVersions,
     syncing,
+    syncError,
     loadFixVersions,
     addContact,
     removeContact,
@@ -124,6 +125,7 @@ function AppProfile() {
             onRemoveGuildSme={removeGuildSme}
             onSync={syncGovernance}
             syncing={syncing}
+            syncError={syncError}
             readOnly={readOnly}
           />
           <DeploymentsCard onCreateDeployment={() => setShowDeploymentWizard(true)} readOnly={readOnly} />

@@ -1,6 +1,7 @@
 import React from 'react';
 import { Modal, Button, Card, Table } from 'react-bootstrap';
 import { formatShortDate } from './helpers';
+import { JIRA_BASE_URL } from '../../../constants/config';
 
 function RiskStoryModal({ show, risk, onHide, onBack }) {
   if (!risk) return null;
@@ -16,7 +17,7 @@ function RiskStoryModal({ show, risk, onHide, onBack }) {
   };
 
   return (
-    <Modal show={show} onHide={onHide} size="lg">
+    <Modal show={show} onHide={onHide} size="lg" backdrop="static" keyboard={false}>
       <Modal.Header closeButton style={{ borderBottom: 'none', paddingBottom: 0 }}>
         <Modal.Title style={{ fontSize: '1rem', fontWeight: 600 }}>
           {risk.id} - {risk.summary}
@@ -31,7 +32,7 @@ function RiskStoryModal({ show, risk, onHide, onBack }) {
                 <tr>
                   <td className="text-muted" style={{ width: '120px' }}>Risk ID</td>
                   <td>
-                    <a href={`https://jira.example.com/browse/${risk.id}`} target="_blank" rel="noopener noreferrer">
+                    <a href={`${JIRA_BASE_URL}/browse/${risk.id}`} target="_blank" rel="noopener noreferrer">
                       {risk.id}
                     </a>
                   </td>
@@ -60,7 +61,7 @@ function RiskStoryModal({ show, risk, onHide, onBack }) {
         <div>
           <Button
             variant="primary"
-            href={`https://jira.example.com/browse/${risk.id}`}
+            href={`${JIRA_BASE_URL}/browse/${risk.id}`}
             target="_blank"
             rel="noopener noreferrer"
             style={{ fontSize: '0.875rem' }}
