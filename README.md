@@ -29,7 +29,7 @@ See [DATAMODEL.md](DATAMODEL.md) for schema reference and ERD.
 ### Prerequisites
 
 - Node.js (v14 or higher recommended)
-- npm (v6 or higher)
+- Yarn (v1.22 or higher)
 
 ### Installation
 
@@ -39,7 +39,7 @@ git clone <repository-url>
 cd product-app-manager
 
 # Install dependencies
-npm install --legacy-peer-deps
+yarn install
 ```
 
 ### Running the Application
@@ -47,7 +47,7 @@ npm install --legacy-peer-deps
 #### Development Mode
 
 ```bash
-npm start
+yarn start
 ```
 
 The app will start at [http://localhost:3000](http://localhost:3000).
@@ -58,14 +58,15 @@ MSW (Mock Service Worker) will automatically intercept API requests and return m
 
 | Command | Description |
 |---------|-------------|
-| `npm start` | Start development server on port 3000 |
-| `npm run start:mock` | Start development server with MSW mocking enabled |
-| `npm test` | Run test suite |
+| `yarn start` | Start development server on port 3000 |
+| `yarn start:mock` | Start development server with MSW mocking enabled |
+| `yarn test` | Run test suite |
+| `yarn build` | Create production build |
 
 ### Generating API Documentation
 
 ```bash
-npx @redocly/cli build-docs docs/openapi.yaml --output docs/index.html
+yarn dlx @redocly/cli build-docs docs/openapi.yaml --output docs/index.html
 ```
 
 Open `docs/index.html` in a browser to view the API documentation.
