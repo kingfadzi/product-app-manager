@@ -1,19 +1,18 @@
 import React from 'react';
 import { Modal, Alert } from 'react-bootstrap';
 import StepWizard from 'react-step-wizard';
+import { AddAppWizardProvider, useAddAppWizard } from './addAppWizard';
 import {
-  AddAppWizardProvider,
-  useAddAppWizard,
-} from './addAppWizard';
-import SearchStepWrapper from './addAppWizard/SearchStepWrapper';
-import ProductStepWrapper from './addAppWizard/ProductStepWrapper';
-import DetailsStepWrapper from './addAppWizard/DetailsStepWrapper';
-import InstancesStepWrapper from './addAppWizard/InstancesStepWrapper';
-import ReposStepWrapper from './addAppWizard/ReposStepWrapper';
-import JiraStepWrapper from './addAppWizard/JiraStepWrapper';
-import DocsStepWrapper from './addAppWizard/DocsStepWrapper';
-import ReviewStepWrapper from './addAppWizard/ReviewStepWrapper';
-import ResultStepWrapper from './addAppWizard/ResultStepWrapper';
+  SearchStepWrapper,
+  ProductStepWrapper,
+  DetailsStepWrapper,
+  InstancesStepWrapper,
+  ReposStepWrapper,
+  JiraStepWrapper,
+  DocsStepWrapper,
+  ReviewStepWrapper,
+  ResultStepWrapper,
+} from './addAppWizard/stepWrappers';
 
 function AddAppModal({ show, onHide, onAdd, existingAppIds = [] }) {
   return (

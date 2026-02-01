@@ -1,12 +1,14 @@
 import React from 'react';
 import { Table, Alert } from 'react-bootstrap';
 import { useAddAppWizard } from './AddAppWizardContext';
-import ApplicationReviewRows from './ApplicationReviewRows';
-import ProductReviewRow from './ProductReviewRow';
-import InstancesReviewRow from './InstancesReviewRow';
-import ReposReviewRow from './ReposReviewRow';
-import JiraReviewRow from './JiraReviewRow';
-import DocsReviewRow from './DocsReviewRow';
+import {
+  ApplicationReviewRows,
+  ProductReviewRow,
+  InstancesReviewRow,
+  ReposReviewRow,
+  JiraReviewRow,
+  DocsReviewRow,
+} from './reviewRows';
 
 function ReviewStep() {
   const {
