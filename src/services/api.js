@@ -1,39 +1,5 @@
 import { JIRA_BASE_URL } from '../constants/config';
-
-// API Configuration
-// Set REACT_APP_USE_MOCK=true in .env to use mock endpoints
-// Set REACT_APP_USE_MOCK=false to use real backend endpoints
-const USE_MOCK = process.env.REACT_APP_USE_MOCK !== 'false';
-
-const BASE_URL = '/api';
-
-async function request(endpoint, options = {}) {
-  const url = `${BASE_URL}${endpoint}`;
-  const config = {
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    ...options,
-  };
-
-  if (config.body && typeof config.body === 'object') {
-    config.body = JSON.stringify(config.body);
-  }
-
-  const response = await fetch(url, config);
-
-  if (response.status === 204) {
-    return null;
-  }
-
-  const data = await response.json();
-
-  if (!response.ok) {
-    throw new Error(data.detail || data.error || 'An error occurred');
-  }
-
-  return data;
-}
+import { request, USE_MOCK } from './apiClient';
 
 // Response transformers to normalize backend responses to expected format
 // Transformers only run when using real backend (USE_MOCK = false)
@@ -201,8 +167,7 @@ export const appsApi = {
   search: (query) => request(USE_MOCK ? `/apps/search?q=${encodeURIComponent(query)}` : `/search/applications/?q=${encodeURIComponent(query)}`).then(transformers.searchResults),
   searchCmdb: (query) => request(USE_MOCK ? `/cmdb/search?q=${encodeURIComponent(query)}` : `/search/applications/?q=${encodeURIComponent(query)}`).then(transformers.cmdbSearchResults),
   getServiceInstances: (appId) => request(USE_MOCK ? `/apps/${appId}/service-instances` : `/release/${appId}/service-instances/`)
-    .then(transformers.serviceInstances)
-    .catch(() => []),
+    .then(transformers.serviceInstances),
 };
 
 // Repos API
@@ -284,8 +249,7 @@ export const guildsApi = {
 export const deploymentsApi = {
   getFixVersions: (projectKey) => request(USE_MOCK ? `/backlogs/${projectKey}/fix-versions` : `/jira/project-versions/${projectKey}/`).then(transformers.versionsToFixVersions),
   getEnvironments: () => request(USE_MOCK ? `/deployment-environments` : `/deployment-environments/`)
-    .then(data => Array.isArray(data) ? data : [])
-    .catch(() => []),
+    .then(data => Array.isArray(data) ? data : []),
   create: (releaseId, data) => request(USE_MOCK ? `/releases/${releaseId}/deploy` : `/release/${releaseId}/deploy/`, { method: 'POST', body: data }),
   getGateStatus: (releaseId) => request(USE_MOCK ? `/releases/${releaseId}/gate-status` : `/release/${releaseId}/gate-status/`),
   createRelease: (appId, data) => request(USE_MOCK ? `/apps/${appId}/releases` : `/application/${appId}/release/create/`, { method: 'POST', body: data }),

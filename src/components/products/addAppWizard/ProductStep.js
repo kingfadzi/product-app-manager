@@ -1,35 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Form, ListGroup, Badge, Alert } from 'react-bootstrap';
-import { productsApi } from '../../../services/api';
+import useProductSearch from '../../../hooks/useProductSearch';
 import { useAddAppWizard } from './AddAppWizardContext';
 
 function ProductStep({ onSelect }) {
   const { selectedApp, selectedProduct, selectProduct } = useAddAppWizard();
   // Use prop if provided, otherwise fall back to context
   const handleSelect = onSelect || selectProduct;
-  const [searchTerm, setSearchTerm] = useState('');
-  const [results, setResults] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const { searchTerm, setSearchTerm, results, loading, error } = useProductSearch(2);
 
   const appProducts = selectedApp?.memberOfProducts || [];
-
-  useEffect(() => {
-    if (searchTerm.length < 2) {
-      setResults([]);
-      return;
-    }
-
-    setLoading(true);
-    productsApi.search(searchTerm)
-      .then(data => {
-        setResults(data);
-        setLoading(false);
-      })
-      .catch(() => {
-        setResults([]);
-        setLoading(false);
-      });
-  }, [searchTerm]);
 
   return (
     <>
@@ -44,7 +24,7 @@ function ProductStep({ onSelect }) {
       </Form.Group>
 
       <ListGroup style={{ maxHeight: '300px', overflow: 'auto' }}>
-        {renderProductResults(searchTerm, results, loading, appProducts, handleSelect)}
+        {renderProductResults(searchTerm, results, loading, error, appProducts, handleSelect)}
       </ListGroup>
 
       {selectedProduct && (
@@ -56,7 +36,7 @@ function ProductStep({ onSelect }) {
   );
 }
 
-function renderProductResults(searchTerm, results, loading, appProducts, onSelect) {
+function renderProductResults(searchTerm, results, loading, error, appProducts, onSelect) {
   if (searchTerm.length < 2) {
     return (
       <ListGroup.Item className="text-center text-muted">
@@ -69,6 +49,14 @@ function renderProductResults(searchTerm, results, loading, appProducts, onSelec
     return (
       <ListGroup.Item className="text-center text-muted">
         Searching products...
+      </ListGroup.Item>
+    );
+  }
+
+  if (error) {
+    return (
+      <ListGroup.Item className="text-center text-danger">
+        {error}
       </ListGroup.Item>
     );
   }

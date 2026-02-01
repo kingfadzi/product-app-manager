@@ -1,5 +1,5 @@
 import React, { useState, useContext } from 'react';
-import { Card, Table, Button, Alert, Breadcrumb } from 'react-bootstrap';
+import { Card, Button, Alert } from 'react-bootstrap';
 import { useParams, useHistory } from 'react-router-dom';
 import { AppContext } from '../context/AppContext';
 import { useUser } from '../context/UserContext';
@@ -8,8 +8,10 @@ import { useAppOnboarding } from '../hooks/useAppOnboarding';
 import PageLayout from '../components/layout/PageLayout';
 import AddAppModal from '../components/products/AddAppModal';
 import ConfirmModal from '../components/common/ConfirmModal';
-import TablePagination from '../components/common/TablePagination';
 import { usePagination } from '../hooks/usePagination';
+import ProductAppsTable from '../components/products/productDetail/ProductAppsTable';
+import ProductDetailBreadcrumb from '../components/products/productDetail/ProductDetailBreadcrumb';
+import ProductHeader from '../components/products/productDetail/ProductHeader';
 
 function ProductDetail() {
   const { id } = useParams();
@@ -27,20 +29,20 @@ function ProductDetail() {
   const [showAddModal, setShowAddModal] = useState(false);
   const [removeConfirm, setRemoveConfirm] = useState(null);
 
-  // App onboarding with product association update
   const { onboardApp } = useAppOnboarding();
   const handleAddApps = async (selectedApps, metadata) => {
-    const association = await onboardApp(selectedApps, metadata);
+    const result = await onboardApp(selectedApps, metadata);
+    const association = result?.association || result;
     if (association) {
       setProductApps(prev => [...prev, association]);
     }
+    return result;
   };
 
   const product = getProductById(id);
   const productAppIds = getAppsForProduct(id);
   const productApps = apps.filter(app => productAppIds.includes(app.id));
 
-  // Pagination for product apps
   const {
     currentPage,
     setCurrentPage,
@@ -72,51 +74,18 @@ function ProductDetail() {
     );
   }
 
-  // Get initial letter for avatar
-  const initial = product.name.charAt(0).toUpperCase();
-
   return (
     <PageLayout>
-      {/* Breadcrumb Navigation */}
-      <Breadcrumb>
-        <Breadcrumb.Item onClick={() => history.push('/')}>Home</Breadcrumb.Item>
-        {product.stackId && (
-          <Breadcrumb.Item onClick={() => history.push(`/products?stack=${product.stackId}`)}>{product.stackId}</Breadcrumb.Item>
-        )}
-        <Breadcrumb.Item active>{product.name}</Breadcrumb.Item>
-      </Breadcrumb>
+      <ProductDetailBreadcrumb history={history} product={product} />
 
       {error && <Alert variant="danger">{error}</Alert>}
 
-      {/* Product Header */}
-      <div className="d-flex align-items-center mb-4">
-        <div
-          className="d-flex align-items-center justify-content-center mr-3"
-          style={{
-            width: '64px',
-            height: '64px',
-            backgroundColor: '#6c5ce7',
-            borderRadius: '8px',
-            color: 'white',
-            fontSize: '28px',
-            fontWeight: 'bold',
-          }}
-        >
-          {initial}
-        </div>
-        <div className="flex-grow-1">
-          <h2 className="mb-1">{product.name}</h2>
-          <span className="text-muted">{product.description || 'No description'}</span>
-        </div>
-        {isLoggedIn && (
-          <Button variant="outline-primary" size="sm" onClick={() => setShowAddModal(true)}>
-            Add Application
-          </Button>
-        )}
-      </div>
+      <ProductHeader
+        product={product}
+        isLoggedIn={isLoggedIn}
+        onAddApp={() => setShowAddModal(true)}
+      />
 
-
-      {/* Applications Section */}
       <div className="mb-3 d-flex justify-content-between align-items-center">
         <h5 className="mb-0">Applications</h5>
       </div>
@@ -133,52 +102,20 @@ function ProductDetail() {
           </Card.Body>
         </Card>
       ) : (
-        <>
-          <Card>
-            <Table hover className="mb-0" size="sm" style={{ whiteSpace: 'nowrap' }}>
-              <thead className="bg-light">
-                <tr>
-                  <th>App ID</th>
-                  <th>Name</th>
-                  <th>Parent</th>
-                  <th>ResCat</th>
-                  <th className="text-center">Repos</th>
-                  <th className="text-center">Backlogs</th>
-                  <th className="text-center">Open Risks</th>
-                </tr>
-              </thead>
-              <tbody>
-                {paginatedApps.map(app => (
-                  <tr
-                    key={app.id}
-                    style={{ cursor: 'pointer' }}
-                    onClick={() => history.push(`/apps/${app.id}`)}
-                  >
-                    <td>{app.cmdbId}</td>
-                    <td style={{ fontWeight: 500 }}>{app.name}</td>
-                    <td>{app.parent || '-'}</td>
-                    <td>{app.resCat || '-'}</td>
-                    <td className="text-center">{app.repoCount || 0}</td>
-                    <td className="text-center">{app.backlogCount || 0}</td>
-                    <td className="text-center">{app.openRisks || 0}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </Table>
-          </Card>
-
-          {showPagination && (
-            <TablePagination
-              currentPage={currentPage}
-              totalPages={totalPages}
-              onPageChange={setCurrentPage}
-              startIndex={startIndex}
-              endIndex={endIndex}
-              totalItems={totalItems}
-              itemLabel="apps"
-            />
-          )}
-        </>
+        <ProductAppsTable
+          apps={productApps}
+          onRowClick={(app) => history.push(`/apps/${app.id}`)}
+          pagination={{
+            currentPage,
+            totalPages,
+            paginatedData: paginatedApps,
+            startIndex,
+            endIndex,
+            totalItems,
+            showPagination,
+            onPageChange: setCurrentPage,
+          }}
+        />
       )}
 
       <AddAppModal

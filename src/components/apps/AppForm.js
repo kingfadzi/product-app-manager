@@ -62,7 +62,6 @@ function AppForm({ initialValues, onSubmit, submitLabel = 'Save', onCancel }) {
               {errors.name}
             </Form.Control.Feedback>
           </Form.Group>
-
           <Form.Group>
             <Form.Label>CMDB ID</Form.Label>
             <Form.Control
@@ -78,7 +77,6 @@ function AppForm({ initialValues, onSubmit, submitLabel = 'Save', onCancel }) {
               {errors.cmdbId}
             </Form.Control.Feedback>
           </Form.Group>
-
           <Form.Group>
             <Form.Label>Description</Form.Label>
             <Form.Control
@@ -95,7 +93,6 @@ function AppForm({ initialValues, onSubmit, submitLabel = 'Save', onCancel }) {
               {errors.description}
             </Form.Control.Feedback>
           </Form.Group>
-
           <Form.Group>
             <Form.Label>Tier</Form.Label>
             <Form.Control
@@ -114,7 +111,6 @@ function AppForm({ initialValues, onSubmit, submitLabel = 'Save', onCancel }) {
               {errors.tier}
             </Form.Control.Feedback>
           </Form.Group>
-
           <Form.Group>
             <Form.Label>Status</Form.Label>
             <Form.Control

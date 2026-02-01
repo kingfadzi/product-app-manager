@@ -4,13 +4,10 @@ import { useHistory, useLocation } from 'react-router-dom';
 import { AppContext } from '../context/AppContext';
 import { useUser } from '../context/UserContext';
 import PageLayout from '../components/layout/PageLayout';
-import EmptyState from '../components/common/EmptyState';
-import TablePagination from '../components/common/TablePagination';
 import { usePagination } from '../hooks/usePagination';
 import useAppListFilters from '../hooks/useAppListFilters';
 import { useAppOnboarding } from '../hooks/useAppOnboarding';
-import AppListFilters from '../components/apps/AppListFilters';
-import AppsTable from '../components/apps/AppsTable';
+import AppListContent from '../components/apps/AppListContent';
 import AddAppModal from '../components/products/AddAppModal';
 
 function AppList() {
@@ -19,16 +16,11 @@ function AppList() {
   const { apps, loading, error } = useContext(AppContext);
   const { isMyApp, isLoggedIn } = useUser();
 
-  // Check if this is a global search (from header)
   const params = new URLSearchParams(location.search);
   const isGlobalSearch = params.has('search');
 
-  // Determine view mode
-  // Guest: always sees all apps
-  // Logged in: sees "My Apps" unless searching
   const showAllApps = !isLoggedIn || isGlobalSearch;
 
-  // Filter apps based on view mode
   const baseApps = useMemo(() => {
     if (showAllApps) {
       return apps;
@@ -38,15 +30,12 @@ function AppList() {
 
   const [showAddWizard, setShowAddWizard] = useState(false);
 
-  // App onboarding
   const { onboardApp } = useAppOnboarding();
 
-  // Pagination
   const {
     resetPage
   } = usePagination([], 10);
 
-  // Filters
   const {
     searchTerm,
     resCatFilter,
@@ -63,10 +52,8 @@ function AppList() {
     updateFilter,
   } = useAppListFilters(baseApps, resetPage);
 
-  // Update pagination when filtered apps change
   const paginationResult = usePagination(filteredApps, 10);
 
-  // Page title and count
   const getPageTitle = () => {
     if (isGlobalSearch) return 'Search Results';
     if (!isLoggedIn) return 'Applications';
@@ -75,10 +62,8 @@ function AppList() {
   const pageTitle = getPageTitle();
   const myAppCount = apps.filter(isMyApp).length;
 
-  // Show TC filter for guest or search results (not for "My Applications")
   const showTcFilter = !isLoggedIn || isGlobalSearch;
 
-  // Handle addApp query param
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     if (params.get('addApp') === 'true') {
@@ -88,7 +73,6 @@ function AppList() {
     }
   }, [location.search, history]);
 
-  // Wizard handles closing via result step - errors propagate to wizard for display
   const handleAddApp = (selectedApps, metadata) => onboardApp(selectedApps, metadata);
 
   const handleRowClick = (appId) => history.push(`/apps/${appId}`);
@@ -130,7 +114,7 @@ function AppList() {
 
       {error && <Alert variant="danger">{error}</Alert>}
 
-      <AppListFilters
+      <AppListContent
         stackFilter={stackFilter}
         productFilter={productFilter}
         tcFilter={tcFilter}
@@ -142,33 +126,11 @@ function AppList() {
         tierOptions={tierOptions}
         updateFilter={updateFilter}
         showTcFilter={showTcFilter}
+        filteredApps={filteredApps}
+        hasActiveFilters={hasActiveFilters}
+        paginationResult={paginationResult}
+        onRowClick={handleRowClick}
       />
-
-      {filteredApps.length === 0 ? (
-        <EmptyState
-          title="No apps found"
-          description={hasActiveFilters ? "Try adjusting your filters." : "No apps are currently available."}
-        />
-      ) : (
-        <>
-          <AppsTable
-            apps={paginationResult.paginatedData}
-            onRowClick={handleRowClick}
-            onFilterClick={updateFilter}
-          />
-          {paginationResult.showPagination && (
-            <TablePagination
-              currentPage={paginationResult.currentPage}
-              totalPages={paginationResult.totalPages}
-              onPageChange={paginationResult.setCurrentPage}
-              startIndex={paginationResult.startIndex}
-              endIndex={paginationResult.endIndex}
-              totalItems={paginationResult.totalItems}
-              itemLabel="apps"
-            />
-          )}
-        </>
-      )}
 
       <AddAppModal
         show={showAddWizard}

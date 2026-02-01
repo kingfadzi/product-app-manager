@@ -14,35 +14,53 @@ export function useAppOnboarding({ onSuccess } = {}) {
   const { addApp } = useContext(AppContext);
 
   const saveRepos = async (appId, repos) => {
+    const warnings = [];
     for (const repo of repos) {
-      await reposApi.create(appId, {
-        name: repo.name,
-        url: repo.url,
-        gitlabId: repo.repoId,
-        defaultBranch: repo.defaultBranch || 'main',
-        isMonorepo: false,
-      }).catch(console.error);
+      try {
+        await reposApi.create(appId, {
+          name: repo.name,
+          url: repo.url,
+          gitlabId: repo.repoId,
+          defaultBranch: repo.defaultBranch || 'main',
+          isMonorepo: false,
+        });
+      } catch (err) {
+        warnings.push(`Repo "${repo.name || repo.repoId}" failed to save.`);
+      }
     }
+    return warnings;
   };
 
   const saveJiraProjects = async (appId, projects) => {
+    const warnings = [];
     for (const jira of projects) {
-      await backlogsApi.create(appId, {
-        projectKey: jira.projectKey,
-        projectName: jira.projectName,
-        projectUrl: jira.url,
-      }).catch(console.error);
+      try {
+        await backlogsApi.create(appId, {
+          projectKey: jira.projectKey,
+          projectName: jira.projectName,
+          projectUrl: jira.url,
+        });
+      } catch (err) {
+        warnings.push(`Jira project "${jira.projectKey}" failed to save.`);
+      }
     }
+    return warnings;
   };
 
   const saveDocs = async (appId, docs) => {
+    const warnings = [];
     for (const doc of docs) {
-      await docsApi.create(appId, {
-        title: doc.type,
-        url: doc.url,
-        type: doc.type,
-      }).catch(console.error);
+      try {
+        await docsApi.create(appId, {
+          title: doc.type,
+          url: doc.url,
+          type: doc.type,
+        });
+      } catch (err) {
+        warnings.push(`Documentation "${doc.type}" failed to save.`);
+      }
     }
+    return warnings;
   };
 
   const onboardApp = useCallback(async (selectedApps, metadata = {}) => {
@@ -55,28 +73,33 @@ export function useAppOnboarding({ onSuccess } = {}) {
     // Add app to product - let errors propagate to caller
     const association = await productsApi.addApp(productId, cmdbId);
     const appId = association?.appId;
+    const warnings = [];
 
     if (appId) {
       // Save related data (errors logged but don't fail the operation)
       if (metadata.repos?.length > 0) {
-        await saveRepos(appId, metadata.repos);
+        warnings.push(...await saveRepos(appId, metadata.repos));
       }
       if (metadata.jiraProjects?.length > 0) {
-        await saveJiraProjects(appId, metadata.jiraProjects);
+        warnings.push(...await saveJiraProjects(appId, metadata.jiraProjects));
       }
       if (metadata.documentation?.length > 0) {
-        await saveDocs(appId, metadata.documentation);
+        warnings.push(...await saveDocs(appId, metadata.documentation));
       }
 
       // Fetch and add the new app to context
-      const newApp = await appsApi.getById(cmdbId);
-      if (newApp) {
-        addApp(newApp);
-        onSuccess?.(newApp);
+      try {
+        const newApp = await appsApi.getById(cmdbId);
+        if (newApp) {
+          addApp(newApp);
+          onSuccess?.(newApp);
+        }
+      } catch (err) {
+        warnings.push('App was added but details failed to refresh.');
       }
     }
 
-    return association;
+    return { association, warnings };
   }, [addApp, onSuccess]);
 
   return { onboardApp };

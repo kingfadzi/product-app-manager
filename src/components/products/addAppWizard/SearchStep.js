@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Form, ListGroup, Badge } from 'react-bootstrap';
-import { appsApi } from '../../../services/api';
+import useCmdbAppSearch from '../../../hooks/useCmdbAppSearch';
 import RemediationBox from '../../common/RemediationBox';
 import { useAddAppWizard } from './AddAppWizardContext';
 import { getTierBadgeColor } from './helpers';
@@ -9,27 +9,7 @@ function SearchStep({ onSelect }) {
   // Use prop if provided, otherwise fall back to context (for backwards compat)
   const { selectApp } = useAddAppWizard();
   const handleSelect = onSelect || selectApp;
-  const [searchTerm, setSearchTerm] = useState('');
-  const [results, setResults] = useState([]);
-  const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    if (searchTerm.length < 2) {
-      setResults([]);
-      return;
-    }
-
-    setLoading(true);
-    appsApi.searchCmdb(searchTerm)
-      .then(data => {
-        setResults(data);
-        setLoading(false);
-      })
-      .catch(() => {
-        setResults([]);
-        setLoading(false);
-      });
-  }, [searchTerm]);
+  const { searchTerm, setSearchTerm, results, loading, error } = useCmdbAppSearch(2);
 
   return (
     <>
@@ -43,7 +23,7 @@ function SearchStep({ onSelect }) {
       </Form.Group>
 
       <ListGroup style={{ maxHeight: '350px', overflow: 'auto' }}>
-        {renderSearchResults(searchTerm, results, loading, handleSelect)}
+        {renderSearchResults(searchTerm, results, loading, error, handleSelect)}
       </ListGroup>
 
       <RemediationBox
@@ -56,7 +36,7 @@ function SearchStep({ onSelect }) {
   );
 }
 
-function renderSearchResults(searchTerm, results, loading, onSelect) {
+function renderSearchResults(searchTerm, results, loading, error, onSelect) {
   if (searchTerm.length === 0) {
     return (
       <ListGroup.Item className="text-center text-muted">
@@ -77,6 +57,14 @@ function renderSearchResults(searchTerm, results, loading, onSelect) {
     return (
       <ListGroup.Item className="text-center text-muted">
         Searching CMDB...
+      </ListGroup.Item>
+    );
+  }
+
+  if (error) {
+    return (
+      <ListGroup.Item className="text-center text-danger">
+        {error}
       </ListGroup.Item>
     );
   }

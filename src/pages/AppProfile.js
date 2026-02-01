@@ -11,12 +11,10 @@ import {
   GovernanceCard,
   DeploymentsCard,
   SourceCodeCard,
-  RiskOutcomesModal,
-  BusinessOutcomeModal,
-  RiskStoryModal,
-  DeploymentWizardModal,
   useAppProfileData
 } from '../components/apps/appProfile';
+import AppBreadcrumb from '../components/apps/appProfile/AppBreadcrumb';
+import AppProfileModals from '../components/apps/appProfile/AppProfileModals';
 import '../styles/tabs.css';
 
 function AppProfile() {
@@ -26,7 +24,6 @@ function AppProfile() {
   const { isLoggedIn } = useUser();
   const readOnly = !isLoggedIn;
 
-  // Load app profile data
   const {
     repos,
     backlogs,
@@ -37,6 +34,7 @@ function AppProfile() {
     guildSmes,
     deploymentEnvironments,
     fixVersions,
+    error,
     syncing,
     syncError,
     loadFixVersions,
@@ -49,24 +47,13 @@ function AppProfile() {
     syncGovernance,
   } = useAppProfileData(id);
 
-  // Modal states
   const [showModal, setShowModal] = useState(null);
   const [selectedOutcome, setSelectedOutcome] = useState(null);
   const [selectedRisk, setSelectedRisk] = useState(null);
   const [showDeploymentWizard, setShowDeploymentWizard] = useState(false);
 
-  const handleItemClick = (item, type) => {
-    if (type === 'outcomes') {
-      setSelectedOutcome(item);
-    } else {
-      setSelectedRisk(item);
-    }
-  };
-
   const app = apps.find(a => a.id === id || a.cmdbId === id);
 
-  // Get products this app belongs to from app.memberOfProducts
-  // Look up full product details from products array to get stack info
   const appProducts = (app?.memberOfProducts || []).map(p => {
     const fullProduct = products.find(prod => prod.id === p.productId);
     return {
@@ -93,6 +80,7 @@ function AppProfile() {
     <PageLayout>
       <AppBreadcrumb history={history} app={app} appProducts={appProducts} />
       <AppHeader app={app} />
+      {error && <Alert variant="danger">{error}</Alert>}
 
       <Row>
         <Col lg={6}>
@@ -133,62 +121,27 @@ function AppProfile() {
         </Col>
       </Row>
 
-      <RiskOutcomesModal
-        show={!!showModal}
-        type={showModal}
-        data={showModal === 'risks' ? riskStories : businessOutcomes}
-        onHide={() => setShowModal(null)}
-        onItemClick={handleItemClick}
-      />
-
-      <BusinessOutcomeModal
-        show={!!selectedOutcome}
-        outcome={selectedOutcome}
+      <AppProfileModals
+        showModal={showModal}
+        selectedOutcome={selectedOutcome}
+        selectedRisk={selectedRisk}
         guildSmes={guildSmes}
-        onHide={() => setSelectedOutcome(null)}
-        onBack={() => {
-          setSelectedOutcome(null);
-          setShowModal('outcomes');
-        }}
-        readOnly={readOnly}
-      />
-
-      <RiskStoryModal
-        show={!!selectedRisk}
-        risk={selectedRisk}
-        onHide={() => setSelectedRisk(null)}
-        onBack={() => {
-          setSelectedRisk(null);
-          setShowModal('risks');
-        }}
-      />
-
-      <DeploymentWizardModal
-        show={showDeploymentWizard}
-        onHide={() => setShowDeploymentWizard(false)}
-        backlogs={backlogs}
+        riskStories={riskStories}
         businessOutcomes={businessOutcomes}
+        backlogs={backlogs}
         deploymentEnvironments={deploymentEnvironments}
         fixVersions={fixVersions}
         loadFixVersions={loadFixVersions}
+        onHideModal={() => setShowModal(null)}
+        onSelectOutcome={setSelectedOutcome}
+        onSelectRisk={setSelectedRisk}
+        onShowOutcomes={() => setShowModal('outcomes')}
+        onShowRisks={() => setShowModal('risks')}
+        showDeploymentWizard={showDeploymentWizard}
+        onHideDeploymentWizard={() => setShowDeploymentWizard(false)}
+        readOnly={readOnly}
       />
     </PageLayout>
-  );
-}
-
-function AppBreadcrumb({ history, app, appProducts }) {
-  return (
-    <Breadcrumb>
-      <Breadcrumb.Item onClick={() => history.push('/')}>Home</Breadcrumb.Item>
-      {appProducts.length > 0 ? (
-        <Breadcrumb.Item onClick={() => history.push(`/products/${appProducts[0].id}`)}>
-          {appProducts[0].name}
-        </Breadcrumb.Item>
-      ) : (
-        <Breadcrumb.Item onClick={() => history.push('/apps')}>Applications</Breadcrumb.Item>
-      )}
-      <Breadcrumb.Item active>{app.name}</Breadcrumb.Item>
-    </Breadcrumb>
   );
 }
 
