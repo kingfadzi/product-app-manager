@@ -3,13 +3,19 @@ import { Card, Tab, Nav, Table, Button, Form } from 'react-bootstrap';
 import { formatShortDate, getHealthColor, getGuildRoleLabel } from './helpers';
 import { GUILD_SME_TYPES } from './constants';
 import DeleteIcon from '../../products/addAppWizard/DeleteIcon';
+import SyncButton from '../../common/SyncButton';
 
-function GovernanceCard({ businessOutcomes, riskStories, guildSmes, onViewOutcomes, onViewRisks, onOutcomeClick, onRiskClick, onAddGuildSme, onRemoveGuildSme, readOnly }) {
+function GovernanceCard({ businessOutcomes, riskStories, guildSmes, onViewOutcomes, onViewRisks, onOutcomeClick, onRiskClick, onAddGuildSme, onRemoveGuildSme, onSync, syncing, readOnly }) {
   return (
     <Card className="mb-4 tabbed-card">
       <Tab.Container defaultActiveKey="outcomes">
         <Card.Header>
-          <strong>Governance & Controls</strong>
+          <div className="d-flex justify-content-between align-items-center">
+            <strong>Governance & Controls</strong>
+            {onSync && (
+              <SyncButton onSync={onSync} syncing={syncing} title="Sync from Jira" />
+            )}
+          </div>
           <Nav variant="tabs" className="mt-2">
             <Nav.Item><Nav.Link eventKey="outcomes">Business Outcomes</Nav.Link></Nav.Item>
             <Nav.Item><Nav.Link eventKey="risk">Risk Stories</Nav.Link></Nav.Item>

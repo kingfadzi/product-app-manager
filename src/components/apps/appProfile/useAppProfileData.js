@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import useApps from '../../../hooks/useApps';
-import { riskStoriesApi, outcomesApi, guildSmesApi, deploymentsApi } from '../../../services/api';
+import { riskStoriesApi, outcomesApi, guildSmesApi, deploymentsApi, syncApi } from '../../../services/api';
 
 function useAppProfileData(appId) {
   const {
@@ -18,6 +18,7 @@ function useAppProfileData(appId) {
   const [deploymentEnvironments, setDeploymentEnvironments] = useState([]);
   const [fixVersions, setFixVersions] = useState({});
   const [loading, setLoading] = useState(true);
+  const [syncing, setSyncing] = useState(false);
 
   const loadData = useCallback(async () => {
     if (!appId) return;
@@ -109,6 +110,23 @@ function useAppProfileData(appId) {
     setGuildSmes(prev => prev.filter(s => s.id !== smeId));
   }, [appId]);
 
+  const syncGovernance = useCallback(async () => {
+    setSyncing(true);
+    try {
+      await syncApi.syncGovernance(appId);
+      const [riskData, outcomesData] = await Promise.all([
+        riskStoriesApi.getByApp(appId),
+        outcomesApi.getByApp(appId),
+      ]);
+      setRiskStories(riskData || []);
+      setBusinessOutcomes(outcomesData || []);
+    } catch (err) {
+      console.error('Error syncing governance data:', err);
+    } finally {
+      setSyncing(false);
+    }
+  }, [appId]);
+
   return {
     repos,
     backlogs,
@@ -120,6 +138,7 @@ function useAppProfileData(appId) {
     deploymentEnvironments,
     fixVersions,
     loading,
+    syncing,
     loadFixVersions,
     addContact,
     removeContact,
@@ -127,6 +146,7 @@ function useAppProfileData(appId) {
     removeDoc,
     addGuildSme,
     removeGuildSme,
+    syncGovernance,
   };
 }
 

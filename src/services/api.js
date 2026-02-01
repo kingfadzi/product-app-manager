@@ -250,20 +250,25 @@ export const transactionCyclesApi = {
   getAll: () => request(USE_MOCK ? '/transaction-cycles' : '/v2/transaction-cycles/'),
 };
 
-// Risk Stories API (Work Items in lean-web)
+// Risk Stories API (reads from lct_data.risk_stories via governance endpoint)
 export const riskStoriesApi = {
-  getByApp: (appId) => request(USE_MOCK ? `/apps/${appId}/risk-stories` : `/work-items/${appId}/`).then(transformers.workItemsToRiskStories),
+  getByApp: (appId) => request(USE_MOCK ? `/apps/${appId}/risk-stories` : `/v2/apps/${appId}/risk-stories/`),
   create: (appId, data) => request(USE_MOCK ? `/apps/${appId}/risk-stories` : `/work-items/${appId}/create/`, { method: 'POST', body: data }),
   update: (id, data) => request(USE_MOCK ? `/risk-stories/${id}` : `/v2/risk-stories/${id}/`, { method: 'PUT', body: data }),
 };
 
-// Business Outcomes API
+// Business Outcomes API (reads from lct_data.business_outcomes via governance endpoint)
 export const outcomesApi = {
-  getByApp: (appId, projectKey, version) =>
-    request(USE_MOCK ? `/apps/${appId}/outcomes` : `/jira/version-bos/${projectKey}/${version}/`),
+  getByApp: (appId) =>
+    request(USE_MOCK ? `/apps/${appId}/outcomes` : `/v2/apps/${appId}/business-outcomes/`),
   search: (appId, query) => request(USE_MOCK ? `/apps/${appId}/outcomes/search?q=${encodeURIComponent(query)}` : `/bo/${appId}/search/?q=${encodeURIComponent(query)}`),
   getEngagement: (id) => request(USE_MOCK ? `/outcomes/${id}/engagement` : `/v2/outcomes/${id}/engagement/`),
   saveEngagement: (id, data) => request(USE_MOCK ? `/outcomes/${id}/engagement` : `/v2/outcomes/${id}/engagement/`, { method: 'PUT', body: data }),
+};
+
+// Governance Sync API
+export const syncApi = {
+  syncGovernance: (appId) => request(`/v2/apps/${appId}/sync-governance/`, { method: 'POST' }),
 };
 
 // Guilds API

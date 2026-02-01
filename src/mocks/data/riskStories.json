@@ -1,19 +1,53 @@
 {
   "app-1": [
-    { "id": "RISK-101", "summary": "Data encryption not enforced", "status": "Open", "updated": "2026-01-28T10:30:00" },
-    { "id": "RISK-98", "summary": "Missing disaster recovery plan", "status": "In Progress", "updated": "2026-01-27T14:15:00" },
-    { "id": "RISK-95", "summary": "API authentication weakness", "status": "Open", "updated": "2026-01-25T09:45:00" },
-    { "id": "RISK-92", "summary": "Logging insufficient for audit", "status": "Resolved", "updated": "2026-01-24T16:20:00" },
-    { "id": "RISK-88", "summary": "Third-party dependency vulnerabilities", "status": "Open", "updated": "2026-01-22T11:00:00" },
-    { "id": "RISK-85", "summary": "Session timeout too long", "status": "In Progress", "updated": "2026-01-20T08:30:00" },
-    { "id": "RISK-82", "summary": "Missing input validation", "status": "Open", "updated": "2026-01-18T13:45:00" },
-    { "id": "RISK-79", "summary": "Insecure data storage", "status": "Resolved", "updated": "2026-01-15T10:10:00" }
+    { "id": "RISK-101", "ticketKey": "RISK-101", "summary": "Data encryption not enforced", "status": "Open", "priority": "High", "assignee": "John Smith", "created": "2026-01-15T08:00:00", "updated": "2026-01-28T10:30:00" },
+    { "id": "RISK-98", "ticketKey": "RISK-98", "summary": "Missing disaster recovery plan", "status": "In Progress", "priority": "High", "assignee": "Sarah Chen", "created": "2026-01-10T09:00:00", "updated": "2026-01-27T14:15:00" },
+    { "id": "RISK-95", "ticketKey": "RISK-95", "summary": "API authentication weakness", "status": "Open", "priority": "Medium", "assignee": "Mike Johnson", "created": "2026-01-08T11:00:00", "updated": "2026-01-25T09:45:00" },
+    { "id": "RISK-92", "ticketKey": "RISK-92", "summary": "Logging insufficient for audit", "status": "Resolved", "priority": "Medium", "assignee": "Emily Davis", "created": "2026-01-05T14:00:00", "updated": "2026-01-24T16:20:00" },
+    { "id": "RISK-88", "ticketKey": "RISK-88", "summary": "Third-party dependency vulnerabilities", "status": "Open", "priority": "High", "assignee": "John Smith", "created": "2026-01-03T10:00:00", "updated": "2026-01-22T11:00:00" },
+    { "id": "RISK-85", "ticketKey": "RISK-85", "summary": "Session timeout too long", "status": "In Progress", "priority": "Low", "assignee": "Sarah Chen", "created": "2026-01-02T08:00:00", "updated": "2026-01-20T08:30:00" },
+    { "id": "RISK-82", "ticketKey": "RISK-82", "summary": "Missing input validation", "status": "Open", "priority": "Medium", "assignee": "Mike Johnson", "created": "2025-12-28T09:00:00", "updated": "2026-01-18T13:45:00" },
+    { "id": "RISK-79", "ticketKey": "RISK-79", "summary": "Insecure data storage", "status": "Resolved", "priority": "High", "assignee": "Emily Davis", "created": "2025-12-20T11:00:00", "updated": "2026-01-15T10:10:00" }
   ],
   "app-2": [
-    { "id": "RISK-110", "summary": "Weak password policy", "status": "Open", "updated": "2026-01-26T09:00:00" },
-    { "id": "RISK-105", "summary": "Outdated TLS configuration", "status": "In Progress", "updated": "2026-01-24T11:30:00" }
+    { "id": "RISK-110", "ticketKey": "RISK-110", "summary": "Weak password policy", "status": "Open", "priority": "Medium", "assignee": "Alex Turner", "created": "2026-01-20T10:00:00", "updated": "2026-01-26T09:00:00" },
+    { "id": "RISK-105", "ticketKey": "RISK-105", "summary": "Outdated TLS configuration", "status": "In Progress", "priority": "High", "assignee": "Lisa Wang", "created": "2026-01-15T09:00:00", "updated": "2026-01-24T11:30:00" }
   ],
   "app-3": [
-    { "id": "RISK-115", "summary": "Missing rate limiting", "status": "Open", "updated": "2026-01-27T15:00:00" }
+    { "id": "RISK-115", "ticketKey": "RISK-115", "summary": "Missing rate limiting", "status": "Open", "priority": "Medium", "assignee": "Chris Brown", "created": "2026-01-22T14:00:00", "updated": "2026-01-27T15:00:00" }
+  ],
+  "app-4": [
+    { "id": "RISK-120", "ticketKey": "RISK-120", "summary": "Insufficient access control", "status": "Open", "priority": "High", "assignee": "David Lee", "created": "2026-01-18T08:00:00", "updated": "2026-01-28T11:30:00" },
+    { "id": "RISK-121", "ticketKey": "RISK-121", "summary": "Sensitive data in logs", "status": "In Progress", "priority": "High", "assignee": "Anna Martinez", "created": "2026-01-15T10:00:00", "updated": "2026-01-26T14:00:00" },
+    { "id": "RISK-122", "ticketKey": "RISK-122", "summary": "Missing security headers", "status": "Waived", "priority": "Low", "assignee": "David Lee", "created": "2026-01-10T09:00:00", "updated": "2026-01-20T16:00:00" }
+  ],
+  "app-5": [
+    { "id": "RISK-130", "ticketKey": "RISK-130", "summary": "Cross-site scripting vulnerability", "status": "In Progress", "priority": "High", "assignee": "Kevin Park", "created": "2026-01-20T11:00:00", "updated": "2026-01-29T09:00:00" },
+    { "id": "RISK-131", "ticketKey": "RISK-131", "summary": "SQL injection risk in search", "status": "Resolved", "priority": "High", "assignee": "Rachel Green", "created": "2026-01-12T08:00:00", "updated": "2026-01-22T15:30:00" }
+  ],
+  "app-6": [
+    { "id": "RISK-140", "ticketKey": "RISK-140", "summary": "Unencrypted database connections", "status": "Open", "priority": "High", "assignee": "Tom Wilson", "created": "2026-01-22T09:00:00", "updated": "2026-01-29T10:00:00" },
+    { "id": "RISK-141", "ticketKey": "RISK-141", "summary": "Missing multi-factor authentication", "status": "In Progress", "priority": "Medium", "assignee": "Jennifer Liu", "created": "2026-01-18T14:00:00", "updated": "2026-01-27T11:00:00" },
+    { "id": "RISK-142", "ticketKey": "RISK-142", "summary": "Outdated SSL certificates", "status": "Resolved", "priority": "Medium", "assignee": "Tom Wilson", "created": "2026-01-10T10:00:00", "updated": "2026-01-18T09:00:00" },
+    { "id": "RISK-143", "ticketKey": "RISK-143", "summary": "Insufficient backup verification", "status": "Open", "priority": "Medium", "assignee": "Jennifer Liu", "created": "2026-01-08T08:00:00", "updated": "2026-01-25T14:30:00" }
+  ],
+  "app-7": [
+    { "id": "RISK-150", "ticketKey": "RISK-150", "summary": "Hardcoded credentials in code", "status": "In Progress", "priority": "High", "assignee": "Mark Taylor", "created": "2026-01-24T10:00:00", "updated": "2026-01-29T08:30:00" },
+    { "id": "RISK-151", "ticketKey": "RISK-151", "summary": "Missing CSRF protection", "status": "Open", "priority": "Medium", "assignee": "Sophie Adams", "created": "2026-01-20T11:00:00", "updated": "2026-01-28T14:00:00" }
+  ],
+  "app-8": [
+    { "id": "RISK-160", "ticketKey": "RISK-160", "summary": "Insecure file upload handling", "status": "Open", "priority": "High", "assignee": "Ryan Cooper", "created": "2026-01-25T09:00:00", "updated": "2026-01-29T11:00:00" },
+    { "id": "RISK-161", "ticketKey": "RISK-161", "summary": "Missing content security policy", "status": "Waived", "priority": "Low", "assignee": "Emma White", "created": "2026-01-18T13:00:00", "updated": "2026-01-24T10:00:00" },
+    { "id": "RISK-162", "ticketKey": "RISK-162", "summary": "Excessive data retention", "status": "In Progress", "priority": "Medium", "assignee": "Ryan Cooper", "created": "2026-01-15T08:00:00", "updated": "2026-01-27T16:00:00" }
+  ],
+  "app-9": [
+    { "id": "RISK-170", "ticketKey": "RISK-170", "summary": "Unpatched server vulnerabilities", "status": "Open", "priority": "High", "assignee": "James Miller", "created": "2026-01-26T10:00:00", "updated": "2026-01-29T09:30:00" },
+    { "id": "RISK-171", "ticketKey": "RISK-171", "summary": "Missing audit trail", "status": "In Progress", "priority": "Medium", "assignee": "Olivia Clark", "created": "2026-01-20T09:00:00", "updated": "2026-01-28T15:00:00" }
+  ],
+  "app-10": [
+    { "id": "RISK-180", "ticketKey": "RISK-180", "summary": "Weak API key management", "status": "In Progress", "priority": "High", "assignee": "Daniel Brown", "created": "2026-01-23T11:00:00", "updated": "2026-01-29T10:30:00" },
+    { "id": "RISK-181", "ticketKey": "RISK-181", "summary": "Missing network segmentation", "status": "Open", "priority": "Medium", "assignee": "Grace Kim", "created": "2026-01-18T14:00:00", "updated": "2026-01-27T09:00:00" },
+    { "id": "RISK-182", "ticketKey": "RISK-182", "summary": "Insecure session management", "status": "Resolved", "priority": "High", "assignee": "Daniel Brown", "created": "2026-01-10T08:00:00", "updated": "2026-01-22T11:30:00" },
+    { "id": "RISK-183", "ticketKey": "RISK-183", "summary": "Missing penetration testing", "status": "Open", "priority": "Medium", "assignee": "Grace Kim", "created": "2026-01-05T10:00:00", "updated": "2026-01-25T13:00:00" }
   ]
 }

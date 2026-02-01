@@ -13,5 +13,39 @@
   ],
   "app-3": [
     { "id": "BO-55", "summary": "Launch self-service portal", "status": "In Progress", "updated": "2026-01-26T14:00:00", "fixReleases": ["2026-Q3"], "description": "Enable customers to manage their accounts online", "navigatorId": "NAV-1255" }
+  ],
+  "app-4": [
+    { "id": "BO-60", "summary": "Migrate to cloud infrastructure", "status": "In Progress", "updated": "2026-01-28T11:00:00", "fixReleases": ["2026-Q2"], "description": "Move all services to AWS for better scalability", "navigatorId": "NAV-1260" },
+    { "id": "BO-61", "summary": "Implement real-time analytics", "status": "On Track", "updated": "2026-01-27T09:30:00", "fixReleases": ["2026-Q3"], "description": "Add real-time dashboard for business metrics", "navigatorId": "NAV-1261" },
+    { "id": "BO-62", "summary": "Reduce page load time to under 2 seconds", "status": "At Risk", "updated": "2026-01-25T14:15:00", "fixReleases": ["2026-Q2"], "description": "Optimize frontend performance and CDN configuration", "navigatorId": "NAV-1262" }
+  ],
+  "app-5": [
+    { "id": "BO-70", "summary": "Launch multi-language support", "status": "Completed", "updated": "2026-01-20T10:00:00", "fixReleases": ["2026-Q1"], "description": "Add support for Spanish, French, and German locales", "navigatorId": "NAV-1270" },
+    { "id": "BO-71", "summary": "Integrate single sign-on", "status": "On Track", "updated": "2026-01-28T08:45:00", "fixReleases": ["2026-Q2"], "description": "Implement SAML and OIDC authentication", "navigatorId": "NAV-1271" }
+  ],
+  "app-6": [
+    { "id": "BO-80", "summary": "Automate deployment pipeline", "status": "On Track", "updated": "2026-01-29T10:30:00", "fixReleases": ["2026-Q2"], "description": "Implement CI/CD with automated testing and deployment", "navigatorId": "NAV-1280" },
+    { "id": "BO-81", "summary": "Achieve SOC2 compliance", "status": "At Risk", "updated": "2026-01-26T16:00:00", "fixReleases": ["2026-Q3"], "description": "Complete security controls and audit requirements", "navigatorId": "NAV-1281" },
+    { "id": "BO-82", "summary": "Reduce customer onboarding time by 50%", "status": "In Progress", "updated": "2026-01-24T11:45:00", "fixReleases": ["2026-Q2", "2026-Q3"], "description": "Streamline onboarding workflow and reduce manual steps", "navigatorId": "NAV-1282" },
+    { "id": "BO-83", "summary": "Launch API marketplace", "status": "On Track", "updated": "2026-01-22T09:00:00", "fixReleases": ["2026-Q4"], "description": "Create developer portal with API documentation", "navigatorId": "NAV-1283" }
+  ],
+  "app-7": [
+    { "id": "BO-90", "summary": "Implement predictive maintenance", "status": "In Progress", "updated": "2026-01-28T13:00:00", "fixReleases": ["2026-Q3"], "description": "Use ML models to predict system failures before they occur", "navigatorId": "NAV-1290" },
+    { "id": "BO-91", "summary": "Reduce support tickets by 30%", "status": "On Track", "updated": "2026-01-25T15:30:00", "fixReleases": ["2026-Q2"], "description": "Improve self-service documentation and chatbot", "navigatorId": "NAV-1291" }
+  ],
+  "app-8": [
+    { "id": "BO-100", "summary": "Launch mobile app v2.0", "status": "At Risk", "updated": "2026-01-29T08:00:00", "fixReleases": ["2026-Q2"], "description": "Complete redesign with improved UX and new features", "navigatorId": "NAV-1300" },
+    { "id": "BO-101", "summary": "Integrate payment gateway", "status": "Completed", "updated": "2026-01-18T14:30:00", "fixReleases": ["2026-Q1"], "description": "Add Stripe and PayPal integration for in-app purchases", "navigatorId": "NAV-1301" },
+    { "id": "BO-102", "summary": "Implement push notifications", "status": "On Track", "updated": "2026-01-27T10:15:00", "fixReleases": ["2026-Q2"], "description": "Add targeted push notifications for user engagement", "navigatorId": "NAV-1302" }
+  ],
+  "app-9": [
+    { "id": "BO-110", "summary": "Migrate database to PostgreSQL", "status": "In Progress", "updated": "2026-01-28T16:00:00", "fixReleases": ["2026-Q2"], "description": "Move from MySQL to PostgreSQL for better performance", "navigatorId": "NAV-1310" },
+    { "id": "BO-111", "summary": "Implement data archival strategy", "status": "On Track", "updated": "2026-01-26T11:30:00", "fixReleases": ["2026-Q3"], "description": "Archive old records to reduce database size and improve performance", "navigatorId": "NAV-1311" }
+  ],
+  "app-10": [
+    { "id": "BO-120", "summary": "Launch partner integration platform", "status": "On Track", "updated": "2026-01-29T09:00:00", "fixReleases": ["2026-Q3"], "description": "Build platform for third-party integrations via webhooks and APIs", "navigatorId": "NAV-1320" },
+    { "id": "BO-121", "summary": "Implement advanced reporting", "status": "Completed", "updated": "2026-01-15T12:00:00", "fixReleases": ["2026-Q1"], "description": "Add customizable reports with export functionality", "navigatorId": "NAV-1321" },
+    { "id": "BO-122", "summary": "Reduce infrastructure costs by 25%", "status": "At Risk", "updated": "2026-01-27T14:45:00", "fixReleases": ["2026-Q2", "2026-Q3"], "description": "Optimize resource utilization and implement auto-scaling", "navigatorId": "NAV-1322" },
+    { "id": "BO-123", "summary": "Achieve GDPR compliance", "status": "In Progress", "updated": "2026-01-24T08:30:00", "fixReleases": ["2026-Q2"], "description": "Implement data privacy controls and consent management", "navigatorId": "NAV-1323" }
   ]
 }

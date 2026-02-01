@@ -37,6 +37,7 @@ function AppProfile() {
     guildSmes,
     deploymentEnvironments,
     fixVersions,
+    syncing,
     loadFixVersions,
     addContact,
     removeContact,
@@ -44,6 +45,7 @@ function AppProfile() {
     removeDoc,
     addGuildSme,
     removeGuildSme,
+    syncGovernance,
   } = useAppProfileData(id);
 
   // Modal states
@@ -120,6 +122,8 @@ function AppProfile() {
             onRiskClick={setSelectedRisk}
             onAddGuildSme={addGuildSme}
             onRemoveGuildSme={removeGuildSme}
+            onSync={syncGovernance}
+            syncing={syncing}
             readOnly={readOnly}
           />
           <DeploymentsCard onCreateDeployment={() => setShowDeploymentWizard(true)} readOnly={readOnly} />

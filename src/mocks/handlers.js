@@ -467,6 +467,30 @@ export const handlers = [
     return res(ctx.json(appOutcomes));
   }),
 
+  // Business Outcomes (v2 endpoint alias)
+  rest.get('/api/v2/apps/:appId/business-outcomes', (req, res, ctx) => {
+    const appOutcomes = businessOutcomes[req.params.appId] || [];
+    return res(ctx.json(appOutcomes));
+  }),
+
+  // Risk Stories (v2 endpoint alias)
+  rest.get('/api/v2/apps/:appId/risk-stories', (req, res, ctx) => {
+    const appRiskStories = riskStories[req.params.appId] || [];
+    return res(ctx.json(appRiskStories));
+  }),
+
+  // Governance Sync endpoint
+  rest.post('/api/v2/apps/:appId/sync-governance', (req, res, ctx) => {
+    // Simulate delay for Jira sync
+    return res(
+      ctx.delay(1500),
+      ctx.json({
+        success: true,
+        synced: { business_outcomes: 3, risk_stories: 2 }
+      })
+    );
+  }),
+
   // Guilds
   rest.get('/api/guilds', (req, res, ctx) => {
     return res(ctx.json(guilds));
