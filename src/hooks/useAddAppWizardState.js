@@ -2,9 +2,7 @@ import { useCallback, useState } from 'react';
 import { DOC_TYPES } from '../components/products/addAppWizard/constants';
 import useAddAppWizardData from './useAddAppWizardData';
 import useAutoClearError from './useAutoClearError';
-import useDocsSelection from './useDocsSelection';
-import useJiraSelection from './useJiraSelection';
-import useRepoSelection from './useRepoSelection';
+import { useRepoSelection, useJiraSelection, useDocsSelection } from './useSelections';
 import useWizardSubmission from './useWizardSubmission';
 
 function useAddAppWizardState({ onComplete, onClose }) {

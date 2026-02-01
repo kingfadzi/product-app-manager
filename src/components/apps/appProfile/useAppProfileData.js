@@ -1,11 +1,13 @@
 import { useMemo, useState } from 'react';
 import useApps from '../../../hooks/useApps';
-import useAppProfileContacts from '../../../hooks/useAppProfileContacts';
-import useAppProfileDocs from '../../../hooks/useAppProfileDocs';
-import useAppProfileFixVersions from '../../../hooks/useAppProfileFixVersions';
-import useAppProfileGovernanceSync from '../../../hooks/useAppProfileGovernanceSync';
-import useAppProfileGuildSmes from '../../../hooks/useAppProfileGuildSmes';
-import useAppProfileLoader from '../../../hooks/useAppProfileLoader';
+import {
+  useAppProfileLoader,
+  useAppProfileContacts,
+  useAppProfileDocs,
+  useAppProfileGuildSmes,
+  useAppProfileFixVersions,
+  useAppProfileGovernanceSync,
+} from '../../../hooks/useAppProfile';
 
 function useAppProfileData(appId) {
   const {

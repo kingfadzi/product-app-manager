@@ -2,11 +2,7 @@ import React from 'react';
 import { Modal, Button } from 'react-bootstrap';
 import StepIndicator from '../../common/StepIndicator';
 import useDeploymentWizardState from '../../../hooks/useDeploymentWizardState';
-import DeploymentWizardStepProject from './DeploymentWizardStepProject';
-import DeploymentWizardStepVersion from './DeploymentWizardStepVersion';
-import DeploymentWizardStepDetails from './DeploymentWizardStepDetails';
-import DeploymentWizardStepEnvironments from './DeploymentWizardStepEnvironments';
-import DeploymentWizardStepAttestation from './DeploymentWizardStepAttestation';
+import { StepProject, StepVersion, StepDetails, StepEnvironments, StepAttestation } from './deploymentWizardSteps';
 
 const WIZARD_STEPS = ['Project', 'Version', 'Details', 'Environments', 'Attestation'];
 
@@ -44,11 +40,11 @@ function DeploymentWizardModal({ show, onHide, backlogs, businessOutcomes, deplo
       </Modal.Header>
       <Modal.Body style={{ paddingTop: 0 }}>
         <StepIndicator steps={WIZARD_STEPS} currentStep={step} />
-        {step === 1 && <DeploymentWizardStepProject backlogs={backlogs} data={data} onChange={handleBacklogChange} />}
-        {step === 2 && <DeploymentWizardStepVersion versions={getAvailableVersions()} data={data} onChange={handleVersionChange} />}
-        {step === 3 && <DeploymentWizardStepDetails data={data} setData={setData} businessOutcomes={businessOutcomes} />}
-        {step === 4 && <DeploymentWizardStepEnvironments data={data} environments={deploymentEnvironments} toggleEnvironment={toggleEnvironment} />}
-        {step === 5 && <DeploymentWizardStepAttestation data={data} environments={deploymentEnvironments} toggleAttestation={toggleAttestation} />}
+        {step === 1 && <StepProject backlogs={backlogs} data={data} onChange={handleBacklogChange} />}
+        {step === 2 && <StepVersion versions={getAvailableVersions()} data={data} onChange={handleVersionChange} />}
+        {step === 3 && <StepDetails data={data} setData={setData} businessOutcomes={businessOutcomes} />}
+        {step === 4 && <StepEnvironments data={data} environments={deploymentEnvironments} toggleEnvironment={toggleEnvironment} />}
+        {step === 5 && <StepAttestation data={data} environments={deploymentEnvironments} toggleAttestation={toggleAttestation} />}
       </Modal.Body>
       <Modal.Footer style={{ justifyContent: 'space-between' }}>
         {step > 1 ? (
