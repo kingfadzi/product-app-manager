@@ -1,6 +1,6 @@
 import React from 'react';
 import { Form, ListGroup, Badge } from 'react-bootstrap';
-import useCmdbAppSearch from '../../../hooks/useCmdbAppSearch';
+import { useCmdbAppSearch } from '../../../hooks/useSearchHooks';
 import RemediationBox from '../../common/RemediationBox';
 import { useAddAppWizard } from './AddAppWizardContext';
 import { getTierBadgeColor } from './helpers';

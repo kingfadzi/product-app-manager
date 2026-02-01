@@ -1,6 +1,6 @@
 import React from 'react';
 import { Form, ListGroup, Badge, Alert } from 'react-bootstrap';
-import useProductSearch from '../../../hooks/useProductSearch';
+import { useProductSearch } from '../../../hooks/useSearchHooks';
 import { useAddAppWizard } from './AddAppWizardContext';
 
 function ProductStep({ onSelect }) {

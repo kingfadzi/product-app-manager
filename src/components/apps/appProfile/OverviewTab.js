@@ -1,7 +1,7 @@
 import React from 'react';
 import { Col, Row } from 'react-bootstrap';
 import { getResCatBadgeClass } from './helpers';
-import DetailRow from './DetailRow';
+import { DetailRow } from './uiHelpers';
 
 function OverviewTab({ app }) {
   return (

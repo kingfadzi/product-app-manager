@@ -1,9 +1,7 @@
 import React from 'react';
 import { Card, Tab, Nav, Alert } from 'react-bootstrap';
 import SyncButton from '../../common/SyncButton';
-import OutcomesTab from './OutcomesTab';
-import RiskStoriesTab from './RiskStoriesTab';
-import GuildsTab from './GuildsTab';
+import { OutcomesTab, RiskStoriesTab, GuildsTab } from './tabs';
 
 function GovernanceCard({
   businessOutcomes,

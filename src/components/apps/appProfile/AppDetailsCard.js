@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
 import { Card, Tab, Nav, Alert } from 'react-bootstrap';
 import { useHistory } from 'react-router-dom';
-import ContactsTab from './ContactsTab';
 import OverviewTab from './OverviewTab';
-import ProductsTab from './ProductsTab';
+import { ContactsTab, ProductsTab } from './tabs';
 
 function AppDetailsCard({ app, contacts, appProducts, onAddContact, onRemoveContact, readOnly }) {
   const history = useHistory();

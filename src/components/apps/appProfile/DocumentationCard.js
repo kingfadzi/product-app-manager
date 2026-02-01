@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Card, Tab, Nav, Button, Alert } from 'react-bootstrap';
-import DocTabContent from './DocTabContent';
+import { DocTabContent } from './tabs';
 
 const PRODUCT_DOC_TYPES = ['Product Vision', 'Product Roadmap'];
 const TECH_DOC_TYPES = ['Architecture Vision', 'Service Vision', 'Security Vision', 'Test Strategy'];

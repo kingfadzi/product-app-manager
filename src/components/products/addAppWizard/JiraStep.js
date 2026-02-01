@@ -1,6 +1,6 @@
 import React from 'react';
 import { Form, Table, Alert, InputGroup, ListGroup, Button } from 'react-bootstrap';
-import useSearchableAPI from '../../../hooks/useSearchableAPI';
+import { useSearchableAPI } from '../../../hooks/useSearchHooks';
 import RemediationBox from '../../common/RemediationBox';
 import PaginatedTableWrapper from './PaginatedTableWrapper';
 import { useAddAppWizard } from './AddAppWizardContext';
